@@ -1,0 +1,21 @@
+# foundation
+brew 'bat'
+brew 'coreutils'
+brew 'diff-so-fancy'
+brew 'fd'
+brew 'fzf'
+brew 'git'
+brew 'gnupg2'
+brew 'node'
+brew 'pkg-config'
+brew 'ripgrep'
+brew 'ruby'
+brew 'vim'
+brew 'autojump'
+
+# dev
+brew 'composer'
+brew 'mysql'
+brew 'php'
+brew 'php@7.2'
+brew 'php@7.3'
