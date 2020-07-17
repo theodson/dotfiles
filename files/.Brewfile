@@ -1,15 +1,10 @@
-#support
-tap "homebrew/bundle"
-tap "homebrew/core"
-tap "homebrew/services"
-tap 'homebrew/cask'
-tap 'homebrew/cask-fonts'
-
 # dependencies
-brew 'pkg-config' # * (memcached)
-brew 'zlib' # memcached
+brew 'pkg-config'
+
+
 
 # foundation
+brew 'awscli'
 brew 'dnsmasq'
 brew 'imagemagick'
 brew 'bash'

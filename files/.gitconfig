@@ -1,0 +1,17 @@
+[user]
+    name = Tim MacDonald
+    email = hello@timacdonald.me
+[core]
+	excludesfile = ~/.gitignore_global
+	pager = diff-so-fancy | less --tabs=4 -RFX
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
+[color]
+	ui = true
+[alias]
+    # delete local branches no long present on origin
+    forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
+[push]
+	default = current

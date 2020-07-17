@@ -1,0 +1,7 @@
+{
+    "tld": "test",
+    "paths": [
+        "~/.config/valet/Sites",
+        "~/Code"
+    ]
+}
