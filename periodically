@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# run to update and cleanup composer, brew, vimplug, npm, pecl, etc
+# write logs
+
+# confirm this updates
+brew bundle --global
+brew bundle cleanup --global
+brew doctor
+
+composer global update
+
+pecl update-channels
+pecl upgrade
+
+npm install npm@latest -g

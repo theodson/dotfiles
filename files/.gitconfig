@@ -35,6 +35,8 @@
 [alias]
     # delete local branches no long present on origin
     forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
+    # branch and checkout
+    bc ="checkout -b"
 [push]
 	default = current
 [fetch]

@@ -1,17 +1,28 @@
+# use GNU coreutil binaries instead of built ins
+export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+
 # Navigation
 shopt -s autocd
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
-PATH="$HOME/.git-commands:$PATH"
+alias cat="bat"
+alias ls="ls -Ah --color --group-directories-first --time-style=iso"
+alias ll="ls -l"
+alias ~="cd ~/"
 
 op() {
     cd ~/code
 
-    directory=$(ls | fzf -q "$1")
+    local directory=$(ls | fzf --ansi -q "$1")
 
     cd $directory
 
     vim
+}
+
+gitBranchAndCheckout() {
+    /usr/local/bin/git branch $1
+    /usr/local/bin/git checkout $1
 }
 
 # use fd instead of find for fzf file lookup
@@ -32,7 +43,6 @@ export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 
 # visuals
 export PS1="~ \W "
-alias cat="bat"
 export BAT_THEME="Dracula"
 
 # git prompt

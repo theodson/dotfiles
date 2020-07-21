@@ -36,6 +36,8 @@ Plug 'chrisbra/matchit'
 call plug#end()
 
 " MISC =======================================================================
+" don't show welcome message
+set shortmess=I
 
 " Set the default character encoding for values
 set encoding=utf-8

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+brew bundle --global --verbose | tee brew.log
+
+composer global install --verbose | tee composer.log
+
+#pecl e
+
+echo 'Done! Checkout the log files'
