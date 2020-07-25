@@ -30,8 +30,12 @@ Plug 'jwalton512/vim-blade'
 Plug 'StanAngeloff/php.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install' }
-Plug 'phpactor/phpactor', {'for': 'php', 'do': 'composer install'}
 Plug 'chrisbra/matchit'
+
+Plug 'dense-analysis/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
+
 " Plug 'vim-airline/vim-airline'
 call plug#end()
 
@@ -360,3 +364,6 @@ function <SID>ArtisanMake(input)
 
     execute('e '.path)
 endfunction
+
+let g:ale_fix_on_save = 1
+let g:ale_fixers = { 'php': ['php_cs_fixer'] }

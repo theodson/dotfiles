@@ -1,14 +1,19 @@
 - clean: ['~']
 
 - link:
+    ~/.vim/coc-settings.json: files/coc-settings.json
     ~/.Brewfile: files/.Brewfile
     ~/.bash_profile: files/.bash_profile
     ~/.gitconfig: files/.gitconfig
     ~/.vimrc: files/.vimrc
     ~/.hushlogin: files/.hushlogin
     ~/.gitignore_global: files/.gitignore_global
-    ~/.composer/composer.json: files/composer.json
-    ~/.config/valet/config.json: files/valet.json
+    ~/.composer/composer.json:
+        path: files/composer.json
+        create: true
+    ~/.config/valet/config.json:
+        path: files/valet.json
+        create: true
 
 - create:
     - ~/.fzf_history
