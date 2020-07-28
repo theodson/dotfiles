@@ -14,3 +14,6 @@ pecl update-channels
 pecl upgrade
 
 npm install npm@latest -g
+
+# update laravel cs fixer config
+# curl: https://gist.githubusercontent.com/laravel-shift/cab527923ed2a109dda047b97d53c200/raw/1db6b058ee3672ebd1a88bac9d8182aed449eb05/.php_cs.laravel.php

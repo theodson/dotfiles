@@ -25,18 +25,23 @@
 	newNormal = "green bold"
 	newHighlight = "green bold 22"
 [color "branch"]
-	current = yellow reverse
-	local = yellow
+    current = cyan reverse
+	local = cyan
 	remote = green
 [color "status"]
-	added = yellow
-	changed = green
+	added = green
+	changed = yellow
 	untracked = cyan
+    unmerged = cyan
+    branch = cyan
+    nobranch = cyan
 [alias]
     # delete local branches no long present on origin
     forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
     # branch and checkout
     bc ="checkout -b"
+    # short status
+    s = "status -s -b --renames"
 [push]
 	default = current
 [fetch]

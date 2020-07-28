@@ -54,3 +54,5 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+.php_cs.local

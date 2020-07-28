@@ -6,6 +6,7 @@
     ~/.bash_profile: files/.bash_profile
     ~/.gitconfig: files/.gitconfig
     ~/.vimrc: files/.vimrc
+    ~/.php_cs.laravel: files/.php_cs.laravel
     ~/.hushlogin: files/.hushlogin
     ~/.gitignore_global: files/.gitignore_global
     ~/.composer/composer.json:

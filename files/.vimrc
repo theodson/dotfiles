@@ -134,11 +134,25 @@ set shiftwidth=4
 " reporting "xterm-true-color" as it's "terminal type"
 set termguicolors
 
-imap <silent> jk <Esc>:w<CR>
+imap <silent> jk <Esc>
+nmap <C-s> :write<CR>
 noremap <Left> :echo 'hjkl'<CR>
 noremap <Right> :echo 'hjkl'<CR>
 noremap <Up> :echo 'hjkl'<CR>
 noremap <Down> :echo 'hjkl'<CR>
+
+" Location list. Used for navigating linting errors, mostly
+nmap [L :lfirst<cr>
+nmap [l :lprevious<cr>
+nmap ]l :lnext<cr>
+nmap ]L :llast<cr>
+nmap [C :cfirst<cr>
+nmap [c :cprevious<cr>
+nmap ]c :cnext<cr>
+nmap ]C :clast<cr>
+nmap <leader>rc :vsplit ~/.vimrc<CR>
+" format (gq) a file (af)
+nmap gqaf :ALEFix<CR>
 
 " Detect if we are in a GIT repo
 let inGitRepo=! empty(finddir('.git'))
@@ -346,7 +360,7 @@ let g:vue_pre_processors=[]
 autocmd FileType vue syntax sync fromstart
 
 nmap <leader>lm :ArtisanMake<space>
-command! -nargs=+ ArtisanMake call <SID>ArtisanMake(<q-args>)
+command! -nargs=+ ArtisanMake call s:ArtisanMake(<q-args>)
 
 function <SID>ArtisanMake(input)
     let before = system('php -r "echo hrtime(true);"')
@@ -365,5 +379,50 @@ function <SID>ArtisanMake(input)
     execute('e '.path)
 endfunction
 
-let g:ale_fix_on_save = 1
+" fixing...
 let g:ale_fixers = { 'php': ['php_cs_fixer'] }
+let g:ale_fix_on_save = 1
+
+" use the global binary by default so I can fix projects that use StyleCI but
+" don't employ a .php_cs locally
+if filereadable('vendor/bin/php-cs-fixer')
+    let g:ale_php_cs_fixer_executable = 'vendor/bin/php-cs-fixer'
+else
+    let g:ale_php_cs_fixer_executable = 'php-cs-fixer'
+endif
+
+" if we aren't using PHP-CS-Fixer on this project, run use the global
+" executable and the Laravel styling config, but make sure we only fix
+" the one file, not all the paths from the config file, i.e. /database /routes.
+if filereadable('.php_cs.local')
+    if match(readfile('.php_cs.local'), '\S') == -1
+        let s:php_cs_config = $HOME.'/.php_cs.laravel'
+    else
+        let s:php_cs_config = $HOME.'.php_cs.local'
+    endif
+    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config="'.s:php_cs_config.'"'
+elseif ! (filereadable('.php_cs') || filereadable('.php_cs.dist'))
+    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config='.$HOME.'/.php_cs.laravel'
+    let g:ale_fix_on_save = 0
+endif
+
+
+" Linting
+let g:ale_cache_executable_check_failures = 1
+let g:ale_php_phpstan_executable = 'vendor/bin/phpstan'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_text_changed = 0
+let g:ale_sign_error = '👀'
+
+" automatically source this file when saved
+augroup autosourcing
+    autocmd!
+    autocmd BufWritePost .vimrc nested source %
+augroup END
+
+autocmd BufNewFile,BufRead .php_cs* set filetype=php
+
+function <SID>FileIsEmpty(path)
+    return
+endfunction
