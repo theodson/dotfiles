@@ -36,6 +36,8 @@ Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
 
+Plug 'tpope/vim-vinegar'
+
 " Plug 'vim-airline/vim-airline'
 call plug#end()
 
@@ -130,6 +132,9 @@ set tabstop=4
 " use 4 spaces for indentation operations
 set shiftwidth=4
 
+set smartindent
+set autoindent
+
 " give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
 " reporting "xterm-true-color" as it's "terminal type"
 set termguicolors
@@ -160,14 +165,8 @@ let inGitRepo=! empty(finddir('.git'))
 " Take me to your leader
 let mapleader="\<Space>"
 
-" Do no show swap files in the files explorer
-let g:netrw_list_hide='.*\.swp$,^\.DS_Store$'
-
-" Hide top banner
-let g:netrw_banner=0
-
 " Open the file explorer, you sadistic mofo
-nmap <Leader>- :Explore<CR>
+" nmap <Leader>- :Explore<CR>
 
 " Launch tinker shell
 nmap <Leader>lt :!php artisan tinker<CR>
@@ -383,29 +382,30 @@ endfunction
 let g:ale_fixers = { 'php': ['php_cs_fixer'] }
 let g:ale_fix_on_save = 1
 
-" use the global binary by default so I can fix projects that use StyleCI but
-" don't employ a .php_cs locally
+" fallback to global binary if not installed on local project
 if filereadable('vendor/bin/php-cs-fixer')
     let g:ale_php_cs_fixer_executable = 'vendor/bin/php-cs-fixer'
 else
     let g:ale_php_cs_fixer_executable = 'php-cs-fixer'
 endif
 
-" if we aren't using PHP-CS-Fixer on this project, run use the global
-" executable and the Laravel styling config, but make sure we only fix
-" the one file, not all the paths from the config file, i.e. /database /routes.
-if filereadable('.php_cs.local')
+if (filereadable('.php_cs') || filereadable('.php_cs.dist'))
+    " great. just let the tool find the right config to use
+elseif filereadable('.php_cs.local')
     if match(readfile('.php_cs.local'), '\S') == -1
+        " .php_cs.local is empty, indicating we should just use the global
+        " laravel rules
         let s:php_cs_config = $HOME.'/.php_cs.laravel'
     else
         let s:php_cs_config = $HOME.'.php_cs.local'
     endif
     let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config="'.s:php_cs_config.'"'
-elseif ! (filereadable('.php_cs') || filereadable('.php_cs.dist'))
+else
+    " no config information is present, so we'll use the global laravel config
+    " and only fix when called manually with `gqaf`
     let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config='.$HOME.'/.php_cs.laravel'
     let g:ale_fix_on_save = 0
 endif
-
 
 " Linting
 let g:ale_cache_executable_check_failures = 1

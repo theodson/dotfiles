@@ -21,9 +21,9 @@
     oldMoved = blue
 [color "diff-highlight"]
 	oldNormal = red bold
-	oldHighlight = "red bold 52"
-	newNormal = "green bold"
-	newHighlight = "green bold 22"
+	oldHighlight = red reverse
+	newNormal = green
+	newHighlight = green reverse
 [color "branch"]
     current = cyan reverse
 	local = cyan
