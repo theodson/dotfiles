@@ -11,19 +11,14 @@
 [color]
 	ui = auto
 [color "diff"]
-    meta = yellow bold
-    commit = green bold
-    frag = magenta bold
-    old = red bold
-    new = green bold
+    meta = yellow
+    commit = green
+    frag = magenta
+    old = red
+    new = green
     whitespace = red reverse
     newMoved = cyan
     oldMoved = blue
-[color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red reverse
-	newNormal = green
-	newHighlight = green reverse
 [color "branch"]
     current = cyan reverse
 	local = cyan
@@ -35,6 +30,11 @@
     unmerged = cyan
     branch = cyan
     nobranch = cyan
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red reverse
+	newNormal = green
+	newHighlight = green reverse
 [alias]
     # delete local branches no long present on origin
     forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
@@ -52,3 +52,6 @@
 	colorMoved = zebra
 [stash]
     showPatch = true
+[interactive]
+    # show a nicer diff when using `git add -p`
+    diffFilter = "$(git --exec-path | sed 's/libexec/share/')/contrib/diff-highlight/diff-highlight"
