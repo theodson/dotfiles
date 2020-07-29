@@ -3,6 +3,7 @@
     email = hello@timacdonald.me
 [core]
 	excludesfile = ~/.gitignore_global
+    editor = vim
 	pager = diff-so-fancy | less --tabs=4 -RFX
 [commit]
 	gpgsign = true
