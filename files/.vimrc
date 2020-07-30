@@ -57,7 +57,7 @@ set writebackup
 set backupdir=$HOME/.vim_backup//
 
 " Persistent undo
-se undofile
+set undofile
 set undodir=$HOME/.vim_undo//
 
 " keep X lines of command history
