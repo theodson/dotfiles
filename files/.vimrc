@@ -397,7 +397,7 @@ elseif filereadable('.php_cs.local')
         " laravel rules
         let s:php_cs_config = $HOME.'/.php_cs.laravel'
     else
-        let s:php_cs_config = $HOME.'.php_cs.local'
+        let s:php_cs_config = '.php_cs.local'
     endif
     let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config="'.s:php_cs_config.'"'
 else
