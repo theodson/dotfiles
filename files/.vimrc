@@ -2,6 +2,21 @@
 " options as a side-effect
 set nocompatible
 
+" use spaces instead of tabs
+set expandtab
+
+" size of a tab is 4 spaces
+set tabstop=4
+
+" size of an indent is 4 spaces
+set shiftwidth=4
+
+set autoindent
+
+" per filetype, e.g. .php, .js, etc
+filetype plugin indent on
+
+
  "Improvements I'd like to make:
 " 1. Pear tree to auto complete matching blade tags, i.e. @if($thing) @endif
 " and @auth @endauth, but not @csrf
@@ -70,6 +85,7 @@ set laststatus=2
 
 " Show all possible results in a tab-able menu in the status bar
 set wildmenu
+set wildmode=longest,list,full
 
 " Show line length indicators
 set colorcolumn=80,120
@@ -120,20 +136,6 @@ nmap Y y$
 
 " INDENTING ==================================================================
 
-" per filetype, e.g. .php, .js, etc
-filetype plugin indent on
-
-" use spaces instead of tab characters
-set expandtab
-
-" use 4 spaces to represent a tab
-set tabstop=4
-
-" use 4 spaces for indentation operations
-set shiftwidth=4
-
-set smartindent
-set autoindent
 
 " give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
 " reporting "xterm-true-color" as it's "terminal type"
@@ -426,3 +428,6 @@ autocmd BufNewFile,BufRead .php_cs* set filetype=php
 function <SID>FileIsEmpty(path)
     return
 endfunction
+
+" stop weird highlighting of text inside italic tags
+let html_no_rendering=0
