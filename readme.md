@@ -15,3 +15,16 @@
 - ssh public key creation
 - AWS cli config steps
 - gpg config steps
+
+# New machine
+- Sign into iCloud
+- Swap iTunes account to other Apple ID
+
+```
+mkdir Code
+cd Code
+git clone https://github.com/timacdonald/dotfiles.git
+cd dotfiles
+bash install
+bash after
+```

@@ -3,12 +3,12 @@ brew 'pkg-config'
 
 # foundation
 brew 'awscli'
+brew 'git-delta'
 brew 'bash'
 brew 'bat'
 brew 'cocoapods'
 brew 'composer'
 brew 'coreutils'
-brew 'diff-so-fancy'
 brew 'fd'
 brew 'ffmpeg'
 brew 'findutils'

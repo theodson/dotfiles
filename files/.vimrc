@@ -40,12 +40,9 @@ Plug 'tpope/vim-commentary'
 Plug 'janko/vim-test'
 Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-surround'
-Plug 'posva/vim-vue'
-Plug 'jwalton512/vim-blade'
-Plug 'StanAngeloff/php.vim'
-Plug 'pangloss/vim-javascript'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install' }
 Plug 'chrisbra/matchit'
+Plug 'sheerun/vim-polyglot'
 
 Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -209,6 +206,7 @@ let g:pear_tree_pairs = {
     \ "'": {'closer': "'"},
     \ '"': {'closer': '"'},
     \ '<!--': {'closer': '-->'},
+    \ '{{--': {'closer': '--}}'},
 \ }
 
 " COLOUR SCHEME ==============================================================
@@ -424,6 +422,7 @@ augroup autosourcing
 augroup END
 
 autocmd BufNewFile,BufRead .php_cs* set filetype=php
+" autocmd FileType html let b:match_words = substitute(b:match_words, '<:>,', '', '').',<:>'
 
 function <SID>FileIsEmpty(path)
     return
