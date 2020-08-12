@@ -1,7 +1,6 @@
 - clean: ['~']
 
 - link:
-    ~/.vim/coc-settings.json: files/coc-settings.json
     ~/.Brewfile: files/.Brewfile
     ~/.bash_profile: files/.bash_profile
     ~/.gitconfig: files/.gitconfig
@@ -9,6 +8,9 @@
     ~/.php_cs.laravel: files/.php_cs.laravel
     ~/.hushlogin: files/.hushlogin
     ~/.gitignore_global: files/.gitignore_global
+    ~/.vim/coc-settings.json:
+        path: files/coc-settings.json
+        create: true
     ~/.composer/composer.json:
         path: files/composer.json
         create: true
@@ -21,4 +23,3 @@
     - ~/.vim_swap
     - ~/.vim_backup
     - ~/.vim_undo
-    - ~/Code

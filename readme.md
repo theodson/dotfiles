@@ -19,6 +19,9 @@
 # New machine
 - Sign into iCloud
 - Swap iTunes account to other Apple ID
+- [Install xCode](https://apps.apple.com/au/app/xcode/id497799835?mt=12)
+- Open Xcode
+- `xcode-select --install`
 
 ```
 mkdir Code
