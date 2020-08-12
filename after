@@ -2,12 +2,19 @@
 
 set -e
 
-if test ! $(which brew); then
+if [ ! $(which brew) ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-brew bundle --global --verbose | tee brew.log
-composer global install --verbose | tee composer.log
+logVersion=0
+
+while [ -e "logs/brew.$logVersion.log" ]
+do
+    ((++logVersion))
+done
+
+brew bundle --global --verbose | tee logs/brew.$logVersion.log
+composer global install --verbose | tee logs/composer.$logVersion.log
 
 # pecl e
 # npm
