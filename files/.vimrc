@@ -30,6 +30,8 @@ filetype plugin indent on
 " 6. Show current git branch in VIM
 " 7. Search the help for all instances of PHP related content.
 " 8. Lazy load plugins
+"
+
 call plug#begin('~/.vim/plugged')
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
