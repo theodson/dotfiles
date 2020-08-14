@@ -1,6 +1,7 @@
 {
     "tld": "test",
     "paths": [
-        "/Users/tim/code"
+        "/Users/tim/code",
+        "/Users/tim/Code"
     ]
 }

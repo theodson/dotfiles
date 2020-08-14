@@ -23,6 +23,8 @@
 - [Install xCode](https://apps.apple.com/au/app/xcode/id497799835?mt=12)
 - Open Xcode
 - `xcode-select --install`
+- install https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/
+- install https://1password.com/browsers/firefox/
 
 ```
 mkdir Code

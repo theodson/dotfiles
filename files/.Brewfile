@@ -1,7 +1,13 @@
+tap 'homebrew/cask-versions'
+tap 'homebrew/cask-fonts'
+
 # dependencies
 brew 'pkg-config'
+brew 'zlib' #memcached
 
 # foundation
+brew 'nginx'
+brew 'dnsmasq'
 brew 'pinentry-mac'
 brew 'awscli'
 brew 'git-delta'
@@ -29,11 +35,9 @@ brew 'memcached'
 brew 'mysql'
 brew 'node'
 brew 'optipng'
-brew 'php'
-brew 'php@7.0'
-brew 'php@7.1'
 brew 'php@7.2'
 brew 'php@7.3'
+brew 'php@7.4'
 brew 'pngquant'
 brew 'ripgrep'
 brew 'sqlite'
@@ -46,6 +50,7 @@ brew 'zsh'
 
 # fonts
 cask 'font-fira-code'
+cask 'font-jetbrains-mono'
 
 # apps
 cask 'firefox-developer-edition'

@@ -2,26 +2,47 @@
 
 set -e
 
-if [ ! $(which brew) ]; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-fi
-
+# Generate a unique log version
 logVersion=0
-
 while [ -e "logs/brew.$logVersion.log" ]
 do
     ((++logVersion))
 done
 
-brew bundle --global --verbose | tee logs/brew.$logVersion.log
-composer global install --verbose | tee logs/composer.$logVersion.log
-
-# pecl e
-# npm
-
-if [ ! -e ~/.vim/autoload/plug.vim ]; then
-    curl -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa"
+# Install homebrew if it isn't already
+if [ ! $(which brew) ]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-echo 'Done! Checkout the log files'
+# Install vim-plug if it isn't already
+if [ ! -e ~/.vim/autoload/plug.vim ]; then
+    curl -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
+
+# Install homebrew dependecies
+brew bundle --global --verbose | tee logs/brew.$logVersion.log
+
+# Install composer dependecies
+composer global install --verbose | tee logs/composer.$logVersion.log
+
+# Install vim-plug dependecies
+vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa" | tee logs/vim-plug.$logVersion.log
+
+# Install pecl dependecies
+pecl install mailparse memcached | tee logs/pecl.$logVersion.log
+
+# Install valet
+~/.composer/vendor/bin/valet install | tee logs/valet.$logVersion.log
+
+# Start services
+brew services restart memcached
+brew services restart mysql
+
+echo 'Done!'
+echo "Don't forget to check out the logs and manually run the following commands:"
+
+# Create mysql tables
+# "laravel" is handy for new projects as it is the default database name in the
+# ".env.example" that ships with Laravel out of the box.
+echo 'mysql -u root -e "create database if not exists tixel;"
+mysql -u root -e "create database if not exists laravel;"'
