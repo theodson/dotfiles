@@ -8,6 +8,7 @@
 - Docker?
 - Rectangle (window management on iMac)
 - VirtualBox (windows virtualiser)
+- create `~/.gitconfig.local` with placeholder variables if it doesn't exist
 
 # Process
 - Check before burning the hard drive for unsynced content
