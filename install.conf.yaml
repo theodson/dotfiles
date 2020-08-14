@@ -23,3 +23,4 @@
     - ~/.vim_swap
     - ~/.vim_backup
     - ~/.vim_undo
+    - ~/.vim/autoload

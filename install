@@ -2,14 +2,26 @@
 
 set -e
 
-CONFIG="install.conf.yaml"
-DOTBOT_DIR="dotbot"
+if [ ! $(which brew) ]; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+fi
 
-DOTBOT_BIN="bin/dotbot"
-BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+logVersion=0
 
-cd "${BASEDIR}"
-git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
-git submodule update --init --recursive "${DOTBOT_DIR}"
+while [ -e "logs/brew.$logVersion.log" ]
+do
+    ((++logVersion))
+done
 
-"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+brew bundle --global --verbose | tee logs/brew.$logVersion.log
+composer global install --verbose | tee logs/composer.$logVersion.log
+
+# pecl e
+# npm
+
+if [ ! -e ~/.vim/autoload/plug.vim ]; then
+    curl -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa"
+fi
+
+echo 'Done! Checkout the log files'
