@@ -2,6 +2,7 @@
 brew 'pkg-config'
 
 # foundation
+brew 'pinentry-mac'
 brew 'awscli'
 brew 'git-delta'
 brew 'bash'
