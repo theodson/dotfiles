@@ -4,6 +4,7 @@
 - ~/.vim (Plugged etc)
 - ~/.ssh/config (private)
 - iTerm config
+- backup ssh / gpg keys
 - Sequel Pro config (private)
 - Docker?
 - Rectangle (window management on iMac)
@@ -25,6 +26,7 @@
 - `xcode-select --install`
 - install https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/
 - install https://1password.com/browsers/firefox/
+- GPG and SSH keys + put in Github
 
 ```
 mkdir Code
