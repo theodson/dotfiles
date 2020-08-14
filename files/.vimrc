@@ -49,6 +49,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
 
 Plug 'tpope/vim-vinegar'
+Plug 'darfink/vim-plist'
 
 " Plug 'vim-airline/vim-airline'
 call plug#end()
@@ -134,10 +135,6 @@ nmap Y y$
 " INDENTING ==================================================================
 
 
-" give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
-" reporting "xterm-true-color" as it's "terminal type"
-set termguicolors
-
 imap <silent> jk <Esc>
 nmap <C-s> :write<CR>
 noremap <Left> :echo 'hjkl'<CR>
@@ -218,7 +215,14 @@ let g:pear_tree_pairs = {
 let g:dracula_italic=0
 
 " in your best dracular voice: "i want to colour your syntax"
-color dracula
+"color dracula
+set background=dark
+colorscheme dracula
+
+" give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
+" reporting "xterm-true-color" as it's "terminal type"
+set termguicolors
+
 
 augroup dracula_customization
   autocmd!
