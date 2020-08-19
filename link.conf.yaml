@@ -2,6 +2,7 @@
 
 - link:
     ~/.Brewfile: files/.Brewfile
+    ~/.zshrc: files/.zshrc
     ~/.bash_profile: files/.bash_profile
     ~/.gitconfig: files/.gitconfig
     ~/.vimrc: files/.vimrc

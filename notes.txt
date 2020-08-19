@@ -179,13 +179,6 @@ Or, if you don't want/need a background service you can just run:
 For Bash or Zsh, put something like this in your $HOME/.bashrc or $HOME/.zshrc:
   . /usr/local/etc/profile.d/z.sh
 
-- fira code failed
-
-- firefox failed
-
-- imagemagick failed. check that this is installed correctly. Says it is installed now.
-
-
 - check that sqlite is installed correctly and in the path, otherwise
 osqlite is keg-only, which means it was not symlinked into /usr/local,
 because macOS already provides this software and installing another version in
