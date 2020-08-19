@@ -16,6 +16,8 @@ set autoindent
 " per filetype, e.g. .php, .js, etc
 filetype plugin indent on
 
+" fzf
+set rtp+=/usr/local/opt/fzf
 
  "Improvements I'd like to make:
 " 1. Pear tree to auto complete matching blade tags, i.e. @if($thing) @endif

@@ -55,6 +55,14 @@ pecl upgrade | tee -a logs/pecl.$logVersion.log
 brew services restart memcached
 brew services restart mysql
 
+# Additionally, if you receive “zsh compinit: insecure directories” warnings
+# when attempting to load these completions, you may need to run this
+# see: https://docs.brew.sh/Shell-Completion
+compaudit | xargs chmod g-w
+
+# Install FZF stuff
+/usr/local/opt/fzf/install --key-bindings --completion --update-rc
+
 echo 'Done!'
 echo "Don't forget to check out the logs and manually run the following commands:"
 

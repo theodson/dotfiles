@@ -12,6 +12,13 @@
 - create `~/.gitconfig.local` with placeholder variables if it doesn't exist
 - alias "browse" that opens the current directory in firefox (timacdonald.test)
 - vim spell check files
+~/.gnupg/gpg-agent.conf
+    pinentry-program /usr/local/bin/pinentry-mac
+
+ - add /Users/tim/.gnupg/gpg-agent.conf to my dot files
+
+ - add .fzf.zsh
+ - make fzf install only do zsh stuff
 
 # Process
 - Check before burning the hard drive for unsynced content
