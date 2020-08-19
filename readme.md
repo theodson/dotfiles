@@ -10,6 +10,8 @@
 - Rectangle (window management on iMac)
 - VirtualBox (windows virtualiser)
 - create `~/.gitconfig.local` with placeholder variables if it doesn't exist
+- alias "browse" that opens the current directory in firefox (timacdonald.test)
+- vim spell check files
 
 # Process
 - Check before burning the hard drive for unsynced content

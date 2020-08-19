@@ -25,6 +25,9 @@ brew bundle --global --verbose | tee logs/brew.$logVersion.log
 # Install composer dependecies
 composer global install --verbose | tee logs/composer.$logVersion.log
 
+# Install npm dependecies
+npm install -g pure-prompt
+
 # Install vim-plug dependecies
 vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa" | tee logs/vim-plug.$logVersion.log
 

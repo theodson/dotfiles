@@ -57,11 +57,15 @@ Plug 'darfink/vim-plist'
 call plug#end()
 
 " MISC =======================================================================
+" Set the default character encoding for values
+set encoding=utf-8
+
+set spelllang=en_au
+autocmd FileType markdown,gitcommit setlocal spell
+
 " don't show welcome message
 set shortmess=I
 
-" Set the default character encoding for values
-set encoding=utf-8
 
 " Store .swp files in a central location so they don't end up in version
 " control etc. Double slash ensure unique names across projects.
@@ -215,6 +219,16 @@ let g:pear_tree_pairs = {
 
 " stop giving a solid background colour to a heap of random things
 let g:dracula_italic=0
+
+" highlight markdown code blocks
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+
+let g:markdown_fenced_languages=['php', 'blade']
+
+let g:vim_markdown_strikethrough = 1
+
+" polyglot plugin
+let g:vim_markdown_frontmatter = 1
 
 " in your best dracular voice: "i want to colour your syntax"
 "color dracula
