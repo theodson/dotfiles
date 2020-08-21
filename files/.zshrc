@@ -1,6 +1,9 @@
 VALET_TLD="test"
 VALET_PARKED_DIRECTORY="$HOME/Code/"
 
+# "cd" by typing only the directory
+setopt autocd
+
 # pure prompt
 # https://github.com/sindresorhus/pure
 autoload -U promptinit; promptinit
@@ -9,8 +12,7 @@ prompt pure
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
 if type brew &>/dev/null; then
-  FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
-
+  export FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
   autoload -Uz compinit
   compinit
 fi
@@ -26,23 +28,34 @@ alias sqlite="sqlite3"
 
 # GNU findutils
 # https://formulae.brew.sh/formula/findutils#default
-PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$PATH"
+export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$PATH"
 
 # GNU coreutils
 # https://formulae.brew.sh/formula/coreutils#default
-PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
 
 # GNU sed
 # https://formulae.brew.sh/formula/gnu-sed#default
-PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
+export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
 
 # GNU which
 # https://formulae.brew.sh/formula/gnu-which#default
-PATH="$(brew --prefix)/opt/gnu-which/libexec/gnubin:$PATH"
+export PATH="$(brew --prefix)/opt/gnu-which/libexec/gnubin:$PATH"
+
+# composer
+# https://formulae.brew.sh/formula/composer#default
+export PATH="~/.composer/vendor/bin:$PATH"
 
 # fzf
 # https://github.com/junegunn/fzf
 source ~/.fzf.zsh
+# use 'fd' instead of 'find' for 'fzf file lookup
+export FZF_DEFAULT_COMMAND='fd --type file --follow --no-ignore --hidden --exclude .git'
+
+# bat, not cat 🦇
+# https://github.com/sharkdp/bat
+alias cat="bat"
+export BAT_THEME="Dracula"
 
 # Open in web browser
 #
@@ -56,9 +69,10 @@ browse() {
     domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed 's=/.*==')
     if [ ${#domain} -gt 0 ];
     then
-        domain=http://$domain.$VALET_TLD
-        open $domain
+        open http://$domain.$VALET_TLD
     else
         open -a Firefox\ Developer\ Edition
     fi
 }
+
+export GPG_TTY=$(tty)
