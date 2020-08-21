@@ -14,6 +14,7 @@
 - vim spell check files
 ~/.gnupg/gpg-agent.conf
     pinentry-program /usr/local/bin/pinentry-mac
+    pinentry-program /usr/local/bin/pinentry-mac
  - add /Users/tim/.gnupg/gpg-agent.conf to my dot files
  - add .fzf.zsh
  - make fzf install only do zsh stuff
