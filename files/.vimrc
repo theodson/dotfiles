@@ -307,6 +307,8 @@ endif
 let test#php#phpunit#executable = 'vendor/bin/phpunit --colors=always'
 " Run whole test suite in a background job
 nmap <Leader>ta :Dispatch! ./vendor/bin/phpunit<CR>
+" Run current suite
+nmap <Leader>ts :TestFile<CR>
 " Run current file
 nmap <Leader>tf :TestFile<CR>
 " Run last test
@@ -446,9 +448,27 @@ augroup END
 autocmd BufNewFile,BufRead .php_cs* set filetype=php
 " autocmd FileType html let b:match_words = substitute(b:match_words, '<:>,', '', '').',<:>'
 
-function <SID>FileIsEmpty(path)
-    return
-endfunction
 
 " stop weird highlighting of text inside italic tags
 let html_no_rendering=0
+
+" try infer the test suite, so that :TestSuite works without opening a test
+" file
+
+if exists('g:test#last_position')
+  finish
+endif
+
+let s:patterns = [{'dir': 'tests', 'pattern': 'Test.php'}]
+
+for s:p in s:patterns
+    let s:path = trim(system('fd '.shellescape(s:p.pattern).' '.shellescape(s:p.dir).' -s | sed -n 1p'))
+    if s:path !=# ''
+        let g:test#last_position = {
+          \ 'file': s:path,
+          \ 'col': 1,
+          \ 'line': 1,
+          \}
+    finish
+  endif
+endfor
