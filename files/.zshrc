@@ -1,3 +1,6 @@
+VALET_TLD="test"
+VALET_PARKED_DIRECTORY="$HOME/Code/"
+
 # pure prompt
 # https://github.com/sindresorhus/pure
 autoload -U promptinit; promptinit
@@ -41,25 +44,21 @@ PATH="$(brew --prefix)/opt/gnu-which/libexec/gnubin:$PATH"
 # https://github.com/junegunn/fzf
 source ~/.fzf.zsh
 
-
-VALET_PARKED_DIRECTORY=$HOME/Sites
-
 # Open in web browser
+#
 # If you are within a subdirectory of the Laravel Valet parked directory
 # open the site in the browser, otherwise just open the browser. Examples:
-# ~/Sites/timacdonald opens timacdonald.test
-# ~/Sites/docs opens docs.test
-# ~/Sites/docs/node_modules opens docs.test
+# ~/Sites/timacdonald opens http://timacdonald.test
+# ~/Sites/style-guide opens http://style-guide.test
+# ~/Sites/style-guide/node_modules opens http://style-guide.test
+#
 browse() {
     domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed 's=/.*==')
-
     if [ ${#domain} -gt 0 ];
     then
-        open http://$domain.test
+        domain=http://$domain.$VALET_TLD
+        open $domain
     else
         open -a Firefox\ Developer\ Edition
     fi
 }
-
-# Open browser
-# alias browse=""
