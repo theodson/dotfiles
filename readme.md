@@ -1,4 +1,4 @@
-# TODO
+# TODO.
 - Forklift sites (private)
 - postman collections (private)
 - ~/.vim (Plugged etc)
