@@ -14,9 +14,7 @@
 - vim spell check files
 ~/.gnupg/gpg-agent.conf
     pinentry-program /usr/local/bin/pinentry-mac
-
  - add /Users/tim/.gnupg/gpg-agent.conf to my dot files
-
  - add .fzf.zsh
  - make fzf install only do zsh stuff
 
@@ -38,10 +36,7 @@
 - GPG and SSH keys + put in Github
 
 ```
-mkdir Code
-cd Code
-git clone https://github.com/timacdonald/dotfiles.git
-cd dotfiles
+mkdir Code && cd Code
+git clone https://github.com/timacdonald/dotfiles.git && cd dotfiles
 bash install
-bash after
 ```

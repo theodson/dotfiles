@@ -40,3 +40,26 @@ PATH="$(brew --prefix)/opt/gnu-which/libexec/gnubin:$PATH"
 # fzf
 # https://github.com/junegunn/fzf
 source ~/.fzf.zsh
+
+
+VALET_PARKED_DIRECTORY=$HOME/Sites
+
+# Open in web browser
+# If you are within a subdirectory of the Laravel Valet parked directory
+# open the site in the browser, otherwise just open the browser. Examples:
+# ~/Sites/timacdonald opens timacdonald.test
+# ~/Sites/docs opens docs.test
+# ~/Sites/docs/node_modules opens docs.test
+browse() {
+    domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed 's=/.*==')
+
+    if [ ${#domain} -gt 0 ];
+    then
+        open http://$domain.test
+    else
+        open -a Firefox\ Developer\ Edition
+    fi
+}
+
+# Open browser
+# alias browse=""
