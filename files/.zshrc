@@ -64,7 +64,6 @@ export BAT_THEME="Dracula"
 # ~/Sites/timacdonald opens http://timacdonald.test
 # ~/Sites/style-guide opens http://style-guide.test
 # ~/Sites/style-guide/node_modules opens http://style-guide.test
-#
 browse() {
     domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed 's=/.*==')
     if [ ${#domain} -gt 0 ];
@@ -74,5 +73,3 @@ browse() {
         open -a Firefox\ Developer\ Edition
     fi
 }
-
-export GPG_TTY=$(tty)
