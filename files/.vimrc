@@ -187,9 +187,6 @@ nmap <Leader>npd :Dispatch! npm run dev<CR>
 " Run 'npm run watch' in a background tab
 nmap <Leader>npw :Start! npm run watch<CR>
 
-" Create a new class in the current directory
-nmap <Leader>n :e %:h/.php<Left><Left><Left><Left>
-
 " Trim trailing whitespace on save
 autocmd BufWritePre * %s/\s\+$//e
 

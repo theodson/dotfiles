@@ -17,6 +17,10 @@ if type brew &>/dev/null; then
   compinit
 fi
 
+# Command substring search (up / down arrows)
+# https://github.com/zsh-users/zsh-history-substring-search
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
 # z: jump around
 # https://github.com/rupa/z/
 source "$(brew --prefix)/etc/profile.d/z.sh"

@@ -49,6 +49,7 @@ pecl install mailparse memcached | tee logs/pecl.$logVersion.log
 pecl upgrade | tee -a logs/pecl.$logVersion.log
 
 # Install valet
+~/.composer/vendor/bin/valet trust
 ~/.composer/vendor/bin/valet install | tee logs/valet.$logVersion.log
 
 # Start services
@@ -58,7 +59,7 @@ brew services restart mysql
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
 # see: https://docs.brew.sh/Shell-Completion
-compaudit | xargs chmod g-w
+# compaudit | xargs chmod g-w
 
 # Install FZF stuff
 /usr/local/opt/fzf/install --key-bindings --completion --update-rc
