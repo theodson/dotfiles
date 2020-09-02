@@ -45,7 +45,7 @@ vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa" | tee logs/vim-plug.$logVers
 
 # Install / update pecl dependecies
 pecl update-channels
-pecl install mailparse memcached | tee logs/pecl.$logVersion.log
+pecl install mailparse memcached pcov | tee logs/pecl.$logVersion.log
 pecl upgrade | tee -a logs/pecl.$logVersion.log
 
 # Install valet
@@ -71,4 +71,5 @@ echo "Don't forget to check out the logs and manually run the following commands
 # "laravel" is handy for new projects as it is the default database name in the
 # ".env.example" that ships with Laravel out of the box.
 echo 'mysql -u root -e "create database if not exists tixel;"
-mysql -u root -e "create database if not exists laravel;"'
+mysql -u root -e "create database if not exists laravel;"
+mysql -u root -e "create database if not exists testing;"'

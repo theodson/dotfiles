@@ -7,6 +7,8 @@ brew 'zlib' #memcached
 
 # foundation
 brew 'awscli'
+brew 'docker'
+brew 'docker-compose'
 brew 'bash'
 brew 'bat'
 brew 'cocoapods'
@@ -19,6 +21,7 @@ brew 'findutils'
 brew 'fzf'
 brew 'gifsicle'
 brew 'git'
+brew 'git-flow'
 brew 'git-delta'
 brew 'git-open'
 brew 'gnu-sed'

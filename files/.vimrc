@@ -39,7 +39,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'tmsvg/pear-tree'
-" Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-commentary'
 Plug 'janko/vim-test'
 Plug 'tpope/vim-dispatch'
@@ -47,15 +46,11 @@ Plug 'tpope/vim-surround'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install' }
 Plug 'chrisbra/matchit'
 Plug 'sheerun/vim-polyglot'
-
 Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
-
 Plug 'tpope/vim-vinegar'
 Plug 'darfink/vim-plist'
-
-" Plug 'vim-airline/vim-airline'
 call plug#end()
 
 " MISC =======================================================================
@@ -83,6 +78,17 @@ set undodir=$HOME/.vim_undo//
 
 " keep X lines of command history
 set history=500
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 
 " DISPLAY ====================================================================
 
@@ -216,9 +222,6 @@ let g:pear_tree_pairs = {
 " Plugin: dracula/vim
 " See: https://github.com/dracula/vim
 
-" stop giving a solid background colour to a heap of random things
-let g:dracula_italic=0
-
 " highlight markdown code blocks
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
@@ -229,18 +232,23 @@ let g:vim_markdown_strikethrough = 1
 " polyglot plugin
 let g:vim_markdown_frontmatter = 1
 
+" stop giving a solid background colour to a heap of random things
+let g:dracula_italic=0
+
+
 " in your best dracular voice: "i want to colour your syntax"
 "color dracula
 set background=dark
 colorscheme dracula
 
+
 " give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
 " reporting "xterm-true-color" as it's "terminal type"
 set termguicolors
 
-
 augroup dracula_customization
   autocmd!
+  " let g:dracula#palette.bg=['#1c1d26', 235]
   highlight! link Search DraculaBgDarker
   highlight! link StatusLine DraculaPurple
   highlight! link String DraculaYellow
@@ -399,6 +407,46 @@ function <SID>ArtisanMake(input)
     execute('e '.path)
 endfunction
 
+" function <SID>MakeFile(path)
+"     if empty(match) && empty(currentFileExtension)
+"         let fullPath = a:path
+"     else if empty(match) && ! empty(currentFileExtension)
+"         let extension =
+"         et fullPath = a:path.'.'.expand('%:e')
+"     endif
+
+"     let result = system('touch '.fullPath)
+
+"     if v:shell_error != 0
+"         echo output
+"         return v:shell_error
+"     endif
+
+"     execute('e '.fullPath)
+" endfunction
+
+" function <SID>MakeFileExtension(path)
+"     let match = matchstr(a:path, '[^\.]\.[^\.].*')
+
+"     if ! empty(match)
+"         return substitute(match, '.\.', '.', '')
+"     endif
+
+"     let currentFileExtension = expand('%:e')
+
+"     if empty(currentFileExtension)
+"         return ''
+"     else
+"         return '.'.currentFileExtension
+"     endif
+" endfunction
+
+" command! -nargs=+ MakeFile call s:MakeFile(<q-args>)
+
+" Create a new class in the current directory
+nmap <Leader>n :e %:h/.php<Left><Left><Left><Left>
+
+
 " fixing...
 let g:ale_fixers = { 'php': ['php_cs_fixer'] }
 let g:ale_fix_on_save = 1
@@ -469,3 +517,4 @@ for s:p in s:patterns
     finish
   endif
 endfor
+

@@ -1,23 +1,46 @@
 - clean: ['~']
 
 - link:
-    ~/.Brewfile: files/.Brewfile
-    ~/.zshrc: files/.zshrc
-    ~/.bash_profile: files/.bash_profile
-    ~/.gitconfig: files/.gitconfig
-    ~/.vimrc: files/.vimrc
-    ~/.php_cs.laravel: files/.php_cs.laravel
-    ~/.hushlogin: files/.hushlogin
-    ~/.gitignore_global: files/.gitignore_global
+    ~/.gnupg/gpg-agent.conf:
+        path: files/gpg-agent.conf
+        relink: true
+        create: true
+    ~/.Brewfile:
+        path: files/.Brewfile
+        relink: true
+    ~/.zshrc:
+        path: files/.zshrc
+        relink: true
+    ~/.bash_profile:
+        path: files/.bash_profile
+        relink: true
+    ~/.gitconfig:
+        path: files/.gitconfig
+        relink: true
+    ~/.vimrc:
+        path: files/.vimrc
+        relink: true
+    ~/.php_cs.laravel:
+        path: files/.php_cs.laravel
+        relink: true
+    ~/.hushlogin:
+        path: files/.hushlogin
+        relink: true
+    ~/.gitignore_global:
+        path: files/.gitignore_global
+        relink: true
     ~/.vim/coc-settings.json:
         path: files/coc-settings.json
         create: true
+        relink: true
     ~/.composer/composer.json:
         path: files/composer.json
         create: true
+        relink: true
     ~/.config/valet/config.json:
         path: files/valet.json
         create: true
+        relink: true
 
 - create:
     - ~/.fzf_history
@@ -25,3 +48,4 @@
     - ~/.vim_backup
     - ~/.vim_undo
     - ~/.vim/autoload
+    - ~/.gitconfig.local
