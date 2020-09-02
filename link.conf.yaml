@@ -5,6 +5,9 @@
         path: files/gpg-agent.conf
         relink: true
         create: true
+    ~/.gitmessage:
+        path: files/.gitmessage
+        relink: true
     ~/.Brewfile:
         path: files/.Brewfile
         relink: true
