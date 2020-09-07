@@ -2,13 +2,11 @@ tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-versions'
 
 # dependencies
-brew 'pkg-config'
+brew 'pkg-config' # bunch of things
 brew 'zlib' #memcached
 
 # foundation
 brew 'awscli'
-brew 'docker'
-brew 'docker-compose'
 brew 'bash'
 brew 'bat'
 brew 'cocoapods'
@@ -50,21 +48,18 @@ brew 'vim'
 brew 'wget'
 brew 'z'
 brew 'zsh'
+brew 'zsh-syntax-highlighting'
 brew 'zsh-history-substring-search'
-
-# fonts
-cask 'font-fira-code'
-cask 'font-jetbrains-mono'
 
 # apps
 cask 'firefox-developer-edition'
 cask 'imageoptim'
-cask 'iterm2'
-cask 'notion'
 cask 'postman'
 cask 'sequel-pro'
 cask 'skype'
 cask 'zoomus'
+cask 'docker'
+cask 'kitty'
 
 # MAS apps
 mas '1Password 7', id: 1333542190

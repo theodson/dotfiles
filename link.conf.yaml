@@ -23,9 +23,6 @@
     ~/.vimrc:
         path: files/.vimrc
         relink: true
-    ~/.php_cs.laravel:
-        path: files/.php_cs.laravel
-        relink: true
     ~/.hushlogin:
         path: files/.hushlogin
         relink: true
@@ -42,6 +39,10 @@
         relink: true
     ~/.config/valet/config.json:
         path: files/valet.json
+        create: true
+        relink: true
+    ~/.config/kitty/kitty.conf:
+        path: files/kitty.conf
         create: true
         relink: true
 

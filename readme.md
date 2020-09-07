@@ -38,3 +38,4 @@ bash install
 ```
 
 - Install printer
+- Install Monolisa

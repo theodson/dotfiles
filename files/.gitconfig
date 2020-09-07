@@ -7,6 +7,7 @@
 	pager = delta
 [commit]
 	gpgsign = true
+  template = ~/.gitmessage
 [gpg]
 	program = gpg
 [color]
@@ -43,6 +44,8 @@
     bc ="checkout -b"
     # short status
     s = "status -s -b --renames"
+    # nice log
+    l = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
 [push]
 	default = current
 [fetch]

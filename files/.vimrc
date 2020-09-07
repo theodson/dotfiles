@@ -16,9 +16,6 @@ set autoindent
 " per filetype, e.g. .php, .js, etc
 filetype plugin indent on
 
-" fzf
-set rtp+=/usr/local/opt/fzf
-
  "Improvements I'd like to make:
 " 1. Pear tree to auto complete matching blade tags, i.e. @if($thing) @endif
 " and @auth @endauth, but not @csrf
@@ -35,7 +32,7 @@ set rtp+=/usr/local/opt/fzf
 "
 
 call plug#begin('~/.vim/plugged')
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'tmsvg/pear-tree'
@@ -108,8 +105,8 @@ set number
 " show relative line numbers above and below current line
 set relativenumber
 
-" Turn on syntax highlighting
-syntax on
+" set a consistent width to the line numbers
+set numberwidth=5
 
 " splits feel more natural opening to the right / bottom
 set splitbelow
@@ -217,7 +214,6 @@ let g:pear_tree_pairs = {
     \ '{{--': {'closer': '--}}'},
 \ }
 
-" COLOUR SCHEME ==============================================================
 
 " Plugin: dracula/vim
 " See: https://github.com/dracula/vim
@@ -232,29 +228,29 @@ let g:vim_markdown_strikethrough = 1
 " polyglot plugin
 let g:vim_markdown_frontmatter = 1
 
-" stop giving a solid background colour to a heap of random things
-let g:dracula_italic=0
+"=======================================================
+" COLOUR SCHEME
+"=======================================================
 
-
-" in your best dracular voice: "i want to colour your syntax"
-"color dracula
-set background=dark
-colorscheme dracula
-
-
-" give me prettyc colours, thanks. Pro tip rookie: make sure iTerm is
-" reporting "xterm-true-color" as it's "terminal type"
+syntax enable
 set termguicolors
+colorscheme dracula
 
 augroup dracula_customization
   autocmd!
-  " let g:dracula#palette.bg=['#1c1d26', 235]
-  highlight! link Search DraculaBgDarker
-  highlight! link StatusLine DraculaPurple
-  highlight! link String DraculaYellow
+  " The green highlighting is to much for me.
+  highlight! Search gui=bold guibg=#191A21 guifg=#FFB86C
+
+  " I don't want the status bar a different bg colour. And who doesn't want
+  " more purple in their lives?
+  highlight! link StatusLine DraculaPurpleItalic
+
+  " This makes variables, like $user, green. Looks prettier IMO
   highlight! link Identifier DraculaGreen
-  highlight! link LineNrAbove DraculaCyan
-  highlight! link LineNrBelow DraculaCyan
+
+  " I prefer a darker background to improve fg bg contrast. Feels easier on
+  " the eyes
+  highlight! Normal guibg=#21222C guifg=#F8F8F2
 augroup END
 
 " Searching =================================================================
@@ -517,4 +513,3 @@ for s:p in s:patterns
     finish
   endif
 endfor
-

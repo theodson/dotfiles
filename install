@@ -21,6 +21,8 @@ fi
 
 curl -fLo ~/.php_cs.laravel https://gist.githubusercontent.com/laravel-shift/cab527923ed2a109dda047b97d53c200/raw/1db6b058ee3672ebd1a88bac9d8182aed449eb05/.php_cs.laravel.php
 
+curl -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
+
 # Link dotfiles
 /bin/bash link | tee logs/link.$logVersion.log
 
@@ -62,7 +64,7 @@ brew services restart mysql
 # compaudit | xargs chmod g-w
 
 # Install FZF stuff
-/usr/local/opt/fzf/install --key-bindings --completion --update-rc
+/usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
 
 echo 'Done!'
 echo "Don't forget to check out the logs and manually run the following commands:"

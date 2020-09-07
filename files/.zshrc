@@ -1,3 +1,4 @@
+BREW_PREFIX=$(brew --prefix)
 VALET_TLD="test"
 VALET_PARKED_DIRECTORY="$HOME/Code/"
 
@@ -12,39 +13,45 @@ prompt pure
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
 if type brew &>/dev/null; then
-  export FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
+  export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
   autoload -Uz compinit
   compinit
 fi
 
+# Zsh syntax highlighting
+# https://github.com/zsh-users/zsh-syntax-highlighting
+source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
 # Command substring search (up / down arrows)
 # https://github.com/zsh-users/zsh-history-substring-search
-source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+bindkey '^p' history-substring-search-up
+bindkey '^n' history-substring-search-down
 
 # z: jump around
 # https://github.com/rupa/z/
-source "$(brew --prefix)/etc/profile.d/z.sh"
+source "$BREW_PREFIX/etc/profile.d/z.sh"
 
 # sqlite
 # https://formulae.brew.sh/formula/sqlite#default
-export PATH="$(brew --prefix)/opt/sqlite/bin:$PATH"
+export PATH="$BREW_PREFIX/opt/sqlite/bin:$PATH"
 alias sqlite="sqlite3"
 
 # GNU findutils
 # https://formulae.brew.sh/formula/findutils#default
-export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$PATH"
+export PATH="$BREW_PREFIX/opt/findutils/libexec/gnubin:$PATH"
 
 # GNU coreutils
 # https://formulae.brew.sh/formula/coreutils#default
-export PATH="$(brew --prefix)/opt/coreutils/libexec/gnubin:$PATH"
+export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
 
 # GNU sed
 # https://formulae.brew.sh/formula/gnu-sed#default
-export PATH="$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
+export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
 
 # GNU which
 # https://formulae.brew.sh/formula/gnu-which#default
-export PATH="$(brew --prefix)/opt/gnu-which/libexec/gnubin:$PATH"
+export PATH="$BREW_PREFIX/opt/gnu-which/libexec/gnubin:$PATH"
 
 # composer
 # https://formulae.brew.sh/formula/composer#default
@@ -54,7 +61,7 @@ export PATH="~/.composer/vendor/bin:$PATH"
 # https://github.com/junegunn/fzf
 source ~/.fzf.zsh
 # use 'fd' instead of 'find' for 'fzf file lookup
-export FZF_DEFAULT_COMMAND='fd --type file --follow --no-ignore --hidden --exclude .git'
+export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
 
 # bat, not cat 🦇
 # https://github.com/sharkdp/bat
@@ -69,7 +76,7 @@ export BAT_THEME="Dracula"
 # ~/Sites/style-guide opens http://style-guide.test
 # ~/Sites/style-guide/node_modules opens http://style-guide.test
 browse() {
-    domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed 's=/.*==')
+    domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed "s=/.*==")
     if [ ${#domain} -gt 0 ];
     then
         open http://$domain.$VALET_TLD
