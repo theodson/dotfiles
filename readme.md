@@ -29,12 +29,14 @@ This is still a WIP. probably always will be.
 - `xcode-select --install`
 - install https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/
 - install https://1password.com/browsers/firefox/
-- GPG and SSH keys + put in Github
+- [Generate SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub
+- [Generate GPG key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key) and add to GitHub
 
 ```
 mkdir Code && cd Code
 git clone https://github.com/timacdonald/dotfiles.git && cd dotfiles
 bash install
+compaudit | xargs chmod g-w
 ```
 
 - Install printer

@@ -9,6 +9,9 @@ do
     ((++logVersion))
 done
 
+# Link dotfiles
+/bin/bash link | tee logs/link.$logVersion.log
+
 # Install homebrew if it isn't already
 if [ ! $(which brew) ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -16,15 +19,12 @@ fi
 
 # Install vim-plug if it isn't already
 if [ ! -e ~/.vim/autoload/plug.vim ]; then
-    curl -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    curl --create-dirs -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
-curl -fLo ~/.php_cs.laravel https://gist.githubusercontent.com/laravel-shift/cab527923ed2a109dda047b97d53c200/raw/1db6b058ee3672ebd1a88bac9d8182aed449eb05/.php_cs.laravel.php
+curl --create-dirs -fLo ~/.php_cs.laravel https://gist.githubusercontent.com/laravel-shift/cab527923ed2a109dda047b97d53c200/raw/1db6b058ee3672ebd1a88bac9d8182aed449eb05/.php_cs.laravel.php
 
-curl -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
-
-# Link dotfiles
-/bin/bash link | tee logs/link.$logVersion.log
+curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 
 # Install / update homebrew dependecies
 brew bundle --global --verbose | tee logs/brew.$logVersion.log
@@ -47,7 +47,7 @@ vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa" | tee logs/vim-plug.$logVers
 
 # Install / update pecl dependecies
 pecl update-channels
-pecl install mailparse memcached pcov | tee logs/pecl.$logVersion.log
+pecl install pcov | tee logs/pecl.$logVersion.log
 pecl upgrade | tee -a logs/pecl.$logVersion.log
 
 # Install valet
@@ -55,7 +55,6 @@ pecl upgrade | tee -a logs/pecl.$logVersion.log
 ~/.composer/vendor/bin/valet install | tee logs/valet.$logVersion.log
 
 # Start services
-brew services restart memcached
 brew services restart mysql
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings

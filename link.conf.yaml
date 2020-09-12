@@ -17,6 +17,9 @@
     ~/.bash_profile:
         path: files/.bash_profile
         relink: true
+    ~/.gitconfig.local:
+        path: files/.gitconfig.local
+        relink: true
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
@@ -45,6 +48,10 @@
         path: files/kitty.conf
         create: true
         relink: true
+    ~/.ssh/config:
+        path: files/ssh_config
+        create: true
+        relink: true
 
 - create:
     - ~/.fzf_history
@@ -52,4 +59,3 @@
     - ~/.vim_backup
     - ~/.vim_undo
     - ~/.vim/autoload
-    - ~/.gitconfig.local

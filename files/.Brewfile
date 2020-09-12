@@ -3,7 +3,6 @@ tap 'homebrew/cask-versions'
 
 # dependencies
 brew 'pkg-config' # bunch of things
-brew 'zlib' #memcached
 
 # foundation
 brew 'awscli'
@@ -29,14 +28,10 @@ brew 'httpie'
 brew 'imagemagick'
 brew 'jpegoptim'
 brew 'less'
-brew 'libmemcached'
-brew 'memcached'
 brew 'mysql'
 brew 'nginx'
 brew 'node'
 brew 'optipng'
-brew 'php@7.2'
-brew 'php@7.3'
 brew 'php@7.4'
 brew 'pinentry-mac'
 brew 'pngquant'
@@ -55,7 +50,6 @@ brew 'zsh-history-substring-search'
 cask 'firefox-developer-edition'
 cask 'imageoptim'
 cask 'postman'
-cask 'sequel-pro'
 cask 'skype'
 cask 'zoomus'
 cask 'docker'
