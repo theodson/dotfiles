@@ -65,12 +65,7 @@ brew services restart mysql
 # Install FZF stuff
 /usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
 
-echo 'Done!'
-echo "Don't forget to check out the logs and manually run the following commands:"
+# Little cleanup
+brew cleanup
 
-# Create mysql tables
-# "laravel" is handy for new projects as it is the default database name in the
-# ".env.example" that ships with Laravel out of the box.
-echo 'mysql -u root -e "create database if not exists tixel;"
-mysql -u root -e "create database if not exists laravel;"
-mysql -u root -e "create database if not exists testing;"'
+echo 'Done!'
