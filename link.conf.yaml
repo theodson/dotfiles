@@ -17,9 +17,6 @@
     ~/.bash_profile:
         path: files/.bash_profile
         relink: true
-    ~/.gitconfig.local:
-        path: files/.gitconfig.local
-        relink: true
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
@@ -59,3 +56,6 @@
     - ~/.vim_backup
     - ~/.vim_undo
     - ~/.vim/autoload
+
+- shell:
+    - touch ~/.gitconfig.local
