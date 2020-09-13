@@ -7,7 +7,7 @@
 	pager = delta
 [commit]
 	gpgsign = true
-  template = ~/.gitmessage
+    template = ~/.gitmessage
 [gpg]
 	program = gpg
 [color]
