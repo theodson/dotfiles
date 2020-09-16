@@ -476,9 +476,10 @@ endif
 let g:ale_cache_executable_check_failures = 1
 let g:ale_php_phpstan_executable = 'vendor/bin/phpstan'
 let g:ale_lint_on_insert_leave = 0
-let g:ale_lint_on_enter = 0
+let g:ale_lint_on_enter = 1
 let g:ale_lint_on_text_changed = 0
 let g:ale_sign_error = '👀'
+autocmd FileType php let b:ale_linters = ['php', 'psalm', 'phpstan']
 
 " automatically source this file when saved
 augroup autosourcing
