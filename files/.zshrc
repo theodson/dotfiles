@@ -10,13 +10,14 @@ setopt autocd
 autoload -U promptinit; promptinit
 prompt pure
 
+# brew shared bin
+export PATH="/usr/local/sbin:$PATH"
+
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
-if type brew &>/dev/null; then
-  export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
-  autoload -Uz compinit
-  compinit
-fi
+export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
+autoload -Uz compinit
+compinit
 
 # Zsh syntax highlighting
 # https://github.com/zsh-users/zsh-syntax-highlighting
