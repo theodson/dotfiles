@@ -1,10 +1,9 @@
 {
     "languageserver": {
-        "phpactor": {
-            "args": ["language-server"],
-            "command": "~/.vim/plugged/phpactor/bin/phpactor",
-            "filetypes": ["php"],
-            "trace.server": "verbose"
+        "intelephense": {
+            "args": ["--stdio"],
+            "command": "intelephense",
+            "filetypes": ["php"]
         }
     }
 }

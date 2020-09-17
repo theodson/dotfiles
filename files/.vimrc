@@ -13,6 +13,10 @@ set shiftwidth=4
 
 set autoindent
 
+" COC wants this
+set updatetime=300
+
+
 " per filetype, e.g. .php, .js, etc
 filetype plugin indent on
 
@@ -45,7 +49,6 @@ Plug 'chrisbra/matchit'
 Plug 'sheerun/vim-polyglot'
 Plug 'dense-analysis/ale'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
 Plug 'tpope/vim-vinegar'
 Plug 'darfink/vim-plist'
 call plug#end()
@@ -59,6 +62,10 @@ autocmd FileType markdown,gitcommit setlocal spell
 
 " don't show welcome message
 set shortmess=I
+" COC wants this
+set shortmess+=c
+" COC wants this
+set signcolumn=number
 
 
 " Store .swp files in a central location so they don't end up in version
@@ -350,11 +357,15 @@ let g:PHP_noArrowMatching=1
 " Review up to here
 " Plugin: phpactor/phpactor
 " See: https://github.com/phpactor/phpactor
-nmap <Leader>in :call phpactor#Transform("fix_namespace_class_name")<CR>
-nmap <Leader>cc :call phpactor#Transform("complete_constructor")<CR>
-nmap <Leader>ic :call phpactor#UseAdd()<CR>
-nmap <Leader>gd :call phpactor#GotoDefinition()<CR>
-nmap <Leader>ec *N:noh<CR>i\<esc>e:call phpactor#ClassExpand()<CR>
+" nmap <Leader>in :call phpactor#Transform("fix_namespace_class_name")<CR>
+" nmap <Leader>cc :call phpactor#Transform("complete_constructor")<CR>
+" nmap <Leader>ic :call phpactor#UseAdd()<CR>
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+" nmap <Leader>ec *N:noh<CR>i\<esc>e:call phpactor#ClassExpand()<CR>
 
 " Plugin: StanAngeloff/php.vim
 " See: https://github.com/StanAngeloff/php.vim
