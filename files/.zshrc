@@ -92,3 +92,6 @@ browse() {
         open -a Firefox\ Developer\ Edition
     fi
 }
+
+# always start in the code directory
+cd ~/Code
