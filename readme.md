@@ -42,3 +42,4 @@ compaudit | xargs chmod g-w
 - Install printer
 - Install Monolisa
 - [Activate intelephense license](https://intelephense.com/faq.html)
+- Add intelephense licence key to ~/intelephense/license.txt

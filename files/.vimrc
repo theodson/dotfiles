@@ -258,6 +258,9 @@ augroup dracula_customization
   " I prefer a darker background to improve fg bg contrast. Feels easier on
   " the eyes
   highlight! Normal guibg=#21222C guifg=#F8F8F2
+
+  highlight! Pmenu guibg=#191A21
+  highlight! PmenuSel gui=bold guibg=#21222C guifg=#FFB86C
 augroup END
 
 " Searching =================================================================
@@ -361,10 +364,12 @@ let g:PHP_noArrowMatching=1
 " nmap <Leader>cc :call phpactor#Transform("complete_constructor")<CR>
 " nmap <Leader>ic :call phpactor#UseAdd()<CR>
 nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>qf <Plug>(coc-fix-current)
+nmap <leader>ac <Plug>(coc-codeaction)
 " nmap <Leader>ec *N:noh<CR>i\<esc>e:call phpactor#ClassExpand()<CR>
 
 " Plugin: StanAngeloff/php.vim

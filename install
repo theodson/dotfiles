@@ -44,6 +44,7 @@ vim -es -u ~/.vimrc -i NONE -c "PlugUpgrade" -c "qa" | tee logs/vim-plug.$logVer
 vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa" | tee -a logs/vim-plug.$logVersion.log
 vim -es -u ~/.vimrc -i NONE -c "PlugUpdate" -c "qa" | tee -a logs/vim-plug.$logVersion.log
 vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa" | tee logs/vim-plug.$logVersion.log
+vim -c 'CocUpdateSync|q'
 
 # Install / update pecl dependecies
 pecl update-channels

@@ -1,6 +1,10 @@
 - clean: ['~']
 
 - link:
+    ~/.config/coc/extensions/package.json:
+        path: files/coc_package.json
+        relink: true
+        create: true
     ~/.gnupg/gpg-agent.conf:
         path: files/gpg-agent.conf
         relink: true
@@ -59,3 +63,4 @@
 
 - shell:
     - touch ~/.gitconfig.local
+    - touch ~/intelephense/licence.txt
