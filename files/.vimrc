@@ -266,6 +266,8 @@ augroup END
 " Searching =================================================================
 " search everywhere. type :command Rg to see the original definition
 command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+" include hidden files. type :command Rg to see the original definition
+command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 nmap <leader>/ :Rg!<space>
 nmap <leader>? :RG!<space>
