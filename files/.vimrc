@@ -227,6 +227,7 @@ let g:pear_tree_pairs = {
 
 " highlight markdown code blocks
 autocmd BufNewFile,BufRead *.md set filetype=markdown
+autocmd BufNewFile,BufRead .env.* set filetype=sh
 
 let g:markdown_fenced_languages=['php', 'blade']
 
@@ -265,9 +266,9 @@ augroup END
 
 " Searching =================================================================
 " search everywhere. type :command Rg to see the original definition
-command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 " include hidden files. type :command Rg to see the original definition
-command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 nmap <leader>/ :Rg!<space>
 nmap <leader>? :RG!<space>

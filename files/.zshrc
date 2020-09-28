@@ -66,6 +66,9 @@ export PATH="~/.composer/vendor/bin:$PATH"
 export PATH="./vendor/bin:$PATH"
 
 # artisan commands
+alias c="composer"
+
+# artisan commands
 alias a="php artisan"
 
 # fzf
@@ -94,6 +97,13 @@ browse() {
     else
         open -a Firefox\ Developer\ Edition
     fi
+}
+
+# A tinker env to play in
+play() {
+    cd ~/Code/playground
+
+    php artisan tinker
 }
 
 # always start in the code directory

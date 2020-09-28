@@ -2,6 +2,8 @@
 
 set -e
 
+STARTING_DIR=$PWD
+
 # Generate a unique log version
 logVersion=0
 while [ -e "logs/brew.$logVersion.log" ]
@@ -54,6 +56,18 @@ pecl upgrade | tee -a logs/pecl.$logVersion.log
 # Install valet
 ~/.composer/vendor/bin/valet trust
 ~/.composer/vendor/bin/valet install | tee logs/valet.$logVersion.log
+
+# Setup playground
+if [ ! -e ~/Code/playground/composer.lock ]; then
+    mkdir -p ~/Code
+    cd $HOME/Code
+    composer create-project laravel/laravel playground
+    cd STARTING_DIR
+else
+    cd $HOME/Code/playground
+    composer update
+    cd STARTING_DIR
+fi
 
 # Start services
 brew services restart mysql
