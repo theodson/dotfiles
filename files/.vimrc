@@ -53,6 +53,13 @@ Plug 'tpope/vim-vinegar'
 Plug 'darfink/vim-plist'
 call plug#end()
 
+let g:coc_global_extensions = [
+\ 'coc-highlight',
+\ 'coc-html',
+\ 'coc-json',
+\ 'coc-tailwindcss'
+\ ]
+
 " MISC =======================================================================
 " Set the default character encoding for values
 set encoding=utf-8
@@ -258,10 +265,12 @@ augroup dracula_customization
 
   " I prefer a darker background to improve fg bg contrast. Feels easier on
   " the eyes
-  highlight! Normal guibg=#21222C guifg=#F8F8F2
+  highlight! Normal guibg='#21222C' guifg='#F8F8F2'
 
-  highlight! Pmenu guibg=#191A21
-  highlight! PmenuSel gui=bold guibg=#21222C guifg=#FFB86C
+  highlight! Pmenu guibg='#191A21'
+  highlight! PmenuSel guibg='#191A21' guifg='#50FA7B'
+
+  highlight! link ColorColumn DraculaBgDarker
 augroup END
 
 " Searching =================================================================

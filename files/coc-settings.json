@@ -3,7 +3,40 @@
         "intelephense": {
             "args": ["--stdio"],
             "command": "intelephense",
-            "filetypes": ["php"]
+            "filetypes": ["php"],
+            "progressOnInitialization": true
         }
+    },
+    "suggest.maxCompleteItemCount": 10,
+    "suggest.noselect":false,
+    "suggest.removeDuplicateItems":true,
+    "suggest.triggerCompletionWait": 200,
+    "suggest.completionItemKindLabels": {
+        "text": "text",
+        "method": "meth",
+        "function": "func",
+        "constructor": "__con",
+        "field": "field",
+        "variable": "var",
+        "class": "class",
+        "interface": "inter",
+        "module": "modu",
+        "property": "prop",
+        "unit": "unit",
+        "value": "val",
+        "enum": "enum",
+        "keyword": "key",
+        "snippet": "snip",
+        "color": "color",
+        "file": "file",
+        "reference": "ref",
+        "folder": "dir",
+        "enumMember": "enmem",
+        "constant": "const",
+        "struct": "struct",
+        "event": "event",
+        "operator": "oper",
+        "typeParameter": "typeParam",
+        "default": "default"
     }
 }
