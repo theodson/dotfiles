@@ -1,6 +1,5 @@
 [user]
     name = Tim MacDonald
-    email = hello@timacdonald.me
 [core]
 	excludesfile = ~/.gitignore_global
     editor = vim

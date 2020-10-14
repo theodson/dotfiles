@@ -31,6 +31,7 @@ This is still a WIP. probably always will be.
 - install https://1password.com/browsers/firefox/
 - [Generate SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub
 - [Generate GPG key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key) and add to GitHub
+- Add "email" to local git config
 
 ```
 mkdir Code && cd Code
