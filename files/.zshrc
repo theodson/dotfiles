@@ -5,9 +5,6 @@ VALET_PARKED_DIRECTORY="$HOME/Code/"
 # "cd" by typing only the directory
 setopt autocd
 
-# use vim mode
-bindkey -v
-
 # pure prompt
 # https://github.com/sindresorhus/pure
 autoload -U promptinit; promptinit
