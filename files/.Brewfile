@@ -6,7 +6,6 @@ brew 'pkg-config' # bunch of things
 
 # foundation
 brew 'awscli'
-brew 'bash'
 brew 'bat'
 brew 'cocoapods'
 brew 'composer'
@@ -18,8 +17,8 @@ brew 'findutils'
 brew 'fzf'
 brew 'gifsicle'
 brew 'git'
-brew 'git-flow'
 brew 'git-delta'
+brew 'git-flow'
 brew 'git-open'
 brew 'gnu-sed'
 brew 'gnu-which'
@@ -40,21 +39,21 @@ brew 'sqlite'
 brew 'svgo'
 brew 'tree'
 brew 'vim'
-brew 'yarn'
 brew 'wget'
+brew 'yarn'
 brew 'z'
 brew 'zsh'
-brew 'zsh-syntax-highlighting'
 brew 'zsh-history-substring-search'
+brew 'zsh-syntax-highlighting'
 
 # apps
+cask 'docker'
 cask 'firefox-developer-edition'
 cask 'imageoptim'
+cask 'kitty'
 cask 'postman'
 cask 'skype'
 cask 'zoomus'
-cask 'docker'
-cask 'kitty'
 
 # MAS apps
 mas '1Password 7', id: 1333542190
