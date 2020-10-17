@@ -14,14 +14,11 @@
     ~/.zshrc:
         path: files/.zshrc
         relink: true
-    ~/.bash_profile:
-        path: files/.bash_profile
-        relink: true
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
     ~/.vimrc:
-        path: files/.vimrc
+        path: files/vim/.vimrc
         relink: true
     ~/.hushlogin:
         path: files/.hushlogin
