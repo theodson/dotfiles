@@ -19,15 +19,11 @@ augroup filetype_customisations
   autocmd FileType vue setlocal tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 
   " Comment string
-  autocmd FileType php setlocal commentabstoptring=//\ %s
-  autocmd FileType vue setlocal commentabstoptring=//\ %s
+  autocmd FileType php setlocal commentstring=//\ %s
+  autocmd FileType vue setlocal commentstring=//\ %s
 
   " Add $ to the php $variable keyword
   autocmd FileType php setlocal iskeyword+=$
-
-  " Occassionaly vim will screw up Vue highlighting because it contains
-  " multiple languages. This accountabstop for that issue
-  autocmd FileType vue syntax sync fromstart
 
   " Turn on spell check
   autocmd FileType markdown,gitcommit setlocal spell

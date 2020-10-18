@@ -46,10 +46,6 @@ Plug 'sheerun/vim-polyglot'
 " See: https://github.com/dense-analysis/ale
 Plug 'dense-analysis/ale'
 
-" Language server support
-" See: https://github.com/neoclide/coc.nvim
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 " Small tweaks to the netrw file browser
 " See: https://github.com/tpope/vim-vinegar
 Plug 'tpope/vim-vinegar'
@@ -61,3 +57,14 @@ Plug 'darfink/vim-plist'
 " Show and allow stripping whitespace
 " See: https://github.com/ntpeters/vim-better-whitespace
 Plug 'ntpeters/vim-better-whitespace'
+
+" Language server support
+" See: https://github.com/neoclide/coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" COC plugins
+let g:coc_global_extensions = [
+\ 'coc-html',
+\ 'coc-json',
+\ 'coc-tailwindcss'
+\ ]

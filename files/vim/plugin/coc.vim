@@ -1,12 +1,3 @@
-" what is this exactly
-set updatetime=500
-
-let g:coc_global_extensions = [
-\ 'coc-highlight',
-\ 'coc-html',
-\ 'coc-json',
-\ 'coc-tailwindcss'
-\ ]
 
 " don't show welcome message
 set shortmess=I

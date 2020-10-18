@@ -12,6 +12,9 @@
 " 7. Search the help for all instances of PHP related content.
 " 8. Lazy load plugins
 
+let mapleader="\<Space>"
+let inGitRepo=! empty(finddir('.git'))
+
 " Load some good defaults that ship with VIM
 unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
@@ -25,14 +28,13 @@ call plug#begin('~/.vim/plugged')
 call plug#end()
 
 call SourceDotFile('defaults.vim')
-call SourceDotFile('pretty.vim')
+call SourceDotFile('visuals.vim')
 call SourceDotFile('filetype.vim')
-call SourceDotFile('search.vim')
+call SourceDotFile('searching.vim')
+call SourceDotFile('testing.vim')
 call SourceDotFile('plugin/coc.vim')
 
 
-" Take me to your leader
-let mapleader="\<Space>"
 " By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
 " just yank from the cursor to the end of the line.
 nmap Y y$
@@ -56,8 +58,6 @@ nmap <leader>rc :vsplit ~/.vimrc<CR>
 " format (gq) a file (af)
 nmap gqaf :ALEFix<CR>
 
-" Detect if we are in a GIT repo
-let inGitRepo=! empty(finddir('.git'))
 
 " Launch tinker shell
 nmap <Leader>lt :!php artisan tinker<CR>
@@ -111,42 +111,6 @@ let g:vim_markdown_frontmatter = 1
 
 " Testing ===================================================================
 
-" Plugin: vim-test
-" See: https://github.com/janko/vim-test
-
-" use PHPUnit, not artisan test
-let test#php#phpunit#executable = 'vendor/bin/phpunit --colors=always'
-" Run whole test suite in a background job
-nmap <Leader>ta :Dispatch! ./vendor/bin/phpunit<CR>
-" Run current suite
-nmap <Leader>ts :TestFile<CR>
-" Run current file
-nmap <Leader>tf :TestFile<CR>
-" Run last test
-nmap <Leader>tl :TestLast<CR>
-" Run current test
-nmap <Leader>tc :TestNearest<CR>
-" Visit the test
-nmap <Leader>tv :TestVisit<CR>
-" Toggle testing strategy
-nmap <Leader>tt :TestToggleStrategy<CR>
-
-" Plugin: vim-dispatch
-" See: https://github.com/tpope/vim-dispatch
-
-let g:test#strategy=""
-
-" Allow toggling between tests dispatched in background or fullscreen
-function! TestToggleStrategy()
-  if exists("g:test#strategy")
-    unlet g:test#strategy
-    echo "Test Strategy: default"
-  else
-    let g:test#strategy="dispatch_background"
-    echo "Test Strategy: background dispatch"
-  endif
-endfunction
-command! TestToggleStrategy call TestToggleStrategy()
 
 " PHP ======================================================================
 

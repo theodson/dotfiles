@@ -1,5 +1,9 @@
+" Plugin: dracula
+
 " Use 24-bit colours
 set termguicolors
+
+" Set the verical split border character
 set fillchars+=vert:·,
 
 " Use the dracula colourscheme
