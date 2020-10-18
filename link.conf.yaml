@@ -49,8 +49,6 @@
 
 - create:
     - ~/.fzf_history
-    - ~/.vim_swap
-    - ~/.vim_backup
     - ~/.vim_undo
     - ~/.vim/autoload
 

@@ -1,25 +1,3 @@
-" Don't try and emulate the Vi editor. This must be first as it changes other
-" options as a side-effect
-set nocompatible
-
-" use spaces instead of tabs
-set expandtab
-
-" size of a tab is 4 spaces
-set tabstop=4
-
-" size of an indent is 4 spaces
-set shiftwidth=4
-
-set autoindent
-
-" COC wants this
-set updatetime=300
-
-
-" per filetype, e.g. .php, .js, etc
-filetype plugin indent on
-
  "Improvements I'd like to make:
 " 1. Pear tree to auto complete matching blade tags, i.e. @if($thing) @endif
 " and @auth @endauth, but not @csrf
@@ -33,133 +11,31 @@ filetype plugin indent on
 " 6. Show current git branch in VIM
 " 7. Search the help for all instances of PHP related content.
 " 8. Lazy load plugins
-"
 
-call plug#begin('~/.vim/plugged')
-Plug '/usr/local/opt/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'tmsvg/pear-tree'
-Plug 'tpope/vim-commentary'
-Plug 'janko/vim-test'
-Plug 'tpope/vim-dispatch'
-Plug 'tpope/vim-surround'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & npm install' }
-Plug 'chrisbra/matchit'
-Plug 'sheerun/vim-polyglot'
-Plug 'dense-analysis/ale'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'tpope/vim-vinegar'
-Plug 'darfink/vim-plist'
-call plug#end()
+" Load some good defaults that ship with VIM
+unlet! skip_defaults_vim
+source $VIMRUNTIME/defaults.vim
 
-let g:coc_global_extensions = [
-\ 'coc-highlight',
-\ 'coc-html',
-\ 'coc-json',
-\ 'coc-tailwindcss'
-\ ]
-
-" MISC =======================================================================
-" Set the default character encoding for values
-set encoding=utf-8
-
-set spelllang=en_au
-autocmd FileType markdown,gitcommit setlocal spell
-
-" don't show welcome message
-set shortmess=I
-" COC wants this
-set shortmess+=c
-" COC wants this
-set signcolumn=number
-
-
-" Store .swp files in a central location so they don't end up in version
-" control etc. Double slash ensure unique names across projects.
-set directory=$HOME/.vim_swap//
-
-" use a backup when writing files
-set writebackup
-set backupdir=$HOME/.vim_backup//
-
-" Persistent undo
-set undofile
-set undodir=$HOME/.vim_undo//
-
-" keep X lines of command history
-set history=500
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
+function! SourceDotFile(file)
+  execute 'source ~/Code/dotfiles/files/vim/' . a:file
 endfunction
 
-" DISPLAY ====================================================================
+call plug#begin('~/.vim/plugged')
+  call SourceDotFile('plugins.vim')
+call plug#end()
 
-" Always show the status bar
-set laststatus=2
+call SourceDotFile('defaults.vim')
+call SourceDotFile('pretty.vim')
+call SourceDotFile('filetype.vim')
+call SourceDotFile('search.vim')
+call SourceDotFile('plugin/coc.vim')
 
-" Show all possible results in a tab-able menu in the status bar
-set wildmenu
-set wildmode=longest,list,full
 
-" Show line length indicators
-set colorcolumn=80,120
-
-" show line numbers
-set number
-
-" show relative line numbers above and below current line
-set relativenumber
-
-" set a consistent width to the line numbers
-set numberwidth=5
-
-" splits feel more natural opening to the right / bottom
-set splitbelow
-set splitright
-
-" EDITING ====================================================================
-
-" if an open file changes while loaded in a buffer, update the buffer with the
-" file contents
-set autoread
-
-" Allow backspacing like it isn't the 1980's
-set backspace=indent,eol,start
-
-" Always keep X lines between the cursor and the top / bottom of the screen
-set scrolloff=3
-
-" allow buffers to enter background in an unsaved state
-set hidden
-
-" Share the MacOS clipboard
-set clipboard=unnamed
-
-" when joining lines, if both lines are commented, delete the comment token
-" from the beginning of the line being joined
-set formatoptions+=j
-
-" when incrementing and decremeting numbers (Ctrl-A / Ctrl-X), don't assume
-" numbers that start with 0 are octal. Treat them as base 10.
-set nrformats-=octal
-
+" Take me to your leader
+let mapleader="\<Space>"
 " By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
 " just yank from the cursor to the end of the line.
 nmap Y y$
-
-
-" INDENTING ==================================================================
-
-
 imap <silent> jk <Esc>
 nmap <C-s> :write<CR>
 noremap <Left> :echo 'hjkl'<CR>
@@ -183,12 +59,6 @@ nmap gqaf :ALEFix<CR>
 " Detect if we are in a GIT repo
 let inGitRepo=! empty(finddir('.git'))
 
-" Take me to your leader
-let mapleader="\<Space>"
-
-" Open the file explorer, you sadistic mofo
-" nmap <Leader>- :Explore<CR>
-
 " Launch tinker shell
 nmap <Leader>lt :!php artisan tinker<CR>
 
@@ -203,9 +73,6 @@ nmap <Leader>npd :Dispatch! npm run dev<CR>
 
 " Run 'npm run watch' in a background tab
 nmap <Leader>npw :Start! npm run watch<CR>
-
-" Trim trailing whitespace on save
-autocmd BufWritePre * %s/\s\+$//e
 
 " Coding ====================================================================
 
@@ -232,10 +99,6 @@ let g:pear_tree_pairs = {
 " Plugin: dracula/vim
 " See: https://github.com/dracula/vim
 
-" highlight markdown code blocks
-autocmd BufNewFile,BufRead *.md set filetype=markdown
-autocmd BufNewFile,BufRead .env.* set filetype=sh
-
 let g:markdown_fenced_languages=['php', 'blade']
 
 let g:vim_markdown_strikethrough = 1
@@ -243,83 +106,8 @@ let g:vim_markdown_strikethrough = 1
 " polyglot plugin
 let g:vim_markdown_frontmatter = 1
 
-"=======================================================
-" COLOUR SCHEME
-"=======================================================
-
-syntax enable
-set termguicolors
-colorscheme dracula
-
-augroup dracula_customization
-  autocmd!
-  " The green highlighting is to much for me.
-  highlight! Search gui=bold guibg=#191A21 guifg=#FFB86C
-
-  " I don't want the status bar a different bg colour. And who doesn't want
-  " more purple in their lives?
-  highlight! link StatusLine DraculaPurpleItalic
-
-  " This makes variables, like $user, green. Looks prettier IMO
-  highlight! link Identifier DraculaGreen
-
-  " I prefer a darker background to improve fg bg contrast. Feels easier on
-  " the eyes
-  highlight! Normal guibg='#21222C' guifg='#F8F8F2'
-
-  highlight! Pmenu guibg='#191A21'
-  highlight! PmenuSel guibg='#191A21' guifg='#50FA7B'
-
-  highlight! link ColorColumn DraculaBgDarker
-augroup END
-
-" Searching =================================================================
-" search everywhere. type :command Rg to see the original definition
-command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
-" include hidden files. type :command Rg to see the original definition
-command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
-
-nmap <leader>/ :Rg!<space>
-nmap <leader>? :RG!<space>
 
 
-
-nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-
-" Perform case-insensitive searches
-set ignorecase
-" Highlight results matching search query
-set hlsearch
-" Highlight searches as you type
-set incsearch
-
-" Plugin: fzf.vim
-" See: https://github.com/junegunn/fzf.vim
-
-" Allow navigating through previous search queries with CTRL-P / CTRL-N
-let g:fzf_history_dir='~/.fzf_history'
-
-" Find file globally
-nmap <Leader>fg :Files!<CR>
-" Find open buffers
-nmap <Leader>fb :Buffers!<CR>
-" Find file history
-nmap <Leader>fh :History!<CR>
-" Find 'locally' / Lines
-nmap <Leader>fl :Lines!<CR>
-" Find dirty fit giles
-nmap <Leader>fd :GFiles?<CR>
-
-" I often reach for `ff` in non-git repos as it is my goto search. This allows
-" me to use it everywhere, and have it fallback to global search in no-Git
-" repos.
-if inGitRepo
-    " Find files
-    nmap <Leader>ff :GFiles!<CR>
-else
-    " Find files
-    nmap <Leader>ff :Files!<CR>
-endif
 
 " Testing ===================================================================
 
@@ -407,9 +195,6 @@ let php_var_selector_is_identifier=1
 " performance, and hopefully some syntax highlighting issues
 let g:vue_pre_processors=[]
 
-" Occassionaly vim will screw up Vue highlighting. This refreshes the
-" highlighting whenever a Vue file is opened
-autocmd FileType vue syntax sync fromstart
 
 nmap <leader>lm :ArtisanMake<space>
 command! -nargs=+ ArtisanMake call s:ArtisanMake(<q-args>)
@@ -514,10 +299,6 @@ augroup autosourcing
     autocmd!
     autocmd BufWritePost .vimrc nested source %
 augroup END
-
-autocmd BufNewFile,BufRead .php_cs* set filetype=php
-" autocmd FileType html let b:match_words = substitute(b:match_words, '<:>,', '', '').',<:>'
-
 
 " stop weird highlighting of text inside italic tags
 let html_no_rendering=0
