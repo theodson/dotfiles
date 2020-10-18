@@ -31,7 +31,7 @@ function! EagerlyDetectTestSuite()
             \ 'col': 1,
             \ 'line': 1,
             \}
-      finish
+      return
     endif
   endfor
 endfunction
