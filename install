@@ -62,11 +62,11 @@ if [ ! -e ~/Code/playground/composer.lock ]; then
     mkdir -p ~/Code
     cd $HOME/Code
     composer create-project laravel/laravel playground
-    cd STARTING_DIR
+    cd $STARTING_DIR
 else
     cd $HOME/Code/playground
     composer update
-    cd STARTING_DIR
+    cd $STARTING_DIR
 fi
 
 # Start services

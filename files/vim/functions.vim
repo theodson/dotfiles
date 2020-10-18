@@ -16,22 +16,22 @@ endfunction
 function! EagerlyDetectTestSuite()
   if exists('g:test#last_position')
     return
-  else
-    " only supports PHP at the moment. Able to be extended to other languages
-    " and tools though.
-    let s:patterns = [{'dir': 'tests','pattern': 'Test.php'}]
-
-    for s:p in s:patterns
-      let s:path = trim(system('fd '.shellescape(s:p.pattern).' '.shellescape(s:p.dir).' -s | sed -n 1p'))
-
-      if s:path !=# ''
-        let g:test#last_position = {
-              \ 'file': s:path,
-              \ 'col': 1,
-              \ 'line': 1,
-              \}
-        finish
-      endif
-    endfor
   endif
+
+  " only supports PHP at the moment. Able to be extended to other languages
+  " and tools though.
+  let s:patterns = [{'dir': 'tests','pattern': 'Test.php'}]
+
+  for s:p in s:patterns
+    let s:path = trim(system('fd '.shellescape(s:p.pattern).' '.shellescape(s:p.dir).' -s | sed -n 1p'))
+
+    if s:path !=# ''
+      let g:test#last_position = {
+            \ 'file': s:path,
+            \ 'col': 1,
+            \ 'line': 1,
+            \}
+      finish
+    endif
+  endfor
 endfunction
