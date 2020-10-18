@@ -1,7 +1,7 @@
 " Plugin: tpope/vim-dispatch
 " Plugin: janko/vim-test
 
-let g:test#strategy=""
+call EagerlyDetectTestSuite()
 
 " use PHPUnit as the php test runner, not artisan test
 let test#php#phpunit#executable = 'vendor/bin/phpunit --colors=always'
@@ -29,14 +29,5 @@ nmap <Leader>tv :TestVisit<CR>
 " Toggle testing strategy
 nmap <Leader>tt :TestToggleStrategy<CR>
 
-" Allow toggling between tests dispatched in background or fullscreen
-function! TestToggleStrategy()
-  if exists("g:test#strategy")
-    unlet g:test#strategy
-    echo "Test Strategy: default"
-  else
-    let g:test#strategy="dispatch_background"
-    echo "Test Strategy: background dispatch"
-  endif
-endfunction
 command! TestToggleStrategy call TestToggleStrategy()
+

@@ -27,12 +27,14 @@ call plug#begin('~/.vim/plugged')
   call SourceDotFile('plugins.vim')
 call plug#end()
 
+call SourceDotFile('functions.vim')
 call SourceDotFile('defaults.vim')
 call SourceDotFile('visuals.vim')
 call SourceDotFile('filetype.vim')
 call SourceDotFile('searching.vim')
 call SourceDotFile('testing.vim')
 call SourceDotFile('plugin/coc.vim')
+
 
 
 " By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
@@ -105,12 +107,6 @@ let g:vim_markdown_strikethrough = 1
 
 " polyglot plugin
 let g:vim_markdown_frontmatter = 1
-
-
-
-
-" Testing ===================================================================
-
 
 " PHP ======================================================================
 
@@ -267,23 +263,3 @@ augroup END
 " stop weird highlighting of text inside italic tags
 let html_no_rendering=0
 
-" try infer the test suite, so that :TestSuite works without opening a test
-" file
-
-if exists('g:test#last_position')
-  finish
-endif
-
-let s:patterns = [{'dir': 'tests', 'pattern': 'Test.php'}]
-
-for s:p in s:patterns
-    let s:path = trim(system('fd '.shellescape(s:p.pattern).' '.shellescape(s:p.dir).' -s | sed -n 1p'))
-    if s:path !=# ''
-        let g:test#last_position = {
-          \ 'file': s:path,
-          \ 'col': 1,
-          \ 'line': 1,
-          \}
-    finish
-  endif
-endfor
