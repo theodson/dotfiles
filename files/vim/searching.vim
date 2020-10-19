@@ -2,7 +2,7 @@
 " Plugin: junegunn/fzf.vim
 
 " -----------------------------------------------------------------------------
-" Buffer search
+"  Buffer search
 " -----------------------------------------------------------------------------
 
 " Clear buffer search highlighting
@@ -10,14 +10,8 @@
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
 " -----------------------------------------------------------------------------
-" Project search
+"  Project search
 " -----------------------------------------------------------------------------
-
-" Local project seach (modified to include hidden files)
-command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
-
-" Global project search
-command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 " Activate local project search
 nmap <leader>/ :Rg<space>
@@ -26,7 +20,7 @@ nmap <leader>/ :Rg<space>
 nmap <leader>// :RG<space>
 
 " -----------------------------------------------------------------------------
-" Fuzzy file/resultset finder
+"  Fuzzy file/resultset finder
 " -----------------------------------------------------------------------------
 
 " Allow navigating through previous search queries with CTRL-P / CTRL-N
@@ -52,3 +46,13 @@ if inGitRepo
 else
   nmap <Leader>ff :Files<CR>
 endif
+
+" -----------------------------------------------------------------------------
+"  Commands / Functions
+" -----------------------------------------------------------------------------
+
+" Local project seach (modified to include hidden files)
+command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+
+" Global project search
+command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)

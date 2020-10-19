@@ -12,6 +12,7 @@ colorscheme dracula
 " Personal customisations I've made to Dracula
 augroup dracula_customization
   autocmd!
+
   " This makes variables, like $user, green. Gives variables a bit of spice.
   highlight! link Identifier DraculaGreen
 
@@ -35,5 +36,6 @@ augroup dracula_customization
   " Make the colour columns darker
   highlight! link ColorColumn DraculaBgDarker
 
+  " Highlight trailing whitespace when not in insert mode
   highlight ExtraWhitespace guibg='#FF79C6'
 augroup END

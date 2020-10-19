@@ -1,12 +1,10 @@
-augroup filetype_remappings
+augroup filetypes
   autocmd!
+
+  " File type remappings
   autocmd BufNewFile,BufRead *.md set filetype=markdown
   autocmd BufNewFile,BufRead .env.* set filetype=sh
   autocmd BufNewFile,BufRead .php_cs* set filetype=php
-augroup END
-
-augroup filetype_customisations
-  autocmd!
 
   " Indentation sizing
   autocmd FileType vim setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab

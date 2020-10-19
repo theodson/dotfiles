@@ -64,7 +64,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " COC plugins
 let g:coc_global_extensions = [
-\ 'coc-html',
-\ 'coc-json',
-\ 'coc-tailwindcss'
-\ ]
+      \ 'coc-html',
+      \ 'coc-json',
+      \ 'coc-tailwindcss'
+      \ ]

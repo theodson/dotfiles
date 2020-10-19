@@ -27,12 +27,12 @@ call plug#begin('~/.vim/plugged')
   call SourceDotFile('plugins.vim')
 call plug#end()
 
-call SourceDotFile('functions.vim')
 call SourceDotFile('defaults.vim')
 call SourceDotFile('visuals.vim')
-call SourceDotFile('filetype.vim')
+call SourceDotFile('filetypes.vim')
 call SourceDotFile('searching.vim')
 call SourceDotFile('testing.vim')
+call SourceDotFile('linting.vim')
 call SourceDotFile('plugin/coc.vim')
 
 
@@ -216,43 +216,6 @@ endfunction
 nmap <Leader>n :e %:h/.php<Left><Left><Left><Left>
 
 
-" fixing...
-let g:ale_fixers = { 'php': ['php_cs_fixer'] }
-let g:ale_fix_on_save = 1
-
-" fallback to global binary if not installed on local project
-if filereadable('vendor/bin/php-cs-fixer')
-    let g:ale_php_cs_fixer_executable = 'vendor/bin/php-cs-fixer'
-else
-    let g:ale_php_cs_fixer_executable = 'php-cs-fixer'
-endif
-
-if (filereadable('.php_cs') || filereadable('.php_cs.dist'))
-    " great. just let the tool find the right config to use
-elseif filereadable('.php_cs.local')
-    if match(readfile('.php_cs.local'), '\S') == -1
-        " .php_cs.local is empty, indicating we should just use the global
-        " laravel rules
-        let s:php_cs_config = $HOME.'/.php_cs.laravel'
-    else
-        let s:php_cs_config = '.php_cs.local'
-    endif
-    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config="'.s:php_cs_config.'"'
-else
-    " no config information is present, so we'll use the global laravel config
-    " and only fix when called manually with `gqaf`
-    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config='.$HOME.'/.php_cs.laravel'
-    let g:ale_fix_on_save = 0
-endif
-
-" Linting
-let g:ale_cache_executable_check_failures = 1
-let g:ale_php_phpstan_executable = 'vendor/bin/phpstan'
-let g:ale_lint_on_insert_leave = 0
-let g:ale_lint_on_enter = 1
-let g:ale_lint_on_text_changed = 0
-let g:ale_sign_error = '👀'
-autocmd FileType php let b:ale_linters = ['php', 'psalm', 'phpstan']
 
 " automatically source this file when saved
 augroup autosourcing
