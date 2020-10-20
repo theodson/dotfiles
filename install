@@ -24,8 +24,6 @@ if [ ! -e ~/.vim/autoload/plug.vim ]; then
     curl --create-dirs -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
-curl --create-dirs -fLo ~/.php_cs.laravel https://gist.githubusercontent.com/laravel-shift/cab527923ed2a109dda047b97d53c200/raw/1db6b058ee3672ebd1a88bac9d8182aed449eb05/.php_cs.laravel.php
-
 curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 
 # Install / update homebrew dependecies

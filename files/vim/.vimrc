@@ -57,8 +57,6 @@ nmap [c :cprevious<cr>
 nmap ]c :cnext<cr>
 nmap ]C :clast<cr>
 nmap <leader>rc :vsplit ~/.vimrc<CR>
-" format (gq) a file (af)
-nmap gqaf :ALEFix<CR>
 
 
 " Launch tinker shell
