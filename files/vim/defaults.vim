@@ -1,3 +1,20 @@
+" By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
+" just yank from the cursor to the end of the line.
+nmap Y y$
+
+" "jk" to escape
+imap <silent> jk <Esc>
+
+" Save buffer
+nnoremap <C-s> :w<CR>
+inoremap <C-s> <ESC>:w<CR>
+
+" Disable arrow keys
+noremap <Left> <nop>
+noremap <Right> <nop>
+noremap <Up> <nop>
+noremap <Down> <nop>
+
 " ----------------------------------------
 "  Files & Buffers
 " ----------------------------------------
@@ -47,6 +64,12 @@ set clipboard=unnamed
 " from the beginning of the line being joined
 set formatoptions+=j
 
+" Use 4 spaces instead of tab characters
+set expandtab tabstop=4 shiftwidth=4 softtabstop=4
+
+" Allow a word to contain a-dash
+set iskeyword+=-
+
 " ----------------------------------------
 "  Display
 " ----------------------------------------
@@ -62,6 +85,8 @@ set laststatus=2
 
 " Show line length indicators
 set colorcolumn=80,120
+
+set cursorline
 
 " ----------------------------------------
 "  Searching

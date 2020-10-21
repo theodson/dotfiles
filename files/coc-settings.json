@@ -7,10 +7,10 @@
             "progressOnInitialization": true
         }
     },
+    "diagnostic.enable": false,
     "suggest.maxCompleteItemCount": 10,
-    "suggest.noselect":false,
-    "suggest.removeDuplicateItems":true,
-    "suggest.triggerCompletionWait": 200,
+    "suggest.noselect": false,
+    "suggest.removeDuplicateItems": true,
     "suggest.completionItemKindLabels": {
         "text": "text",
         "method": "meth",

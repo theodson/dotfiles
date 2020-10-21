@@ -50,6 +50,10 @@ Plug 'dense-analysis/ale'
 " See: https://github.com/tpope/vim-vinegar
 Plug 'tpope/vim-vinegar'
 
+" Repeated patterns in a plugin
+" See: https://github.com/tpope/vim-unimpaired
+Plug 'tpope/vim-unimpaired'
+
 " Support plist files
 " See: https://github.com/darfink/vim-plist
 Plug 'darfink/vim-plist'
