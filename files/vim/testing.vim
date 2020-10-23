@@ -4,6 +4,9 @@
 " use PHPUnit as the php test runner, not artisan test
 let test#php#phpunit#executable = 'vendor/bin/phpunit --colors=always'
 
+" open a VIM terminal for test suite
+let g:test#strategy = "vimterminal"
+
 " Run whole test suite in a background job
 " TODO: Make this call a function that checks which strategy to use so that is
 " can run sync or async like all the other commands
@@ -30,18 +33,19 @@ nmap <Leader>tt :TestToggleStrategy<CR>
 
 command! TestToggleStrategy call TestToggleStrategy()
 
-function! TestToggleStrategy()
-  if exists("g:test#strategy")
-    unlet g:test#strategy
 
-    echo "Test Strategy: default"
+function! TestToggleStrategy()
+  if g:test#strategy != "vimterminal"
+    let g:test#strategy = "vimterminal"
+
+    echo "Test strategy now: popup terminal"
 
     return
   endif
 
   let g:test#strategy="dispatch_background"
 
-  echo "Test Strategy: background dispatch"
+  echo "Test strategy now: dispatch background"
 endfunction
 
 

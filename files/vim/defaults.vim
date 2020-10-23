@@ -71,7 +71,7 @@ set expandtab tabstop=4 shiftwidth=4 softtabstop=4
 set iskeyword+=-
 
 " ----------------------------------------
-"  Display
+"  Presentation
 " ----------------------------------------
 
 " Show current and relative line numbers
@@ -87,6 +87,9 @@ set laststatus=2
 set colorcolumn=80,120
 
 set cursorline
+
+set noerrorbells
+set visualbell t_vb=
 
 " ----------------------------------------
 "  Searching

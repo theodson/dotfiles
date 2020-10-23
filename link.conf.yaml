@@ -27,7 +27,7 @@
         path: files/.gitignore_global
         relink: true
     ~/.vim/coc-settings.json:
-        path: files/coc-settings.json
+        path: files/vim/coc.json
         create: true
         relink: true
     ~/.composer/composer.json:

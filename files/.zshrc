@@ -58,7 +58,7 @@ export PATH="$BREW_PREFIX/opt/gnu-which/libexec/gnubin:$PATH"
 # https://formulae.brew.sh/formula/composer#default
 export PATH="/Users/tim/.composer/vendor/bin:$PATH"
 
-# composer install binaries
+# locally installed composer install binaries
 # https://twitter.com/paulredmond/status/1189952205182226432
 export PATH="./vendor/bin:$PATH"
 

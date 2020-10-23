@@ -4,6 +4,14 @@ augroup dev
   autocmd!
 augroup END
 
+" append ";" to end of line
+imap ;; <ESC>A;
+nmap ;; A;<ESC>
+
+" aapend "," to end of line
+imap ,, <ESC>A,
+nmap ,, A,<ESC>
+
 " Go to definition
 nmap <silent> gd <Plug>(coc-definition)
 
@@ -26,7 +34,7 @@ nmap <leader>qf <Plug>(coc-fix-current)
 nmap <leader>ac <Plug>(coc-codeaction)
 
 " Show documentation
-nnoremap <silent> K :call ShowDocumentation<CR>
+nnoremap <silent> K :call ShowDocumentation()<CR>
 
 function! ShowDocumentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -43,6 +51,10 @@ autocmd dev FileType markdown,gitcommit setlocal spell
 let g:pear_tree_smart_openers = 1
 let g:pear_tree_smart_closers = 1
 let g:pear_tree_smart_backspace = 1
+
+" disable dot repeat so that pairs aren't hidden until editing has been
+" completed.
+let g:pear_tree_repeatable_expand = 0
 
 " Additional pairs to autocomplete
 let g:pear_tree_pairs = {
