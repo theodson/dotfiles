@@ -14,10 +14,10 @@ nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR
 " -----------------------------------------------------------------------------
 
 " Activate local project search
-nmap <leader>/ :Rg<space>
+nnoremap <leader>/ :Rg<space>
 
 " Activate global project search
-nmap <leader>// :RG<space>
+nnoremap <leader>// :RG<space>
 
 " -----------------------------------------------------------------------------
 "  Fuzzy file/resultset finder
@@ -27,24 +27,24 @@ nmap <leader>// :RG<space>
 let g:fzf_history_dir='~/.fzf_history'
 
 " Search for global project file
-nmap <Leader>fg :Files<CR>
+nnoremap <Leader>fg :Files<CR>
 " Search for open buffers
-nmap <Leader>fb :Buffers<CR>
+nnoremap <Leader>fb :Buffers<CR>
 " Search for previously opened files
-nmap <Leader>fh :History<CR>
+nnoremap <Leader>fh :History<CR>
 " Search for current buffers files
-nmap <Leader>fl :Lines<CR>
+nnoremap <Leader>fl :Lines<CR>
 " Search for dirty git files
-nmap <Leader>fd :GFiles?<CR>
+nnoremap <Leader>fd :GFiles?<CR>
 
 " Search for local project files
 " Note: I often reach for "<Leader>ff" in non-git directories as it is my goto
 " search. This conditional allows me to use it everywhere, and have it
 " fallback to global search in no-Git repos.
 if inGitRepo
-  nmap <Leader>ff :GFiles<CR>
+  nnoremap <Leader>ff :GFiles<CR>
 else
-  nmap <Leader>ff :Files<CR>
+  nnoremap <Leader>ff :Files<CR>
 endif
 
 " -----------------------------------------------------------------------------

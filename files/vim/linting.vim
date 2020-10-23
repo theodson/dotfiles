@@ -15,7 +15,7 @@ let g:ale_fix_on_save = 1
 autocmd linting FileType php let b:ale_fixers = ['php_cs_fixer']
 
 " format (gq) a file (af)
-nmap gqaf :ALEFix<CR>
+nnoremap gqaf :ALEFix<CR>
 
 " Fallback to my global php-cs-fixer binary if not installed in local project
 function! FallbackToGlobalPhpCsFixerBinary()

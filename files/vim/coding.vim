@@ -5,33 +5,31 @@ augroup dev
 augroup END
 
 " append ";" to end of line
-imap ;; <ESC>A;
-nmap ;; A;<ESC>
+inoremap ;; <ESC>A;
 
 " aapend "," to end of line
-imap ,, <ESC>A,
-nmap ,, A,<ESC>
+inoremap ,, <ESC>A,
 
 " Go to definition
-nmap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gd <Plug>(coc-definition)
 
 " Go to type definition (useful when on a variable)
-nmap <silent> gy <Plug>(coc-type-definition)
+nnoremap <silent> gy <Plug>(coc-type-definition)
 
 " Go to implementation
-nmap <silent> gi <Plug>(coc-implementation)
+nnoremap <silent> gi <Plug>(coc-implementation)
 
 " Find all references
-nmap <silent> gr <Plug>(coc-references)
+nnoremap <silent> gr <Plug>(coc-references)
 
 " Rename class / variable / etc
-nmap <leader>rn <Plug>(coc-rename)
+nnoremap <leader>rn <Plug>(coc-rename)
 
 " Apply a "quickfix"
-nmap <leader>qf <Plug>(coc-fix-current)
+nnoremap <leader>qf <Plug>(coc-fix-current)
 
 " Show possible actions list
-nmap <leader>ac <Plug>(coc-codeaction)
+nnoremap <leader>ac <Plug>(coc-codeaction)
 
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>

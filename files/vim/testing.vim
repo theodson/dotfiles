@@ -10,26 +10,26 @@ let g:test#strategy = "vimterminal"
 " Run whole test suite in a background job
 " TODO: Make this call a function that checks which strategy to use so that is
 " can run sync or async like all the other commands
-nmap <Leader>ta :Dispatch! ./vendor/bin/phpunit<CR>
+nnoremap <Leader>ta :Dispatch! ./vendor/bin/phpunit<CR>
 
 " Run the entire test suite for the current file
-nmap <Leader>ts :TestFile<CR>
+nnoremap <Leader>ts :TestFile<CR>
 
 " Run all tests in the current file
-nmap <Leader>tf :TestFile<CR>
+nnoremap <Leader>tf :TestFile<CR>
 
 " Rerun the last run test
-nmap <Leader>tl :TestLast<CR>
+nnoremap <Leader>tl :TestLast<CR>
 
 " Run the current test
-nmap <Leader>tc :TestNearest<CR>
+nnoremap <Leader>tc :TestNearest<CR>
 
 " Visit the last run test
-nmap <Leader>tv :TestVisit<CR>
+nnoremap <Leader>tv :TestVisit<CR>
 
 " Allow toggling between the test suite being dispatched in background or
 " fullscreen
-nmap <Leader>tt :TestToggleStrategy<CR>
+nnoremap <Leader>tt :TestToggleStrategy<CR>
 
 command! TestToggleStrategy call TestToggleStrategy()
 

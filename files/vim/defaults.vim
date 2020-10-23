@@ -1,9 +1,9 @@
 " By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
 " just yank from the cursor to the end of the line.
-nmap Y y$
+nnoremap Y y$
 
 " "jk" to escape
-imap <silent> jk <Esc>
+inoremap <silent> jk <Esc>
 
 " Save buffer
 nnoremap <C-s> :w<CR>
@@ -75,6 +75,7 @@ set iskeyword+=-
 " ----------------------------------------
 
 " Show current and relative line numbers
+set number
 set relativenumber
 
 " set a consistent width to the line numbers column
