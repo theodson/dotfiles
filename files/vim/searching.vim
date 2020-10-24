@@ -9,6 +9,24 @@
 " See: https://github.com/tpope/vim-sensible/blob/2d9f34c09f548ed4df213389caa2882bfe56db58/plugin/sensible.vim#L35
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
+nnoremap <silent>n :call GoToSearchResultAndCenter(1)<CR>
+
+nnoremap <silent>N :call GoToSearchResultAndCenter(0)<CR>
+
+function! GoToSearchResultAndCenter(forward)
+    let s:scrollOffToRestore=&scrolloff
+    set scrolloff=999
+    try
+        if a:forward
+            silent normal! n
+        else
+            silent normal! N
+        endif
+    finally
+        let &scrolloff=s:scrollOffToRestore
+    endtry
+endfunction
+
 " -----------------------------------------------------------------------------
 "  Project search
 " -----------------------------------------------------------------------------
@@ -16,8 +34,12 @@ nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR
 " Activate local project search
 nnoremap <leader>/ :Rg<space>
 
+command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+
 " Activate global project search
 nnoremap <leader>// :RG<space>
+
+command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
 
 " -----------------------------------------------------------------------------
 "  Fuzzy file/resultset finder
@@ -47,12 +69,3 @@ else
   nnoremap <Leader>ff :Files<CR>
 endif
 
-" -----------------------------------------------------------------------------
-"  Commands / Functions
-" -----------------------------------------------------------------------------
-
-" Local project seach (modified to include hidden files)
-command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
-
-" Global project search
-command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
