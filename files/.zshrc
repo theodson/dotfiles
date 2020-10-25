@@ -74,6 +74,10 @@ source ~/.fzf.zsh
 # use 'fd' instead of 'find' for 'fzf file lookup
 export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
 
+# phpactor
+# https://github.com/phpactor/phpactor
+export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
+
 # bat, not cat 🦇
 # https://github.com/sharkdp/bat
 alias cat="bat"

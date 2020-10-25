@@ -1,14 +1,7 @@
 {
-    "languageserver": {
-        "intelephense": {
-            "args": ["--stdio"],
-            "command": "intelephense",
-            "filetypes": ["php"],
-            "progressOnInitialization": true
-        }
-    },
+    "phpactor.enable": true,
+    "phpactor.path": "/Users/tim/.vim/plugged/phpactor/bin/phpactor",
     "diagnostic.enable": false,
-    "suggest.maxCompleteItemCount": 10,
     "suggest.noselect": false,
     "suggest.removeDuplicateItems": true,
     "suggest.completionItemKindLabels": {

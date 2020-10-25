@@ -62,6 +62,9 @@ Plug 'darfink/vim-plist'
 " See: https://github.com/ntpeters/vim-better-whitespace
 Plug 'ntpeters/vim-better-whitespace'
 
+" PHP intellegence and refactoring
+Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer install --no-dev -o'}
+
 " Language server support
 " See: https://github.com/neoclide/coc.nvim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -70,5 +73,6 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_global_extensions = [
       \ 'coc-html',
       \ 'coc-json',
-      \ 'coc-tailwindcss'
+      \ 'coc-tailwindcss',
+      \ 'coc-phpactor'
       \ ]
