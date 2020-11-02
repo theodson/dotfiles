@@ -31,18 +31,6 @@ nmap <leader>qf <Plug>(coc-fix-current)
 " Show possible actions list
 nmap <leader>ac <Plug>(coc-codeaction)
 
-" Function text object
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-
-" Class text object
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
