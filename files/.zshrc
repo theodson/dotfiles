@@ -83,6 +83,10 @@ export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
 alias cat="bat"
 export BAT_THEME="Dracula"
 
+# VIM, not nano
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
 # Open in web browser
 #
 # If you are within a subdirectory of the Laravel Valet parked directory

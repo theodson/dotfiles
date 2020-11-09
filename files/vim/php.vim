@@ -4,6 +4,7 @@ augroup php
   autocmd!
 augroup END
 
+
 " Highlighting for native functions should not be different for highlighting
 " of local functions / methods.
 let g:php_syntax_extensions_enabled = []
