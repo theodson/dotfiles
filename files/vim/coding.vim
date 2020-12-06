@@ -31,8 +31,12 @@ nmap <leader>qf <Plug>(coc-fix-current)
 " Show possible actions list
 nmap <leader>ac <Plug>(coc-codeaction)
 
+" Import class
+nmap <leader>ic :PhpactorImportClass<CR>
+
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
+
 
 function! ShowDocumentation()
   if (index(['vim','help'], &filetype) >= 0)

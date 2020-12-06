@@ -47,6 +47,7 @@ brew 'zsh-history-substring-search'
 brew 'zsh-syntax-highlighting'
 
 # apps
+cask 'pritunl'
 cask 'docker'
 cask 'firefox-developer-edition'
 cask 'imageoptim'

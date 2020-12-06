@@ -10,8 +10,8 @@ function! SourceDotFile(file)
 endfunction
 
 " Some initial vars we want setup early
-let mapleader="\<Space>"
-let inGitRepo=! empty(finddir('.git'))
+let mapleader = "\<Space>"
+let inGitRepo = ! empty(finddir('.git'))
 
 " Load up all the extensions
 call plug#begin('~/.vim/plugged')
@@ -31,3 +31,7 @@ call SourceDotFile('frontend.vim')
 call SourceDotFile('php.vim')
 call SourceDotFile('laravel.vim')
 call SourceDotFile('markdown.vim')
+
+if (filereadable('local.vim'))
+  execute 'source local.vim'
+endif

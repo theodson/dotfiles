@@ -1,9 +1,14 @@
 {
-    "phpactor.enable": true,
-    "phpactor.path": "/Users/tim/.vim/plugged/phpactor/bin/phpactor",
+    "languageserver": {
+        "intelephense": {
+            "args": ["--stdio"],
+            "command": "intelephense",
+            "filetypes": ["php"],
+            "progressOnInitialization": true
+        }
+    },
     "diagnostic.enable": false,
     "suggest.noselect": false,
-    "suggest.removeDuplicateItems": true,
     "suggest.completionItemKindLabels": {
         "text": "text",
         "method": "meth",
