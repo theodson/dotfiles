@@ -32,6 +32,6 @@ call SourceDotFile('php.vim')
 call SourceDotFile('laravel.vim')
 call SourceDotFile('markdown.vim')
 
-if (filereadable('local.vim'))
-  execute 'source local.vim'
-endif
+" Allow a local ".vimrc" for per directory configuration changes
+set secure
+set exrc

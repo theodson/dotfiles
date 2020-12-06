@@ -56,4 +56,4 @@ tags
 [._]*.un~
 
 .php_cs.local
-local.vim
+.vimrc
