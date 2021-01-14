@@ -1,3 +1,5 @@
+let g:laravel_artisan_executable = 'php artisan'
+
 " Run a "php artisan *" command
 nmap <Leader>la :!php artisan<Space>
 
@@ -10,12 +12,10 @@ nmap <Leader>ll :Start! tail -f -n 0 ./storage/logs/laravel.log<CR>
 
 " Create and open a file via "php artisan make:*"
 nmap <leader>lm :ArtisanMake<space>
-
 command! -nargs=+ ArtisanMake call ArtisanMake(<q-args>)
-
 function! ArtisanMake(input)
     let before = system('php -r "echo hrtime(true);"')
-    let output = trim(system('php artisan make:'.a:input))
+    let output = trim(system(g:laravel_artisan_executable.' make:'.a:input))
     let after = system('php -r "echo hrtime(true);"')
 
     if v:shell_error != 0

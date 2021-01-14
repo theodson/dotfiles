@@ -34,6 +34,9 @@ nmap <leader>ac <Plug>(coc-codeaction)
 " Import class
 nmap <leader>ic :PhpactorImportClass<CR>
 
+" Create a new class
+nmap <leader>nc :PhpactorClassNew<CR>
+
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
 

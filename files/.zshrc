@@ -111,5 +111,10 @@ play() {
     php artisan tinker
 }
 
+# Big Picture Medical deployment helper
+bpm-deploy() {
+    docker run -v "/Users/tim/Code:/bpm" -v "/Users/tim/.aws:/root/.aws" -it bpmdeploy/bpm-deploy:latest
+}
+
 # always start in the code directory
 cd ~/Code
