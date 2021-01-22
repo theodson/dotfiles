@@ -11,7 +11,8 @@ let g:php_syntax_extensions_enabled = []
 
 " Highlight $ with variable
 let g:php_var_selector_is_identifier = 1
-autocmd php FileType php setlocal iskeyword+=$
+" Disabled: Got used to this without the $ tbh
+" autocmd php FileType php setlocal iskeyword+=$
 
 " do not auto indent PHP to make arrows match indentation across lines, i.e.
 " don't do this....

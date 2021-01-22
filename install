@@ -35,6 +35,7 @@ composer global update --verbose | tee -a logs/composer.$logVersion.log
 composer global outdated --direct --verbose | tee -a logs/composer.$logVersion.log
 
 # Install / update npm dependecies
+npm install npm@latest -g
 npm install -g pure-prompt intelephense | tee logs/npm.$logVersion.log
 npm update -g | tee -a logs/npm.$logVersion.log
 npm outdated -g | tee -a logs/npm.$logVersion.log

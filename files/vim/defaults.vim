@@ -68,7 +68,8 @@ set formatoptions+=j
 set expandtab tabstop=4 shiftwidth=4 softtabstop=4
 
 " Allow a word to contain a-dash
-set iskeyword+=-
+" Disabled: Would be nice if this worked, but only within a "string-value"
+"set iskeyword+=-
 
 set timeoutlen=400
 
