@@ -1,5 +1,6 @@
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-versions'
+tap 'homebrew/cask-drivers'
 
 # dependencies
 brew 'pkg-config' # bunch of things
@@ -10,6 +11,7 @@ brew 'bat'
 brew 'composer'
 brew 'coreutils'
 brew 'dnsmasq'
+brew 'elgato-control-center'
 brew 'fd'
 brew 'findutils'
 brew 'fzf'

@@ -87,6 +87,14 @@ export BAT_THEME="Dracula"
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
+# Docker compose
+alias dc="docker-compose"
+
+# Big Picture Medical deployment helper
+bpm-deploy() {
+    docker run -v "/Users/tim/Code:/bpm" -v "/Users/tim/.aws:/root/.aws" -it bpmdeploy/bpm-deploy:latest
+}
+
 # Open in web browser
 #
 # If you are within a subdirectory of the Laravel Valet parked directory
@@ -111,10 +119,6 @@ play() {
     php artisan tinker
 }
 
-# Big Picture Medical deployment helper
-bpm-deploy() {
-    docker run -v "/Users/tim/Code:/bpm" -v "/Users/tim/.aws:/root/.aws" -it bpmdeploy/bpm-deploy:latest
-}
 
 # always start in the code directory
 cd ~/Code
