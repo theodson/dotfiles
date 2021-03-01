@@ -3,11 +3,13 @@
 nnoremap Y y$
 
 " "jk" to escape
-inoremap <silent> jk <Esc>
+" Disabling to use new caps as escape
+" inoremap <silent> jk <Esc>
 
 " Save buffer
-nnoremap <C-s> :w<CR>
-inoremap <C-s> <ESC>:w<CR>
+" Disabling to use default while forcing home-rowing
+" nnoremap <C-s> :w<CR>
+" inoremap <C-s> <ESC>:w<CR>
 
 " Disable arrow keys
 noremap <Left> <nop>

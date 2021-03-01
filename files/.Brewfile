@@ -51,6 +51,7 @@ cask 'imageoptim'
 cask 'kitty'
 cask 'postman'
 cask 'skype'
+cask 'karabiner-elements'
 cask 'zoom'
 
 # MAS apps
