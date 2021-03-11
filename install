@@ -4,15 +4,8 @@ set -e
 
 STARTING_DIR=$PWD
 
-# Generate a unique log version
-logVersion=0
-while [ -e "logs/brew.$logVersion.log" ]
-do
-    ((++logVersion))
-done
-
 # Link dotfiles
-/bin/bash link | tee logs/link.$logVersion.log
+/bin/bash link
 
 # Install homebrew if it isn't already
 if [ ! $(which brew) ]; then
@@ -27,30 +20,30 @@ fi
 curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 
 # Install / update homebrew dependecies
-brew bundle --global --verbose | tee logs/brew.$logVersion.log
+brew bundle --global --verbose
 
 # Install / update composer dependecies
-composer global install --verbose | tee logs/composer.$logVersion.log
-composer global update --verbose --with-all-dependencies | tee -a logs/composer.$logVersion.log
-composer global outdated --direct --verbose | tee -a logs/composer.$logVersion.log
+composer global install --verbose
+composer global update --verbose --with-all-dependencies
+composer global outdated --direct --verbose
 
 # Install / update npm dependecies
 npm install npm@latest -g
-npm install -g pure-prompt intelephense | tee logs/npm.$logVersion.log
-npm update -g | tee -a logs/npm.$logVersion.log
-npm outdated -g | tee -a logs/npm.$logVersion.log
+npm install -g pure-prompt intelephense
+npm update -g
+npm outdated -g
 
 # Upgrade / install / update / clean vim-plug dependecies
-vim -es -u ~/.vimrc -i NONE -c "PlugUpgrade" -c "qa" | tee logs/vim-plug.$logVersion.log
-vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa" | tee -a logs/vim-plug.$logVersion.log
-vim -es -u ~/.vimrc -i NONE -c "PlugUpdate" -c "qa" | tee -a logs/vim-plug.$logVersion.log
-vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa" | tee logs/vim-plug.$logVersion.log
+vim -es -u ~/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
+vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa"
+vim -es -u ~/.vimrc -i NONE -c "PlugUpdate" -c "qa"
+vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa"
 vim -c 'CocUpdateSync|q'
 
 # Install / update pecl dependecies
 pecl update-channels
-pecl install pcov | tee logs/pecl.$logVersion.log
-pecl upgrade | tee -a logs/pecl.$logVersion.log
+pecl install pcov
+pecl upgrade
 
 # Setup playground
 if [ ! -e ~/Code/playground/composer.lock ]; then
