@@ -1,6 +1,5 @@
 {
     "require": {
-        "laravel/valet": "^2.8",
         "friendsofphp/php-cs-fixer": "^2.16"
     }
 }

@@ -31,7 +31,7 @@ brew bundle --global --verbose | tee logs/brew.$logVersion.log
 
 # Install / update composer dependecies
 composer global install --verbose | tee logs/composer.$logVersion.log
-composer global update --verbose | tee -a logs/composer.$logVersion.log
+composer global update --verbose --with-all-dependencies | tee -a logs/composer.$logVersion.log
 composer global outdated --direct --verbose | tee -a logs/composer.$logVersion.log
 
 # Install / update npm dependecies
@@ -52,10 +52,6 @@ pecl update-channels
 pecl install pcov | tee logs/pecl.$logVersion.log
 pecl upgrade | tee -a logs/pecl.$logVersion.log
 
-# Install valet
-~/.composer/vendor/bin/valet trust
-~/.composer/vendor/bin/valet install | tee logs/valet.$logVersion.log
-
 # Setup playground
 if [ ! -e ~/Code/playground/composer.lock ]; then
     mkdir -p ~/Code
@@ -67,9 +63,6 @@ else
     composer update
     cd $STARTING_DIR
 fi
-
-# Start services
-brew services restart mysql
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this

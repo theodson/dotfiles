@@ -34,14 +34,6 @@
         path: files/composer.json
         create: true
         relink: true
-    ~/.config/valet/config.json:
-        path: files/valet.json
-        create: true
-        relink: true
-    ~/.config/kitty/kitty.conf:
-        path: files/kitty.conf
-        create: true
-        relink: true
     ~/.ssh/config:
         path: files/ssh_config
         create: true

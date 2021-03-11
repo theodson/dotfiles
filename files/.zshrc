@@ -1,6 +1,4 @@
 BREW_PREFIX=$(brew --prefix)
-VALET_TLD="test"
-VALET_PARKED_DIRECTORY="$HOME/Code/"
 
 # "cd" by typing only the directory
 setopt autocd
@@ -96,17 +94,11 @@ bpm-deploy() {
 }
 
 # Open in web browser
-#
-# If you are within a subdirectory of the Laravel Valet parked directory
-# open the site in the browser, otherwise just open the browser. Examples:
-# ~/Sites/timacdonald opens http://timacdonald.test
-# ~/Sites/style-guide opens http://style-guide.test
-# ~/Sites/style-guide/node_modules opens http://style-guide.test
 browse() {
-    domain=$(echo $PWD | sed "s=$VALET_PARKED_DIRECTORY==I" | sed "s=/.*==")
+    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
     if [ ${#domain} -gt 0 ];
     then
-        open http://$domain.$VALET_TLD
+        open http://$domain.test
     else
         open -a Firefox\ Developer\ Edition
     fi
