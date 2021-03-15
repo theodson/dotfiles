@@ -12,15 +12,12 @@ if [ ! $(which brew) ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
-# Install vim-plug if it isn't already
-if [ ! -e ~/.vim/autoload/plug.vim ]; then
-    curl --create-dirs -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
-
-curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
-
 # Install / update homebrew dependecies
-brew bundle --global --verbose
+brew bundle --verbose --file=./files/.Brewfile
+brew bundle cleanup --file=./files/.Brewfile --force
+brew services cleanup
+sudo brew services cleanup
+brew cleanup
 
 # Install / update composer dependecies
 composer global install --verbose
@@ -32,6 +29,11 @@ npm install npm@latest -g
 npm install -g pure-prompt intelephense
 npm update -g
 npm outdated -g
+
+# Install vim-plug if it isn't already
+if [ ! -e ~/.vim/autoload/plug.vim ]; then
+    curl --create-dirs -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
 
 # Upgrade / install / update / clean vim-plug dependecies
 vim -es -u ~/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
@@ -46,16 +48,11 @@ pecl install pcov
 pecl upgrade
 
 # Setup playground
-if [ ! -e ~/Code/playground/composer.lock ]; then
-    mkdir -p ~/Code
-    cd $HOME/Code
-    composer create-project laravel/laravel playground
-    cd $STARTING_DIR
-else
-    cd $HOME/Code/playground
-    composer update
-    cd $STARTING_DIR
-fi
+rm -rf ~/Code/playground
+mkdir -p ~/Code
+cd $HOME/Code
+composer create-project laravel/laravel playground
+cd $STARTING_DIR
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
@@ -65,7 +62,7 @@ fi
 # Install FZF stuff
 /usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
 
-# Little cleanup
-brew cleanup
+# Update kitty colour scheme
+curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 
 echo 'Done!'

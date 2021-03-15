@@ -8,9 +8,6 @@
     ~/.gitmessage:
         path: files/.gitmessage
         relink: true
-    ~/.Brewfile:
-        path: files/.Brewfile
-        relink: true
     ~/.zshrc:
         path: files/.zshrc
         relink: true
