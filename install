@@ -5,22 +5,27 @@ set -e
 STARTING_DIR=$PWD
 cd $HOME
 
-
 echo '================================================================================'
 echo 'Checking for dotfile updates...'
 git -C $HOME/Code/dotfiles fetch origin
-if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; then
-    echo 'Dotfiles are outdated. Updating to the latestd dotfiles'
-    if ! git -C $HOME/Code/dotfiles diff-index --quiet HEAD --; then
-        echo 'Dotfiles repository also contains local changes. Changes will be stashed and popped.'
-        git -C $HOME/Code/dotfiles stash
-        git -C $HOME/Code/dotfiles pull
-        git -C $HOME/Code/dotfiles stash pop
+if [ ! $(git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master) ]; then
+    echo 'Dotfiles are outdated.'
+    echo 'Would you like to update [y/n]? (you will need to re-run the install / update command after updating)'
+    read WOULD_LIKE_TO_UPDATE
+    if [[ "$WOULD_LIKE_TO_UPDATE" =~ ^[Yy]$ ]]; then
+        if [ ! $(git -C $HOME/Code/dotfiles diff-index --quiet HEAD --) ]; then
+            echo 'Dotfiles repository also contains local changes. Changes will be stashed and popped.'
+            git -C $HOME/Code/dotfiles stash
+            git -C $HOME/Code/dotfiles pull
+            git -C $HOME/Code/dotfiles stash pop
+        else
+            git -C $HOME/Code/dotfiles pull
+        fi
+        echo 'Dotfiles have been updated. You will need to re-run the install / update.'
+        exit 1
     else
-        git -C $HOME/Code/dotfiles pull
+        echo 'Continuing without updating the dotfiles'
     fi
-    echo 'Dotfiles have been updated. You will need to re-run the install / update.'
-    exit 1
 else
     echo 'Dotfiles are already update to date!'
 fi
