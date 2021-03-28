@@ -1,10 +1,11 @@
 # TODO
+
 - Automate creation `~/.gitconfig.local` with placeholder variables if it doesn't exist
 - Add Karabiner config
 - Add basic Mac preferences, such as open home rather than recent in finder
-- Automate create of new SSH keys (https://github.com/driesvints/dotfiles/pull/57)
 
 # Old machine
+
 - Check before burning the hard drive for unsynced content
 - Check git for unpushed changes / branches / repos
 - Backup gpg keys
@@ -28,10 +29,8 @@ compaudit | xargs chmod g-w
 - Install browser plugins:
   - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
   - [1Password](https://1password.com/browsers/firefox/)
-- [Generate SSH key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub
 - [Generate GPG key](https://docs.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key) and add to GitHub
-- Add "email" to local git config
 - Install printer
-- Install Monolisa
+- Install Monolisa font
 - AWS cli config steps
 - gpg config steps
