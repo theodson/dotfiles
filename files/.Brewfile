@@ -35,6 +35,7 @@ brew 'wget'
 brew 'yarn'
 brew 'z'
 brew 'zsh'
+brew 'zsh-autosuggestions'
 brew 'zsh-history-substring-search'
 brew 'zsh-syntax-highlighting'
 
