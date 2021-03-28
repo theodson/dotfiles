@@ -7,7 +7,15 @@ cd $HOME
 
 
 echo '================================================================================'
-echo 'Checking for dotfile updates...'
+echo 'Checking status of dotfiles...'
+if git -C $HOME/Code/dotfiles diff-index --quiet HEAD --; then
+    DOTFILES_REPO_HAS_LOCAL_CHANGES=1
+else
+    DOTFILES_REPO_HAS_LOCAL_CHANGES=0
+fi
+echo 'Dotfiles'
+echo $DOTFILES_REPO_HAS_LOCAL_CHANGES
+exit 0;
 git -C $HOME/Code/dotfiles fetch origin
 if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; then
     echo 'Dotfiles are outdated.'
@@ -15,7 +23,7 @@ if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; t
     exit 1
 fi
 echo 'Dotfiles are update to date!'
-echo 'Done checking for dotfile updates.'
+echo 'Done checking status of dotfiles.'
 echo '================================================================================'
 
 if [ ! $(which brew) ]; then
