@@ -3,8 +3,16 @@
 set -e
 
 STARTING_DIR=$PWD
-
 cd $HOME
+
+if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; then
+    echo '================================================================================'
+    echo 'Updating your dotfiles repository, as it is out-of-date...'
+    git -C $HOME/Code/dotfiles pull
+    echo 'Done updating your dotfiles repository. You will need to re-run the install / update command.'
+    echo '================================================================================'
+    exit 1
+fi
 
 if [ ! $(which brew) ]; then
     echo '================================================================================'
@@ -117,8 +125,7 @@ echo '==========================================================================
 echo 'Setting up a fresh Laravel playground...'
 rm -rf $HOME/Code/playground
 mkdir -p $HOME/Code
-cd $HOME/Code
-composer create-project laravel/laravel playground
+composer create-project laravel/laravel $HOME/Code/playground
 echo 'Done setting up a fresh Laravel playground.'
 echo '================================================================================'
 
