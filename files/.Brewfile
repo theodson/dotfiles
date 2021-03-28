@@ -1,6 +1,8 @@
+tap 'homebrew/cask'
+tap 'homebrew/cask-drivers'
 tap 'homebrew/cask-fonts'
 tap 'homebrew/cask-versions'
-tap 'homebrew/cask-drivers'
+tap 'homebrew/services'
 
 # dependencies
 brew 'pkg-config' # bunch of things
@@ -21,6 +23,7 @@ brew 'gnu-sed'
 brew 'gnu-which'
 brew 'gnupg'
 brew 'less'
+brew 'mas'
 brew 'node'
 brew 'php@8.0'
 brew 'pinentry-mac'

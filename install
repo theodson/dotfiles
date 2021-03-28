@@ -4,17 +4,32 @@ set -e
 
 STARTING_DIR=$PWD
 
-# Link dotfiles
-/bin/bash link
+cd $HOME
 
 # Install homebrew if it isn't already
 if [ ! $(which brew) ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 fi
 
+# Install vim-plug if it isn't already
+if [ ! -e $HOME/.vim/autoload/plug.vim ]; then
+    curl --create-dirs -fLo $HOME/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
+
+# Add intelephense license
+if [ ! -e $HOME/intelephense/licence.txt ]; then
+    mkdir -p $HOME/intelephense
+    echo 'Enter your Intelephense license key:'
+    read -s INTELEPHENSE_LICENSE_KEY
+    echo $INTELEPHENSE_LICENSE_KEY > $HOME/intelephense/licence.txt
+fi
+
+# Link dotfiles
+/bin/bash $STARTING_DIR/link
+
 # Install / update homebrew dependecies
-brew bundle --verbose --file=./files/.Brewfile
-brew bundle cleanup --file=./files/.Brewfile --force
+brew bundle --verbose --global
+brew bundle cleanup --force --global
 brew services cleanup
 sudo brew services cleanup
 brew cleanup
@@ -30,16 +45,11 @@ npm install -g pure-prompt intelephense
 npm update -g
 npm outdated -g
 
-# Install vim-plug if it isn't already
-if [ ! -e ~/.vim/autoload/plug.vim ]; then
-    curl --create-dirs -fLo ~/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
-
 # Upgrade / install / update / clean vim-plug dependecies
-vim -es -u ~/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
-vim -es -u ~/.vimrc -i NONE -c "PlugInstall" -c "qa"
-vim -es -u ~/.vimrc -i NONE -c "PlugUpdate" -c "qa"
-vim -es -u ~/.vimrc -i NONE -c "PlugClean!" -c "qa"
+vim -es -u $HOME/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
+vim -es -u $HOME/.vimrc -i NONE -c "PlugInstall" -c "qa"
+vim -es -u $HOME/.vimrc -i NONE -c "PlugUpdate" -c "qa"
+vim -es -u $HOME/.vimrc -i NONE -c "PlugClean!" -c "qa"
 vim -c 'CocUpdateSync|q'
 
 # Install / update pecl dependecies
@@ -48,21 +58,22 @@ pecl install pcov
 pecl upgrade
 
 # Setup playground
-rm -rf ~/Code/playground
-mkdir -p ~/Code
+rm -rf $HOME/Code/playground
+mkdir -p $HOME/Code
 cd $HOME/Code
 composer create-project laravel/laravel playground
+
+# Install FZF stuff
+/usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
+
+# Update kitty colour scheme
+curl --create-dirs -fLo $HOME/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
+
 cd $STARTING_DIR
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
 # see: https://docs.brew.sh/Shell-Completion
 # compaudit | xargs chmod g-w
-
-# Install FZF stuff
-/usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
-
-# Update kitty colour scheme
-curl --create-dirs -fLo ~/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 
 echo 'Done!'

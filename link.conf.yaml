@@ -1,6 +1,10 @@
 - clean: ['~']
 
 - link:
+    ~/.Brewfile:
+        path: files/.Brewfile
+        relink: true
+        create: true
     ~/.gnupg/gpg-agent.conf:
         path: files/gpg-agent.conf
         relink: true
@@ -43,4 +47,3 @@
 
 - shell:
     - touch ~/.gitconfig.local
-    - touch ~/intelephense/licence.txt
