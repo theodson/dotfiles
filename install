@@ -6,68 +6,96 @@ STARTING_DIR=$PWD
 
 cd $HOME
 
-# Install homebrew if it isn't already
 if [ ! $(which brew) ]; then
+    echo 'Installing homebrew...'
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    echo 'Done installing homebrew.'
 fi
 
-# Install vim-plug if it isn't already
 if [ ! -e $HOME/.vim/autoload/plug.vim ]; then
+    echo 'Installing vim-plug...'
     curl --create-dirs -fLo $HOME/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    echo 'Done installing vim-plug.'
 fi
 
-# Add intelephense license
+# @see: https://intelephense.com/faq.html
 if [ ! -e $HOME/intelephense/licence.txt ]; then
+    echo 'Setting up Intelephense license...'
     mkdir -p $HOME/intelephense
     echo 'Enter your Intelephense license key:'
     read -s INTELEPHENSE_LICENSE_KEY
     echo $INTELEPHENSE_LICENSE_KEY > $HOME/intelephense/licence.txt
+    echo 'Done setting up Intelephense license.'
 fi
 
-# Link dotfiles
-/bin/bash $STARTING_DIR/link
+# @see: https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+if [ ! -e $HOME/.ssh/id_ed25519 ]; then
+    echo 'Creating SSH key...'
+    echo 'Enter the email address for you SSH key:'
+    read SSH_EMAIL_ADDRESS
+    ssh-keygen -t ed25519 -C $SSH_EMAIL_ADDRESS -f $HOME/.ssh/id_ed25519
+    eval "$(ssh-agent -s)"
+    ssh-add -K $HOME/.ssh/id_ed25519
+    pbcopy < $HOME/.ssh/id_ed25519.pub
+    echo 'The public key has been copied to the clipboard.'
+    echo 'Add to GitHub: https://github.com/settings/ssh/new'
+    echo 'After you have done that, hit enter to continue.'
+    read
+    echo 'Done creating SSH key.'
+fi
 
-# Install / update homebrew dependecies
+echo 'Linking dotfiles...'
+/bin/bash $STARTING_DIR/link
+echo 'Done linking dotfiles.'
+
+echo 'Installing, updating, and cleaning up brew dependencies...'
 brew bundle --verbose --global
 brew bundle cleanup --force --global
 brew services cleanup
 sudo brew services cleanup
 brew cleanup
+echo 'Done installing, updating, and cleaning up brew dependencies.'
 
-# Install / update composer dependecies
+echo 'Installing and updating composer dependencies...'
 composer global install --verbose
 composer global update --verbose --with-all-dependencies
 composer global outdated --direct --verbose
+echo 'Done installing and updating composer dependencies.'
 
-# Install / update npm dependecies
-npm install npm@latest -g
-npm install -g pure-prompt intelephense
+echo 'Installing and updating npm dependencies...'
+npm install -g npm@latest pure-prompt intelephense
 npm update -g
 npm outdated -g
+echo 'Done installing and updating npm dependencies.'
 
-# Upgrade / install / update / clean vim-plug dependecies
+echo 'Installing and updating pecl dependencies...'
+pecl update-channels
+pecl install pcov
+pecl upgrade
+echo 'Done installing and updating pecl dependencies.'
+
+echo 'Installing and updating vim-plug and its dependencies...'
 vim -es -u $HOME/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
 vim -es -u $HOME/.vimrc -i NONE -c "PlugInstall" -c "qa"
 vim -es -u $HOME/.vimrc -i NONE -c "PlugUpdate" -c "qa"
 vim -es -u $HOME/.vimrc -i NONE -c "PlugClean!" -c "qa"
 vim -c 'CocUpdateSync|q'
+echo 'Done installing and updating vim-plug and its dependencies.'
 
-# Install / update pecl dependecies
-pecl update-channels
-pecl install pcov
-pecl upgrade
+echo 'Installing and updating FZF...'
+/usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
+echo 'Done installing and updating FZF.'
 
-# Setup playground
+echo 'Installing and updating terminal theme...'
+curl --create-dirs -fLo $HOME/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
+echo 'Done installing and updating terminal theme.'
+
+echo 'Setting up a fresh Laravel playground...'
 rm -rf $HOME/Code/playground
 mkdir -p $HOME/Code
 cd $HOME/Code
 composer create-project laravel/laravel playground
-
-# Install FZF stuff
-/usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
-
-# Update kitty colour scheme
-curl --create-dirs -fLo $HOME/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
+echo 'Done setting up a fresh Laravel playground.'
 
 cd $STARTING_DIR
 
