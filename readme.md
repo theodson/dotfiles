@@ -6,13 +6,13 @@
 - Automate the process of downloading installing the Monolisa font via a cloud based script that is password protected
 - Automate installation of browser plugins(?)
 
-# Old machine
+# Before nuking the previous machine
 
 - Check before burning the hard drive for unsynced content
 - Check git for unpushed changes / branches / repos
 - Backup gpg keys
 
-# New machine
+# Settings up the new machine
 
 1. Apple:
    - Sign into iCloud
@@ -35,6 +35,6 @@ compaudit | xargs chmod g-w
 6. Install home printer
 7. Install Monolisa font
 
-# Updating machines
+# After setting up the new machine
 
-Ongoing you can run `$ dots` and it will run the install / update script, which is idempotent (well, kinda. You might get a newer version - but it should have the same result essentially).
+Ongoing run `$ dots` and the install / update script will run, which is idempotent (well, kinda. It might get a newer version - but it should have the same result essentially).
