@@ -5,6 +5,8 @@ set -e
 STARTING_DIR=$PWD
 cd $HOME
 
+git -C $HOME/Code/dotfiles fetch origin
+
 if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; then
     echo '================================================================================'
     echo 'Updating your dotfiles repository, as it is out-of-date...'
