@@ -4,7 +4,7 @@
 - Add Karabiner config.
 - Add basic Mac preferences, such as open home rather than recent in finder.
 - Automate the process of downloading installing the Monolisa font via a cloud based script that is password protected.
-- Automate installation of browser plugins(?)
+- Automate installation of browser plugins(?).
 
 # Before nuking the previous machine
 
