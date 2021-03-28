@@ -5,16 +5,18 @@ set -e
 STARTING_DIR=$PWD
 cd $HOME
 
-git -C $HOME/Code/dotfiles fetch origin
 
+echo '================================================================================'
+echo 'Checking for dotfile updates...'
+git -C $HOME/Code/dotfiles fetch origin
 if ! git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master; then
-    echo '================================================================================'
-    echo 'Updating your dotfiles repository, as it is out-of-date...'
+    echo 'Dotfiles are outdated.'
     git -C $HOME/Code/dotfiles pull
-    echo 'Done updating your dotfiles repository. You will need to re-run the install / update command.'
-    echo '================================================================================'
     exit 1
 fi
+echo 'Dotfiles are update to date!'
+echo 'Done checking for dotfile updates.'
+echo '================================================================================'
 
 if [ ! $(which brew) ]; then
     echo '================================================================================'
