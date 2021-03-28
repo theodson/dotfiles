@@ -68,7 +68,7 @@ alias a="php artisan"
 
 # fzf
 # https://github.com/junegunn/fzf
-source ~/.fzf.zsh
+source $HOME/.fzf.zsh
 # use 'fd' instead of 'find' for 'fzf file lookup
 export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
 
@@ -106,11 +106,17 @@ browse() {
 
 # A tinker env to play in
 play() {
-    cd ~/Code/playground
+    cd $HOME/Code/playground
 
     php artisan tinker
 }
 
+dots() {
+    zsh $HOME/Code/dotfiles/install
+}
+
 
 # always start in the code directory
-cd ~/Code
+cd $HOME/Code
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

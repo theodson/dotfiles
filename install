@@ -7,29 +7,36 @@ STARTING_DIR=$PWD
 cd $HOME
 
 if [ ! $(which brew) ]; then
+    echo '================================================================================'
     echo 'Installing homebrew...'
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     echo 'Done installing homebrew.'
+    echo '================================================================================'
 fi
 
 if [ ! -e $HOME/.vim/autoload/plug.vim ]; then
+    echo '================================================================================'
     echo 'Installing vim-plug...'
     curl --create-dirs -fLo $HOME/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     echo 'Done installing vim-plug.'
+    echo '================================================================================'
 fi
 
 # @see: https://intelephense.com/faq.html
 if [ ! -e $HOME/intelephense/licence.txt ]; then
+    echo '================================================================================'
     echo 'Setting up Intelephense license...'
     mkdir -p $HOME/intelephense
     echo 'Enter your Intelephense license key:'
     read -s INTELEPHENSE_LICENSE_KEY
     echo $INTELEPHENSE_LICENSE_KEY > $HOME/intelephense/licence.txt
     echo 'Done setting up Intelephense license.'
+    echo '================================================================================'
 fi
 
 # @see: https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 if [ ! -e $HOME/.ssh/id_ed25519 ]; then
+    echo '================================================================================'
     echo 'Creating SSH key...'
     echo 'Enter the email address for you SSH key:'
     read SSH_EMAIL_ADDRESS
@@ -42,38 +49,49 @@ if [ ! -e $HOME/.ssh/id_ed25519 ]; then
     echo 'After you have done that, hit enter to continue.'
     read
     echo 'Done creating SSH key.'
+    echo '================================================================================'
 fi
 
+echo '================================================================================'
 echo 'Linking dotfiles...'
-/bin/bash $STARTING_DIR/link
+/bin/bash $HOME/Code/dotfiles/link
 echo 'Done linking dotfiles.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing, updating, and cleaning up brew dependencies...'
-brew bundle --verbose --global
+brew bundle --global
 brew bundle cleanup --force --global
 brew services cleanup
 sudo brew services cleanup
 brew cleanup
 echo 'Done installing, updating, and cleaning up brew dependencies.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating composer dependencies...'
-composer global install --verbose
-composer global update --verbose --with-all-dependencies
-composer global outdated --direct --verbose
+composer global install
+composer global update --with-all-dependencies
 echo 'Done installing and updating composer dependencies.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating npm dependencies...'
 npm install -g npm@latest pure-prompt intelephense
 npm update -g
-npm outdated -g
 echo 'Done installing and updating npm dependencies.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating pecl dependencies...'
 pecl update-channels
-pecl install pcov
-pecl upgrade
+# pecl upgrade will also install if it isn't yet installed, where as pecl
+# install will fail if it is installed.
+pecl upgrade pcov
 echo 'Done installing and updating pecl dependencies.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating vim-plug and its dependencies...'
 vim -es -u $HOME/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
 vim -es -u $HOME/.vimrc -i NONE -c "PlugInstall" -c "qa"
@@ -81,21 +99,28 @@ vim -es -u $HOME/.vimrc -i NONE -c "PlugUpdate" -c "qa"
 vim -es -u $HOME/.vimrc -i NONE -c "PlugClean!" -c "qa"
 vim -c 'CocUpdateSync|q'
 echo 'Done installing and updating vim-plug and its dependencies.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating FZF...'
 /usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
 echo 'Done installing and updating FZF.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Installing and updating terminal theme...'
 curl --create-dirs -fLo $HOME/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
 echo 'Done installing and updating terminal theme.'
+echo '================================================================================'
 
+echo '================================================================================'
 echo 'Setting up a fresh Laravel playground...'
 rm -rf $HOME/Code/playground
 mkdir -p $HOME/Code
 cd $HOME/Code
 composer create-project laravel/laravel playground
 echo 'Done setting up a fresh Laravel playground.'
+echo '================================================================================'
 
 cd $STARTING_DIR
 

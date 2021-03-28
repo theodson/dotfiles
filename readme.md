@@ -3,6 +3,8 @@
 - Automate creation `~/.gitconfig.local` with placeholder variables if it doesn't exist
 - Add Karabiner config
 - Add basic Mac preferences, such as open home rather than recent in finder
+- Automate the process of downloading installing the Monolisa font via a cloud based script that is password protected
+- Automate installation of browser plugins(?)
 
 # Old machine
 
@@ -32,3 +34,7 @@ compaudit | xargs chmod g-w
    - [1Password](https://1password.com/browsers/firefox/)
 6. Install home printer
 7. Install Monolisa font
+
+# Updating machines
+
+Ongoing you can run `$ dots` and it will run the install / update script, which is idempotent (well, kinda. You might get a newer version - but it should have the same result essentially).
