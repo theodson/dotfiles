@@ -84,9 +84,10 @@ export BAT_THEME="Dracula"
 # VIM, not nano
 export VISUAL=vim
 export EDITOR="$VISUAL"
+alias ":q"="exit"
 
 # Docker compose
-alias dc="docker-compose"
+alias dc="docker compose"
 
 # Big Picture Medical deployment helper
 bpm-deploy() {

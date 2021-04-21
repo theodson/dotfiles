@@ -1,4 +1,5 @@
 {
+    "tailwindCSS.headwind.runOnSave": false,
     "languageserver": {
         "intelephense": {
             "args": ["--stdio"],

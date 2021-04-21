@@ -9,25 +9,6 @@
 " See: https://github.com/tpope/vim-sensible/blob/2d9f34c09f548ed4df213389caa2882bfe56db58/plugin/sensible.vim#L35
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
-" When moving between search results via "n" and "N" I want the search result
-" to appear vertically centered
-nnoremap <silent>n :call GoToSearchResultAndCenter(1)<CR>
-nnoremap <silent>N :call GoToSearchResultAndCenter(0)<CR>
-
-function! GoToSearchResultAndCenter(forward)
-    let s:scrollOffToRestore=&scrolloff
-    set scrolloff=999
-    try
-        if a:forward
-            silent normal! n
-        else
-            silent normal! N
-        endif
-    finally
-        let &scrolloff=s:scrollOffToRestore
-    endtry
-endfunction
-
 " -----------------------------------------------------------------------------
 "  Project search
 " -----------------------------------------------------------------------------

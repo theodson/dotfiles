@@ -74,4 +74,8 @@ let g:coc_global_extensions = [
       \ 'coc-html',
       \ 'coc-json',
       \ 'coc-tailwindcss',
+      \ 'coc-eslint',
+      \ 'coc-prettier',
+      \ 'coc-tsserver',
+      \ 'coc-vetur',
       \ ]
