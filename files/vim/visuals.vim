@@ -4,7 +4,16 @@
 set termguicolors
 
 " don't show welcome message when opening VIM
-set shortmess=I
+set shortmess+=I
+
+" Don't pass messages to |ins-completion-menu|.
+set shortmess+=c
+
+" Merge sign and number column so the screen doesn't shift
+set signcolumn=number
+
+" Give more space for displaying messages.
+set cmdheight=2
 
 " Set the verical split border character
 set fillchars+=vert:·,

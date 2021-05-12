@@ -45,6 +45,9 @@
     s = "status -s -b --renames"
     # nice log
     l = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+    # Deal with "There is no tracking information for the current branch."
+    # See: https://zarino.co.uk/post/git-set-upstream/
+    set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
 [push]
 	default = current
 [fetch]

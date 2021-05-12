@@ -37,6 +37,8 @@ nmap <leader>ic :PhpactorImportClass<CR>
 " Create a new class
 nmap <leader>nc :PhpactorClassNew<CR>
 
+nmap <leader>ec viwb<ESC>i\<ESC>l:PhpactorClassExpand<CR>e
+
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
 
