@@ -39,6 +39,10 @@
         path: files/ssh_config
         create: true
         relink: true
+    ~/.config/karabiner/karabiner.json:
+        path: files/karabiner.json
+        create: true
+        relink: true
 
 - create:
     - ~/.fzf_history
