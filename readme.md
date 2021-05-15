@@ -9,7 +9,7 @@
 
 - Check before burning the hard drive for unsynced content
 - Check git for unpushed changes / branches / repos
-- Backup gpg keys.
+- Backup gpg keys. see: https://www.youtube.com/watch?v=1vVIpIvboSg
 
 # Settings up the new machine
 
