@@ -9,7 +9,6 @@
 
 - Check before burning the hard drive for unsynced content
 - Check git for unpushed changes / branches / repos
-- Backup gpg keys. see: https://www.youtube.com/watch?v=1vVIpIvboSg
 
 # Settings up the new machine
 
@@ -27,7 +26,10 @@ git clone https://github.com/timacdonald/dotfiles.git && cd dotfiles
 zsh install
 compaudit | xargs chmod g-w
 ```
-4. Add GPG key from old machine
+4. Import GPG key
+```sh
+gpg —-import /path/to/secret-key-backup.asc
+```
 5. Install browser plugins:
    - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
    - [1Password](https://1password.com/browsers/firefox/)
