@@ -1,14 +1,8 @@
-# TODO
-
-- Automate creation `~/.gitconfig.local` with placeholder variables if it doesn't exist.
-- Add basic Mac preferences, such as open home rather than recent in finder.
-- Automate the process of downloading installing the Monolisa font via a cloud based script that is password protected.
-- Automate installation of browser plugins(?).
-
 # Before nuking the previous machine
 
-- Check before burning the hard drive for unsynced content
-- Check git for unpushed changes / branches / repos
+- Check before burning the hard drive for unsynced content, including:
+    - Home directory files
+    - unpushed changes / branches / repos
 
 # Settings up the new machine
 
@@ -17,7 +11,7 @@
    - Swap iTunes account to other Apple ID
 2. Setup Xcode:
    - [Install](https://apps.apple.com/au/app/xcode/id497799835?mt=12)
-   - Open 
+   - Open Xcode
    - Run `xcode-select --install`
 3. Run the installation script...
 ```sh
@@ -30,12 +24,13 @@ compaudit | xargs chmod g-w
 ```sh
 gpg —-import /path/to/secret-key-backup.asc
 ```
-5. Install browser plugins:
+5. Import SSH key
+6. Install browser plugins:
    - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
    - [1Password](https://1password.com/browsers/firefox/)
-6. Install home printer
-7. Install Monolisa font
+7. Install home printer
+8. Install Monolisa font
 
-# After setting up the new machine
+# Updating
 
-Ongoing run `$ dots` and the install / update script will run, which is idempotent (well, kinda. It might get a newer version - but it should have the same result essentially).
+Re-run the installation script
