@@ -53,6 +53,12 @@ function! ShowDocumentation()
   endif
 endfunction
 
+" Highlight symbol on hover
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Use <c-space> to open completion menu
+inoremap <silent><expr> <c-@> coc#refresh()
+
 " Turn on spell check
 autocmd dev FileType markdown,gitcommit setlocal spell
 
