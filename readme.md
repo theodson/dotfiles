@@ -8,11 +8,12 @@
 
 1. Apple:
    - Sign into iCloud
-   - Swap iTunes account to other Apple ID
+   - Swap Music and App Store account to other Apple ID
 2. Setup Xcode:
    - [Install](https://apps.apple.com/au/app/xcode/id497799835?mt=12)
    - Open Xcode
    - Run `xcode-select --install`
+3. Install and setup 1Password
 3. Run the installation script...
 ```sh
 mkdir $HOME/Code && cd $HOME/Code

@@ -37,11 +37,11 @@ nmap <leader>ic :PhpactorImportClass<CR>
 " Create a new class
 nmap <leader>nc :PhpactorClassNew<CR>
 
+" Expand to FQCN
 nmap <leader>ec viwb<ESC>i\<ESC>l:PhpactorClassExpand<CR>e
 
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
-
 
 function! ShowDocumentation()
   if (index(['vim','help'], &filetype) >= 0)
