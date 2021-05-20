@@ -13,7 +13,7 @@ if test ! $(git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master ma
     echo 'Would you like to update [y/n]? (you will need to re-run the install / update command after updating)'
     read WOULD_LIKE_TO_UPDATE
     if [[ "$WOULD_LIKE_TO_UPDATE" =~ ^[Yy]$ ]]; then
-        if [ ! $(git -C $HOME/Code/dotfiles diff-index --quiet HEAD --) ]; then
+        if test ! $(git -C $HOME/Code/dotfiles diff-index --quiet HEAD --); then
             echo 'Dotfiles repository also contains local changes. Changes will be stashed and popped.'
             git -C $HOME/Code/dotfiles stash
             git -C $HOME/Code/dotfiles pull

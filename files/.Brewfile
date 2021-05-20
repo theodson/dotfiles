@@ -62,4 +62,3 @@ mas 'Pixelmator', id: 407963104
 mas 'ScreenFlow 9', id: 1475796517
 mas 'Slack', id: 803453959
 mas 'Telegram', id: 747648890
-mas 'Xcode', id: 497799835
