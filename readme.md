@@ -18,7 +18,7 @@
 ```sh
 mkdir $HOME/Code && cd $HOME/Code
 git clone https://github.com/timacdonald/dotfiles.git && cd dotfiles
-zsh install
+bash install
 compaudit | xargs chmod g-w
 ```
 4. Import GPG key

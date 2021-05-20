@@ -8,7 +8,7 @@ cd $HOME
 echo '================================================================================'
 echo 'Checking for dotfile updates...'
 git -C $HOME/Code/dotfiles fetch origin
-if [ ! $(git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master) ]; then
+if test ! $(git -C $HOME/Code/dotfiles merge-base --is-ancestor origin/master master); then
     echo 'Dotfiles are outdated.'
     echo 'Would you like to update [y/n]? (you will need to re-run the install / update command after updating)'
     read WOULD_LIKE_TO_UPDATE
@@ -40,7 +40,7 @@ if test ! $(which brew); then
     echo '================================================================================'
 fi
 
-if [ ! -e $HOME/.vim/autoload/plug.vim ]; then
+if test ! -e $HOME/.vim/autoload/plug.vim; then
     echo '================================================================================'
     echo 'Installing vim-plug...'
     curl --create-dirs -fLo $HOME/.vim/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -49,7 +49,7 @@ if [ ! -e $HOME/.vim/autoload/plug.vim ]; then
 fi
 
 # @see: https://intelephense.com/faq.html
-if [ ! -e $HOME/intelephense/licence.txt ]; then
+if test ! -e $HOME/intelephense/licence.txt; then
     echo '================================================================================'
     echo 'Setting up Intelephense license...'
     mkdir -p $HOME/intelephense
@@ -78,7 +78,6 @@ echo '==========================================================================
 
 echo '================================================================================'
 echo 'Installing and updating composer dependencies...'
-composer global install
 composer global update --with-all-dependencies
 echo 'Done installing and updating composer dependencies.'
 echo '================================================================================'
