@@ -70,8 +70,8 @@ echo '==========================================================================
 echo 'Installing, updating, and cleaning up brew dependencies...'
 brew bundle --global
 brew bundle cleanup --force --global
-brew services cleanup
-sudo brew services cleanup
+# brew services cleanup
+# sudo brew services cleanup
 brew cleanup
 echo 'Done installing, updating, and cleaning up brew dependencies.'
 echo '================================================================================'
