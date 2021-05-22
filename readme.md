@@ -30,8 +30,11 @@ gpg --list-keys
 gpg --edit-key {keyid} trust quit
 # trust ultimately
 ```
-5. Trust key
-5. Import SSH key
+5. Drop SSH keys into ~/.ssh
+6. Add SSH key to agent
+```
+ssh-add -K ~/.ssh/id_ed25519
+```
 6. Install browser plugins:
    - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
    - [1Password](https://1password.com/browsers/firefox/)

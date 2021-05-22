@@ -6,7 +6,7 @@ setopt autocd
 # brew shared bin
 export PATH="/usr/local/sbin:$PATH"
 
-# something, something, GPG
+# Use the terminal to enter GPG passphrase
 export GPG_TTY=$(tty)
 
 # brew autocompletions
@@ -74,6 +74,10 @@ export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclu
 # https://github.com/phpactor/phpactor
 export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
 
+# Set Spaceship ZSH as a prompt
+autoload -U promptinit; promptinit
+prompt spaceship
+
 # bat, not cat 🦇
 # https://github.com/sharkdp/bat
 alias cat="bat"
@@ -110,16 +114,9 @@ play() {
     php artisan tinker
 }
 
-dots() {
-    zsh $HOME/Code/dotfiles/install
+update() {
+    bash $HOME/Code/dotfiles/install
 }
-
 
 # always start in the code directory
 cd $HOME/Code
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-  # Set Spaceship ZSH as a prompt
-  autoload -U promptinit; promptinit
-  prompt spaceship
