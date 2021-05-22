@@ -1,5 +1,7 @@
 [user]
     name = Tim MacDonald
+    email = hello@timacdonald.me
+    signingkey = E05B0D8446E02087
 [core]
 	excludesfile = ~/.gitignore_global
     editor = vim
@@ -76,7 +78,5 @@
     line-numbers-right-style = cyan
     line-numbers-minus-style = 124
     line-numbers-plus-style = 28
-[include]
-    path = ~/.gitconfig.local
 [init]
 	defaultBranch = main

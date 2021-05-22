@@ -3,13 +3,11 @@ BREW_PREFIX=$(brew --prefix)
 # "cd" by typing only the directory
 setopt autocd
 
-# pure prompt
-# https://github.com/sindresorhus/pure
-autoload -U promptinit; promptinit
-prompt pure
-
 # brew shared bin
 export PATH="/usr/local/sbin:$PATH"
+
+# something, something, GPG
+export GPG_TTY=$(tty)
 
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
@@ -121,3 +119,7 @@ dots() {
 cd $HOME/Code
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+  # Set Spaceship ZSH as a prompt
+  autoload -U promptinit; promptinit
+  prompt spaceship

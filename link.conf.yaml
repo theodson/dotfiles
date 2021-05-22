@@ -1,6 +1,10 @@
 - clean: ['~']
 
 - link:
+    ~/.config/kitty/kitty.conf:
+        path: files/kitty.conf
+        relink: true
+        create: true
     ~/.Brewfile:
         path: files/.Brewfile
         relink: true
@@ -48,6 +52,3 @@
     - ~/.fzf_history
     - ~/.vim_undo
     - ~/.vim/autoload
-
-- shell:
-    - touch ~/.gitconfig.local
