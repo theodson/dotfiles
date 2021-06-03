@@ -25,6 +25,12 @@ nmap <silent> gr <Plug>(coc-references)
 " Rename class / variable / etc
 nmap <leader>rn <Plug>(coc-rename)
 
+" Rename file
+nmap <leader>rf :PhpactorMoveFile<CR>
+
+" Import namespace
+nmap <leader>in :call phpactor#Transform("fix_namespace_class_name")<CR>
+
 " Apply a "quickfix"
 nmap <leader>qf <Plug>(coc-fix-current)
 
@@ -54,7 +60,8 @@ function! ShowDocumentation()
 endfunction
 
 " Highlight symbol on hover
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" Disabling. Performance was really bad with this on.
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Use <c-space> to open completion menu
 inoremap <silent><expr> <c-@> coc#refresh()
