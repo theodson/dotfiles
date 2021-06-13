@@ -3,16 +3,16 @@
     email = hello@timacdonald.me
     signingkey = E05B0D8446E02087
 [core]
-	excludesfile = ~/.gitignore_global
+    excludesfile = ~/.gitignore_global
     editor = vim
-	pager = delta
+    pager = delta
 [commit]
-	gpgsign = true
+    gpgsign = true
     template = ~/.gitmessage
 [gpg]
-	program = gpg
+    program = gpg
 [color]
-	ui = auto
+    ui = auto
 [color "diff"]
     meta = yellow
     commit = green
@@ -24,20 +24,20 @@
     oldMoved = blue
 [color "branch"]
     current = cyan reverse
-	local = cyan
-	remote = green
+    local = cyan
+    remote = green
 [color "status"]
-	added = green
-	changed = yellow
-	untracked = cyan
+    added = green
+    changed = yellow
+    untracked = cyan
     unmerged = cyan
     branch = cyan
     nobranch = cyan
 [color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red reverse
-	newNormal = green
-	newHighlight = green reverse
+    oldNormal = red bold
+    oldHighlight = red reverse
+    newNormal = green
+    newHighlight = green reverse
 [alias]
     # delete local branches no long present on origin
     forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
@@ -51,13 +51,13 @@
     # See: https://zarino.co.uk/post/git-set-upstream/
     set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
 [push]
-	default = current
+    default = current
 [fetch]
-	prune = true
+    prune = true
 [pull]
-	rebase = true
+    rebase = true
 [diff]
-	colorMoved = default
+    colorMoved = default
 [stash]
     showPatch = true
 [interactive]
@@ -79,4 +79,4 @@
     line-numbers-minus-style = 124
     line-numbers-plus-style = 28
 [init]
-	defaultBranch = main
+    defaultBranch = main
