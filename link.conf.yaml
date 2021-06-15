@@ -47,6 +47,15 @@
         path: files/karabiner.json
         create: true
         relink: true
+    ~/.vim/ftplugin:
+        path: files/vim/ftplugin
+        create: true
+        relink: true
+    ~/.vim/ftdetect:
+        path: files/vim/ftdetect
+        create: true
+        relink: true
+
 
 - create:
     - ~/.fzf_history

@@ -1,6 +1,3 @@
-" use PHPUnit as the php test runner, not artisan test
-autocmd vimrc FileType php let test#php#phpunit#executable = g:cli_cmd_prefix.' ./vendor/bin/phpunit --colors=always'
-
 " open a VIM terminal for test suite
 let g:test#strategy = "vimterminal"
 

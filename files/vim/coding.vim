@@ -45,10 +45,7 @@ endfunction
 inoremap <silent><expr> <c-@> coc#refresh()
 
 " Highlight symbol on hover
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Turn on spell check
-autocmd vimrc FileType markdown,gitcommit setlocal spell
+autocmd vimrc CursorHold * silent call CocActionAsync('highlight')
 
 " Intelligently decide when to add, remove, and skip character pairs
 let g:pear_tree_smart_openers = 1

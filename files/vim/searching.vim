@@ -2,6 +2,15 @@
 "  Buffer search
 " -----------------------------------------------------------------------------
 
+" Perform case-insensitive searches
+set ignorecase
+
+" When search term contains capitals, use case sensitive searche
+set smartcase
+
+" Highlight results matching search query as you type
+set hlsearch
+
 " Clear buffer search highlighting
 " See: https://github.com/tpope/vim-sensible/blob/2d9f34c09f548ed4df213389caa2882bfe56db58/plugin/sensible.vim#L35
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>

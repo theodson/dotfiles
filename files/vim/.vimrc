@@ -39,18 +39,14 @@ call plug#begin('~/.vim/plugged')
 call plug#end()
 
 " Setup my custom config
-call SourceDotFile('coding.vim')
 call SourceDotFile('defaults.vim')
-call SourceDotFile('filetypes.vim')
-call SourceDotFile('frontend.vim')
-call SourceDotFile('laravel.vim')
-call SourceDotFile('linting.vim')
-call SourceDotFile('logging.vim')
-call SourceDotFile('markdown.vim')
-call SourceDotFile('php.vim')
-call SourceDotFile('searching.vim')
-call SourceDotFile('testing.vim')
 call SourceDotFile('visuals.vim')
+call SourceDotFile('coding.vim')
+call SourceDotFile('searching.vim')
+call SourceDotFile('linting.vim')
+call SourceDotFile('testing.vim')
+call SourceDotFile('laravel.vim')
+call SourceDotFile('frontend.vim')
 
 " Allow a local ".vimrc" for per directory configuration changes
 set secure

@@ -68,16 +68,3 @@ set cursorline
 " Remove noise when an error occurs
 set noerrorbells
 set visualbell t_vb=
-
-" ----------------------------------------
-"  Searching
-" ----------------------------------------
-
-" Perform case-insensitive searches
-set ignorecase
-
-" When search term contains capitals, use case sensitive searche
-set smartcase
-
-" Highlight results matching search query as you type
-set hlsearch
