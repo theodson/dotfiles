@@ -1,8 +1,5 @@
-" Plugin: tpope/vim-dispatch
-" Plugin: janko/vim-test
-
 " use PHPUnit as the php test runner, not artisan test
-let test#php#phpunit#executable = 'vendor/bin/phpunit --colors=always'
+autocmd vimrc FileType php let test#php#phpunit#executable = g:cli_cmd_prefix.' ./vendor/bin/phpunit --colors=always'
 
 " open a VIM terminal for test suite
 let g:test#strategy = "vimterminal"
@@ -30,10 +27,7 @@ nnoremap <Leader>tv :TestVisit<CR>
 " Allow toggling between the test suite being dispatched in background or
 " fullscreen
 nnoremap <Leader>tt :TestToggleStrategy<CR>
-
 command! TestToggleStrategy call TestToggleStrategy()
-
-
 function! TestToggleStrategy()
   if g:test#strategy != "vimterminal"
     let g:test#strategy = "vimterminal"

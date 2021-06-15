@@ -1,9 +1,3 @@
-" Plugin: dense-analysis/ale
-
-augroup linting
-  autocmd!
-augroup END
-
 " -----------------------------------------------------------------------------
 "  Fixers
 " -----------------------------------------------------------------------------
@@ -12,45 +6,35 @@ augroup END
 let g:ale_fix_on_save = 1
 
 " Don't use PHP Code Sniffer, only php_cs_fixer
-autocmd linting FileType php let b:ale_fixers = ['php_cs_fixer']
+autocmd vimrc FileType php let b:ale_fixers = ['php_cs_fixer']
 
 " format (gq) a file (af)
 nnoremap gqaf :ALEFix<CR>
 
-" Fallback to my global php-cs-fixer binary if not installed in local project
-function! FallbackToGlobalPhpCsFixerBinary()
-  if filereadable('vendor/bin/php-cs-fixer')
-    let g:ale_php_cs_fixer_executable = 'vendor/bin/php-cs-fixer'
-  else
-    let g:ale_php_cs_fixer_executable = 'php-cs-fixer'
-  endif
-endfunction
-
-call FallbackToGlobalPhpCsFixerBinary()
-
 " When the current project does not have a php-cs-fixer config, we will fall
-" back to a locally defined `.php_cs.local` file if it exists, otherwise we
+" back to a locally defined config file if it exists, otherwise we
 " will just use PSR2.
-function! FallbackToCustomLocalOrPsr2PhpCsFixerConfig()
-  if (filereadable('.php_cs') || filereadable('.php_cs.dist') || filereadable('.php-cs-fixer.php') || filereadable('.php-cs-fixer.dist.php'))
-    return
-  elseif filereadable('.php_cs.local')
-    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config=.php_cs.local'
+autocmd vimrc FileType php call SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()
+function! SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()
+  if exists('g:ale_php_cs_fixer_options')
+      return
+  endif
+
+  if (filereadable('.php-cs-fixer.dist.php') || filereadable('.php-cs-fixer.php') || filereadable('.php_cs.dist') || filereadable('.php_cs'))
+      let g:ale_php_cs_fixer_options = ''
   elseif filereadable('.php-cs-fixer.local.php')
-    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --config=.php-cs-fixer.local.php'
+    let g:ale_php_cs_fixer_options = '--config=.php-cs-fixer.local.php'
   else
-    let g:ale_php_cs_fixer_options = '--using-cache=no --path-mode=override --rules=@PSR2'
+    let g:ale_php_cs_fixer_options = '--rules=@PSR2'
   endif
 endfunction
-
-call FallbackToCustomLocalOrPsr2PhpCsFixerConfig()
 
 " -----------------------------------------------------------------------------
 "  Linters
 " -----------------------------------------------------------------------------
 
 " Use the following linters, in this order, when any are available
-autocmd linting FileType php let b:ale_linters = ['php', 'psalm', 'phpstan']
+autocmd vimrc FileType php let b:ale_linters = ['php', 'psalm', 'phpstan']
 
 " Only look for a binary once
 let g:ale_cache_executable_check_failures = 1
@@ -63,9 +47,6 @@ let g:ale_lint_on_insert_leave = 0
 
 " Don't lint every time I change text
 let g:ale_lint_on_text_changed = 0
-
-" Use the local PHPStan binary instead of the global binary
-let g:ale_php_phpstan_executable = 'vendor/bin/phpstan'
 
 " Use this as a marker in the sidebar when an linting error is found
 let g:ale_sign_error = '👀'

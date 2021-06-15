@@ -1,9 +1,6 @@
-" Plugin: sheerun/vim-polyglot
-
-" let g:markdown_fenced_languages = ['php', 'blade']
-
+" Support strikethrough in markdown
 let g:vim_markdown_strikethrough = 1
 
-" polyglot plugin
+" Support frontmatter in markdown
 let g:vim_markdown_frontmatter = 1
 

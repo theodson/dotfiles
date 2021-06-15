@@ -50,5 +50,5 @@
 
 - create:
     - ~/.fzf_history
-    - ~/.vim_undo
+    - ~/.vim/undo_history
     - ~/.vim/autoload

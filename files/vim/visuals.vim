@@ -1,5 +1,3 @@
-" Plugin: dracula
-
 " Use 24-bit colours
 set termguicolors
 
@@ -17,6 +15,7 @@ set cmdheight=2
 
 " Set the verical split border character
 set fillchars+=vert:·,
+
 
 " Use the dracula colourscheme
 colorscheme dracula
@@ -47,4 +46,10 @@ highlight! link ColorColumn DraculaBgDarker
 " Highlight trailing whitespace when not in insert mode
 highlight! ExtraWhitespace guibg='#FF79C6'
 
+" Highlight line that the cursor is currently on.
 highlight! link CursorLine DraculaBgDarker
+
+" use an yellow cursor in insert mode
+let &t_SI = "\<Esc>]12;yellow\x7"
+" use a green cursor otherwise
+let &t_EI = "\<Esc>]12;green\x7"

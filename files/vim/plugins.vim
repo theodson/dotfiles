@@ -50,7 +50,7 @@ Plug 'dense-analysis/ale'
 " See: https://github.com/tpope/vim-vinegar
 Plug 'tpope/vim-vinegar'
 
-" Repeated patterns in a plugin
+" Repeated keystroke patterns in a plugin
 " See: https://github.com/tpope/vim-unimpaired
 Plug 'tpope/vim-unimpaired'
 

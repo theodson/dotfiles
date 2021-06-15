@@ -1,21 +1,15 @@
-let g:laravel_artisan_executable = 'php artisan'
-
 " Run a "php artisan *" command
-nmap <Leader>la :!php artisan<Space>
+nmap <expr> <Leader>la ':!'.g:cli_cmd_prefix.' php artisan<Space>'
 
 " Launch a tinker shell
-nmap <Leader>lt :!php artisan tinker<CR>
-
-" Clear and tail laravel logs
-" TODO: Not working correctly at the moment. Need to investigate.
-nmap <Leader>ll :Start! tail -f -n 0 ./storage/logs/laravel.log<CR>
+nmap <expr> <Leader>lt ':!'.g:cli_cmd_prefix.' php artisan tinker<CR>'
 
 " Create and open a file via "php artisan make:*"
 nmap <leader>lm :ArtisanMake<space>
 command! -nargs=+ ArtisanMake call ArtisanMake(<q-args>)
 function! ArtisanMake(input)
     let before = system('php -r "echo hrtime(true);"')
-    let output = trim(system(g:laravel_artisan_executable.' make:'.a:input))
+    let output = trim(system(g:cli_cmd_prefix.' php artisan make:'.a:input))
     let after = system('php -r "echo hrtime(true);"')
 
     if v:shell_error != 0

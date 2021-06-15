@@ -2,21 +2,6 @@
 " just yank from the cursor to the end of the line.
 nnoremap Y y$
 
-" "jk" to escape
-" Disabling to use new caps as escape
-" inoremap <silent> jk <Esc>
-
-" Save buffer
-" Disabling to use default while forcing home-rowing
-" nnoremap <C-s> :w<CR>
-" inoremap <C-s> <ESC>:w<CR>
-
-" Disable arrow keys
-noremap <Left> <nop>
-noremap <Right> <nop>
-noremap <Up> <nop>
-noremap <Down> <nop>
-
 " ----------------------------------------
 "  Files & Buffers
 " ----------------------------------------
@@ -34,23 +19,12 @@ set hidden
 " Prompt to save modified buffers when quiting
 set confirm
 
-" if an open file changes while loaded in a buffer, update the buffer with the
-" file contents
-set autoread
-
 " Disable swap files
 set noswapfile
 
-" Disable backup write files
-set nobackup
-
 " Persistent undo
 set undofile
-set undodir=$HOME/.vim_undo//
-
-" This is how quickly things can notice changes in a buffer, such as text
-" changes or when holding cursor over a word
-set updatetime=300
+set undodir=$HOME/.vim_history//
 
 " ----------------------------------------
 "  Editing
@@ -68,10 +42,6 @@ set formatoptions+=j
 
 " Use 4 spaces instead of tab characters
 set expandtab tabstop=4 shiftwidth=4 softtabstop=4
-
-" Allow a word to contain a-dash
-" Disabled: Would be nice if this worked, but only within a "string-value"
-"set iskeyword+=-
 
 set timeoutlen=400
 
@@ -92,8 +62,10 @@ set laststatus=2
 " Show line length indicators
 set colorcolumn=80,120
 
+" Highlight the current active line
 set cursorline
 
+" Remove noise when an error occurs
 set noerrorbells
 set visualbell t_vb=
 

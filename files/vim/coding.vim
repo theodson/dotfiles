@@ -1,14 +1,11 @@
-" Plugin: tmsvg/pear-tree
-
-augroup dev
-  autocmd!
-augroup END
-
 " append ";" to end of line
 inoremap ;; <ESC>A;
 
 " aapend "," to end of line
 inoremap ,, <ESC>A,
+
+" Access a terminal
+nmap <expr> <leader>sh ':!'.g:cli_cmd_prefix.' /bin/sh<CR>'
 
 " Go to definition
 nmap <silent> gd <Plug>(coc-definition)
@@ -25,26 +22,11 @@ nmap <silent> gr <Plug>(coc-references)
 " Rename class / variable / etc
 nmap <leader>rn <Plug>(coc-rename)
 
-" Rename file
-nmap <leader>rf :PhpactorMoveFile<CR>
-
-" Import namespace
-nmap <leader>in :call phpactor#Transform("fix_namespace_class_name")<CR>
-
 " Apply a "quickfix"
 nmap <leader>qf <Plug>(coc-fix-current)
 
 " Show possible actions list
 nmap <leader>ac <Plug>(coc-codeaction)
-
-" Import class
-nmap <leader>ic :PhpactorImportClass<CR>
-
-" Create a new class
-nmap <leader>nc :PhpactorClassNew<CR>
-
-" Expand to FQCN
-nmap <leader>ec viwb<ESC>i\<ESC>l:PhpactorClassExpand<CR>e
 
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
@@ -59,15 +41,14 @@ function! ShowDocumentation()
   endif
 endfunction
 
-" Highlight symbol on hover
-" Disabling. Performance was really bad with this on.
-" autocmd CursorHold * silent call CocActionAsync('highlight')
-
 " Use <c-space> to open completion menu
 inoremap <silent><expr> <c-@> coc#refresh()
 
+" Highlight symbol on hover
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
 " Turn on spell check
-autocmd dev FileType markdown,gitcommit setlocal spell
+autocmd vimrc FileType markdown,gitcommit setlocal spell
 
 " Intelligently decide when to add, remove, and skip character pairs
 let g:pear_tree_smart_openers = 1
