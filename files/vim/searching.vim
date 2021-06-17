@@ -11,6 +11,8 @@ set smartcase
 " Highlight results matching search query as you type
 set hlsearch
 
+" nnoremap / :BLines<CR>
+
 " Clear buffer search highlighting
 " See: https://github.com/tpope/vim-sensible/blob/2d9f34c09f548ed4df213389caa2882bfe56db58/plugin/sensible.vim#L35
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
@@ -20,12 +22,24 @@ nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR
 " -----------------------------------------------------------------------------
 
 " Activate local project search
-nnoremap <leader>/ :Rg<space>
-command! -nargs=* -bang Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+nnoremap <leader>/ :call ProjectSearch()<CR>
+function! ProjectSearch()
+  let command_fmt = "rg --column --line-number --no-heading --color=always --smart-case --hidden -g \!.git $(rg_smart_quote %s) || true"
+  let initial_command = printf(command_fmt, '')
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', '', '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec))
+endfunction
 
 " Activate global project search
-nnoremap <leader>// :RG<space>
-command! -nargs=* -bang RG call fzf#vim#grep('rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- '.shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+nnoremap <leader>// :call GlobalSearch()<CR>
+function! GlobalSearch()
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- %s || true'
+  let initial_command = printf(command_fmt, '')
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--prompt=Global search: ', '--phony', '--query', '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec))
+endfunction
 
 " -----------------------------------------------------------------------------
 "  Fuzzy file/resultset finder

@@ -6,6 +6,10 @@ Plug '/usr/local/opt/fzf'
 " See: https://github.com/junegunn/fzf.vim
 Plug 'junegunn/fzf.vim'
 
+" Smart escaping of options when searching
+" See: https://github.com/jesseleite/vim-agriculture
+Plug 'jesseleite/vim-agriculture'
+
 " Dracula colour scheme
 " See: https://github.com/dracula/vim
 Plug 'dracula/vim', { 'as': 'dracula' }

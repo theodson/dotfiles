@@ -1,3 +1,6 @@
+" Bring docker env up
+nmap <leader>dcu :Dispatch! docker-compose up
+
 " append ";" to end of line
 inoremap ;; <ESC>A;
 
