@@ -118,21 +118,6 @@ update() {
     bash $HOME/Code/dotfiles/install
 }
 
-# reimplementation of: https://github.com/jesseleite/vim-agriculture/
-rg_smart_quote() {
-    local script="\$haystack = <<<'VAR'
- $1
-VAR;echo preg_match('/(\s-[-a-zA-Z])|([\'\"])/', \$haystack) === 1 ? '1' : '0';"
-
-    local match=$(php -r $script)
-
-    if [[ $match == '1' ]]; then
-        echo $1
-    else
-        echo "-- \"$1\""
-    fi
-}
-
 # always start in the code directory
 cd $HOME/Code
 

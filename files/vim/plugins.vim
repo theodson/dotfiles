@@ -82,4 +82,5 @@ let g:coc_global_extensions = [
       \ 'coc-prettier',
       \ 'coc-tsserver',
       \ 'coc-vetur',
+      \ 'coc-vimlsp',
       \ ]
