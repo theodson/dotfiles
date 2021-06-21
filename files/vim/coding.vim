@@ -1,14 +1,14 @@
-" Bring docker env up
-nmap <leader>dcu :Dispatch! docker-compose up
-
 " append ";" to end of line
 inoremap ;; <ESC>A;
 
 " aapend "," to end of line
 inoremap ,, <ESC>A,
 
-" Access a terminal
-nmap <expr> <leader>sh ':!'.g:cli_cmd_prefix.' /bin/sh<CR>'
+" Bring docker env up
+nnoremap <leader>dcu :Dispatch! docker-compose up
+
+" Access a terminal (usually for docker)
+nnoremap <expr> <leader>sh ':term '.g:cli_cmd_prefix.' /bin/sh<CR>'
 
 " Go to definition
 nmap <silent> gd <Plug>(coc-definition)
@@ -33,7 +33,6 @@ nmap <leader>ac <Plug>(coc-codeaction)
 
 " Show documentation
 nnoremap <silent> K :call ShowDocumentation()<CR>
-
 function! ShowDocumentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')

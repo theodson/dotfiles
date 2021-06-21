@@ -1,6 +1,21 @@
+" ----------------------------------------
+"  Fixes to default behaviour
+" ----------------------------------------
+
 " By default "Y" is the same as "yy", but like "D" is makes sense for "Y" to
 " just yank from the cursor to the end of the line.
 nnoremap Y y$
+
+nnoremap gx :call OpenURLUnderCursor()<CR>
+function! OpenURLUnderCursor()
+  let s:uri = expand('<cWORD>')
+  let s:uri = substitute(s:uri, '?', '\\?', '')
+  let s:uri = shellescape(s:uri, 1)
+  if s:uri != ''
+    silent exec "!open '".s:uri."'"
+    :redraw!
+  endif
+endfunction
 
 " ----------------------------------------
 "  Files & Buffers

@@ -16,7 +16,6 @@ set cmdheight=2
 " Set the verical split border character
 set fillchars+=vert:·,
 
-
 " Use the dracula colourscheme
 colorscheme dracula
 

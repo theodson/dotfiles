@@ -12,8 +12,12 @@ export GPG_TTY=$(tty)
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
 export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
-autoload -Uz compinit
-compinit
+
+# Zsh autocompletions
+# https://github.com/zsh-users/zsh-autosuggestions
+source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+bindkey '^e' autosuggest-execute
+bindkey '^y' autosuggest-accept
 
 # Zsh syntax highlighting
 # https://github.com/zsh-users/zsh-syntax-highlighting
@@ -67,16 +71,13 @@ alias a="php artisan"
 # fzf
 # https://github.com/junegunn/fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# use 'fd' instead of 'find' for 'fzf file lookup
+
+# use 'fd' instead of 'find' for fzf file lookup
 export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
 
 # phpactor
 # https://github.com/phpactor/phpactor
 export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
-
-# Set Spaceship ZSH as a prompt
-autoload -U promptinit; promptinit
-prompt spaceship
 
 # bat, not cat 🦇
 # https://github.com/sharkdp/bat
@@ -118,6 +119,13 @@ update() {
     bash $HOME/Code/dotfiles/install
 }
 
+# Setup completions
+autoload -Uz compinit
+compinit
+
+# Set Spaceship ZSH as a prompt
+autoload -U promptinit; promptinit
+prompt spaceship
+
 # always start in the code directory
 cd $HOME/Code
-

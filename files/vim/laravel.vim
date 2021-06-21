@@ -1,11 +1,11 @@
 " Run a "php artisan *" command
-nmap <expr> <Leader>la ':!'.g:cli_cmd_prefix.' php artisan<Space>'
+nnoremap <expr> <Leader>la ':!'.g:cli_cmd_prefix.' php artisan<Space>'
 
 " Launch a tinker shell
-nmap <expr> <Leader>lt ':!'.g:cli_cmd_prefix.' php artisan tinker<CR>'
+nnoremap <expr> <Leader>lt ':!'.g:cli_cmd_prefix.' php artisan tinker<CR>'
 
 " Create and open a file via "php artisan make:*"
-nmap <leader>lm :ArtisanMake<space>
+nnoremap <leader>lm :ArtisanMake<space>
 command! -nargs=+ ArtisanMake call ArtisanMake(<q-args>)
 function! ArtisanMake(input)
     let before = system('php -r "echo hrtime(true);"')

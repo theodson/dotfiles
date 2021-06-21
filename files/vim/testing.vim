@@ -2,9 +2,7 @@
 let g:test#strategy = "vimterminal"
 
 " Run whole test suite in a background job
-" TODO: Make this call a function that checks which strategy to use so that is
-" can run sync or async like all the other commands
-nnoremap <Leader>ta :Dispatch! ./vendor/bin/phpunit<CR>
+nnoremap <expr> <Leader>ta ':Dispatch! '.g:cli_cmd_prefix.' ./vendor/bin/phpunit<CR>'
 
 " Run the entire test suite for the current file
 nnoremap <Leader>ts :TestFile<CR>
@@ -23,18 +21,15 @@ nnoremap <Leader>tv :TestVisit<CR>
 
 " Allow toggling between the test suite being dispatched in background or
 " fullscreen
-nnoremap <Leader>tt :TestToggleStrategy<CR>
-command! TestToggleStrategy call TestToggleStrategy()
+nnoremap <Leader>tt :call TestToggleStrategy()<CR>
 function! TestToggleStrategy()
-  if g:test#strategy != "vimterminal"
-    let g:test#strategy = "vimterminal"
+    if g:test#strategy != "vimterminal"
+        let g:test#strategy = "vimterminal"
 
-    echo "Test strategy now: popup terminal"
+        echo "Test strategy now: popup terminal"
+    else
+        let g:test#strategy="dispatch_background"
 
-    return
-  endif
-
-  let g:test#strategy="dispatch_background"
-
-  echo "Test strategy now: dispatch background"
+        echo "Test strategy now: dispatch background"
+    endif
 endfunction

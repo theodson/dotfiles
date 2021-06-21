@@ -43,6 +43,12 @@ let g:PHP_noArrowMatching = 1
 " Use "//" instead of "/* ... */" style comments
 setlocal commentstring=//\ %s
 
+" Use fzf to filter suggestion results
+let g:phpactorInputListStrategy = 'phpactor#input#list#fzf'
+
+" use FZF to show references to things
+let g:phpactorQuickfixStrategy = 'phpactor#quickfix#fzf'
+
 " Rename file
 nmap <leader>rf :PhpactorMoveFile<CR>
 
