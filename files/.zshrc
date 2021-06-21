@@ -66,7 +66,7 @@ alias a="php artisan"
 
 # fzf
 # https://github.com/junegunn/fzf
-source $HOME/.fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # use 'fd' instead of 'find' for 'fzf file lookup
 export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
 
@@ -121,4 +121,3 @@ update() {
 # always start in the code directory
 cd $HOME/Code
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

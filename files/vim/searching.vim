@@ -21,72 +21,31 @@ nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR
 "  Project search
 " -----------------------------------------------------------------------------
 
-" Activate local project search
-let g:base_project_search_command = 'rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git'
-nnoremap <leader>/ :call ProjectPlainSearch()<CR>
-function! ProjectPlainSearch()
-  let plain_command = g:base_project_search_command.' --fixed-strings -- %s || true'
+" Local project search
+let g:project_search_command = 'rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git'
+let g:global_search_command = 'rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git'
 
-  let initial_command = printf(plain_command, '')
+nnoremap <leader>/ :call Search(g:project_search_command.' --fixed-strings -- %s', 'Project search: ')<CR>
+nnoremap <leader>? :call Search(g:project_search_command.' -- %s', 'Project search [r]: ')<CR>
+nnoremap <leader>// :call Search(g:global_search_command.' --fixed-strings -- %s', 'Global search: ')<CR>
+nnoremap <leader>?? :call Search(g:global_search_command.' -- %s', 'Global search [r]: ')<CR>
 
-  let plain_reload_command = printf(plain_command, '{q}')
+function! Search(base_search_command, search_prompt)
+  let initial_search_command = printf(a:base_search_command, '')
+
+  let reload_search_command = printf(a:base_search_command, '{q}')
 
   let spec = {'options': [
       \ '--phony',
       \ '--prompt',
-      \ 'Project plain search: ',
+      \ a:search_prompt,
       \ '--bind',
-      \ 'change:reload:'.plain_reload_command,
+      \ 'change:reload:'.reload_search_command.' || true',
       \ '--bind',
       \ 'ctrl-f:unbind(change)+change-prompt(Result filter: )+enable-search+clear-query',
       \ ]}
 
-  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec))
-endfunction
-
-nnoremap <leader>/* :call ProjectRegexSearch()<CR>
-function! ProjectRegexSearch()
-  let regex_command = g:base_project_search_command.' -- %s || true'
-
-  let regex_reload_command = printf(regex_command, '{q}')
-
-  let initial_command = printf(regex_command, '')
-
-  call Search(initial_command, regex_reload_command, 'Project regex search')
-endfunction
-
-function! Search(initial, reload, prompt)
-  let spec = {'options': [
-      \ '--phony',
-      \ '--prompt',
-      \ 'Project regex search: ',
-      \ '--bind',
-      \ 'change:reload:'.a:reload,
-      \ '--bind',
-      \ 'ctrl-f:unbind(change)+change-prompt('.a:prompt.': )+enable-search+clear-query',
-      \ ]}
-
-  call fzf#vim#grep(a:initial, 1, fzf#vim#with_preview(spec))
-endfunction
-
-" Activate global project search
-nnoremap <leader>// :call GlobalPlainSearch()<CR>
-function! GlobalPlainSearch()
-  let search_command = 'rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git -- %s || true'
-
-  let initial_command = printf(search_command, '')
-
-  let reload_command = printf(search_command, '{q}')
-
-  let spec = {'options': [
-      \ '--phony',
-      \ '--prompt',
-      \ 'Global search: ',
-      \ '--bind',
-      \ 'change:reload:'.reload_command,
-      \ ]}
-
-  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec))
+  call fzf#vim#grep(initial_search_command, 1, fzf#vim#with_preview(spec))
 endfunction
 
 " -----------------------------------------------------------------------------
