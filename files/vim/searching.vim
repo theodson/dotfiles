@@ -21,7 +21,6 @@ nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR
 "  Project search
 " -----------------------------------------------------------------------------
 
-" Local project search
 let g:project_search_command = 'rg --column --line-number --no-heading --color=always --smart-case --hidden -g !.git'
 let g:global_search_command = 'rg --column --line-number --no-heading --color=always --smart-case --no-ignore -g !.git'
 
