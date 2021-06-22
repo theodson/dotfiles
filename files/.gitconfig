@@ -43,6 +43,8 @@
     forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
     # branch and checkout
     bc ="checkout -b"
+    # checkout
+    c = "checkout"
     # short status
     s = "status -s -b --renames"
     # nice log

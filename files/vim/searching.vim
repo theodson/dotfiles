@@ -35,7 +35,7 @@ function! Search(base_search_command, search_prompt)
   let reload_search_command = printf(a:base_search_command, '{q}')
 
   let spec = {'options': [
-      \ '--phony',
+      \ '--disabled',
       \ '--prompt',
       \ a:search_prompt,
       \ '--bind',
