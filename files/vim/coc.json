@@ -1,13 +1,5 @@
 {
     "tailwindCSS.headwind.runOnSave": false,
-    "languageserver": {
-        "intelephense": {
-            "args": ["--stdio"],
-            "command": "intelephense",
-            "filetypes": ["php"],
-            "progressOnInitialization": true
-        }
-    },
     "diagnostic.enable": false,
     "suggest.noselect": false,
     "suggest.completionItemKindLabels": {

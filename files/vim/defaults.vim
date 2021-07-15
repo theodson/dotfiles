@@ -39,7 +39,7 @@ set noswapfile
 
 " Persistent undo
 set undofile
-set undodir=$HOME/.vim_history//
+set undodir=$HOME/.vim/undo_history//
 
 " ----------------------------------------
 "  Editing

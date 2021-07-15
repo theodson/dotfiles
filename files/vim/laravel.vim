@@ -1,5 +1,5 @@
 " Run a "php artisan *" command
-nnoremap <expr> <Leader>la ':!'.g:cli_cmd_prefix.' php artisan<Space>'
+nnoremap <expr> <Leader>la ':!'.g:cli_cmd_prefix.' php artisan '
 
 " Launch a tinker shell
 nnoremap <expr> <Leader>lt ':!'.g:cli_cmd_prefix.' php artisan tinker<CR>'
@@ -12,8 +12,9 @@ function! ArtisanMake(input)
     let output = trim(system(g:cli_cmd_prefix.' php artisan make:'.a:input))
     let after = system('php -r "echo hrtime(true);"')
 
+    echo output
+
     if v:shell_error != 0
-        echo output
         return v:shell_error
     endif
 

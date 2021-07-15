@@ -5,7 +5,7 @@ inoremap ;; <ESC>A;
 inoremap ,, <ESC>A,
 
 " Bring docker env up
-nnoremap <leader>dcu :Dispatch! docker-compose up
+nnoremap <leader>dcu :Dispatch! docker-compose up<CR>
 
 " Access a terminal (usually for docker)
 nnoremap <expr> <leader>sh ':term '.g:cli_cmd_prefix.' /bin/sh<CR>'
