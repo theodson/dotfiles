@@ -57,7 +57,7 @@ echo '==========================================================================
 
 echo '================================================================================'
 echo 'Installing and updating npm dependencies...'
-npm install -g npm@latest spaceship-prompt
+npm install -g npm@latest spaceship-prompt @ionic/cli
 npm update -g
 echo 'Done installing and updating npm dependencies.'
 echo '================================================================================'
