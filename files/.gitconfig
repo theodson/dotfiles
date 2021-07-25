@@ -49,6 +49,8 @@
     s = "status -s -b --renames"
     # pull
     p = "pull"
+    # reset head hard
+    rshh="reset head --hard"
     # nice log
     l = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
     # Deal with "There is no tracking information for the current branch."
