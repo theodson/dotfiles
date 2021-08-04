@@ -11,7 +11,7 @@ set shortmess+=c
 set signcolumn=number
 
 " Give more space for displaying messages.
-set cmdheight=2
+set cmdheight=1
 
 " Set the verical split border character
 set fillchars+=vert:·,

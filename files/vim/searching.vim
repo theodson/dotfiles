@@ -47,6 +47,8 @@ function! Search(base_search_command, search_prompt)
   call fzf#vim#grep(initial_search_command, 1, fzf#vim#with_preview(spec))
 endfunction
 
+let g:fzf_layout = { 'window': { 'width': 1, 'height': 0.95, 'yoffset': 1, 'border': 'horizontal' } }
+
 " -----------------------------------------------------------------------------
 "  Fuzzy file/resultset finder
 " -----------------------------------------------------------------------------
