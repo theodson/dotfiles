@@ -90,7 +90,7 @@ export EDITOR="$VISUAL"
 alias ":q"="exit"
 
 # Docker compose
-alias dc="docker-compose"
+alias dcu="docker-compose up"
 
 # Big Picture Medical deployment helper
 bpm-deploy() {

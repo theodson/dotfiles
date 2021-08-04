@@ -9,10 +9,10 @@ nnoremap <leader>lm :ArtisanMake<space>
 command! -nargs=+ ArtisanMake call ArtisanMake(<q-args>)
 function! ArtisanMake(input)
     let before = system('php -r "echo hrtime(true);"')
-    let output = trim(system(g:cli_cmd_prefix.' php artisan make:'.a:input))
-    let after = system('php -r "echo hrtime(true);"')
 
-    echo output
+    let output = system('php artisan make:'.a:input)
+
+    let after = system('php -r "echo hrtime(true);"')
 
     if v:shell_error != 0
         return v:shell_error
