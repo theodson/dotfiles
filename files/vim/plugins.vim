@@ -69,6 +69,10 @@ Plug 'phpactor/phpactor', {'for': 'php', 'branch': 'master', 'do': 'composer ins
 " See: https://github.com/neoclide/coc.nvim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+" Use FZF for COC lists
+" See: https://github.com/antoinemadec/coc-fzf
+Plug 'antoinemadec/coc-fzf'
+
 " COC plugins
 let g:coc_global_extensions = [
       \ 'coc-phpls',

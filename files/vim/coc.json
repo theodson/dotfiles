@@ -1,5 +1,4 @@
 {
-    "tailwindCSS.headwind.runOnSave": false,
     "diagnostic.enable": false,
     "suggest.noselect": false,
     "suggest.completionItemKindLabels": {
@@ -29,5 +28,15 @@
         "operator": "oper",
         "typeParameter": "typeParam",
         "default": "default"
-    }
+    },
+    "tailwindCSS.headwind.runOnSave": false,
+    "intelephense.format.enable": false,
+    "intelephense.diagnostics.enable": false,
+    "intelephense.telemetry.enabled": false,
+    "intelephense.references.exclude": [],
+    "intelephense.phpdoc.returnVoid": false,
+    "intelephense.phpdoc.classTemplate": {},
+    "intelephense.phpdoc.propertyTemplate": {},
+    "intelephense.phpdoc.functionTemplate": {},
+    "intelephense.phpdoc.useFullyQualifiedNames": false
 }

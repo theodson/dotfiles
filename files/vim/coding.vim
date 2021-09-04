@@ -49,6 +49,10 @@ inoremap <silent><expr> <c-@> coc#refresh()
 " Highlight symbol on hover
 autocmd vimrc CursorHold * silent call CocActionAsync('highlight')
 
+" Show CoC lists in FZF using my FZF settings
+let g:coc_fzf_preview = ''
+let g:coc_fzf_opts = []
+
 " Intelligently decide when to add, remove, and skip character pairs
 let g:pear_tree_smart_openers = 1
 let g:pear_tree_smart_closers = 1
