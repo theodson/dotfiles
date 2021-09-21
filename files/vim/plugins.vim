@@ -73,6 +73,9 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " See: https://github.com/antoinemadec/coc-fzf
 Plug 'antoinemadec/coc-fzf'
 
+" Kick some bad habits
+Plug 'takac/vim-hardtime'
+
 " COC plugins
 let g:coc_global_extensions = [
       \ 'coc-phpls',

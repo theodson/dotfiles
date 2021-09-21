@@ -60,6 +60,17 @@ set expandtab tabstop=4 shiftwidth=4 softtabstop=4
 
 set timeoutlen=400
 
+" don't add a new line at the end of files automatically
+set nofixendofline
+
+" Kick the bad habits
+let g:hardtime_default_on = 1
+let g:list_of_normal_keys = ["h", "j", "k", "l", "+"]
+let g:list_of_visual_keys = ["h", "j", "k", "l", "-", "+"]
+let g:list_of_insert_keys = []
+let g:list_of_disabled_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
+
+
 " ----------------------------------------
 "  Presentation
 " ----------------------------------------
@@ -83,3 +94,5 @@ set cursorline
 " Remove noise when an error occurs
 set noerrorbells
 set visualbell t_vb=
+
+set scrolloff=2

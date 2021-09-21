@@ -30,13 +30,14 @@
         "default": "default"
     },
     "tailwindCSS.headwind.runOnSave": false,
-    "intelephense.format.enable": false,
     "intelephense.diagnostics.enable": false,
-    "intelephense.telemetry.enabled": false,
-    "intelephense.references.exclude": [],
-    "intelephense.phpdoc.returnVoid": false,
+    "intelephense.format.enable": false,
+    "intelephense.maxMemory": 2000,
     "intelephense.phpdoc.classTemplate": {},
-    "intelephense.phpdoc.propertyTemplate": {},
     "intelephense.phpdoc.functionTemplate": {},
-    "intelephense.phpdoc.useFullyQualifiedNames": false
+    "intelephense.phpdoc.propertyTemplate": {},
+    "intelephense.phpdoc.returnVoid": false,
+    "intelephense.phpdoc.useFullyQualifiedNames": false,
+    "intelephense.references.exclude": [],
+    "intelephense.telemetry.enabled": false
 }
