@@ -75,6 +75,8 @@ let g:list_of_disabled_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 " Show current and relative line numbers
 set number
 set relativenumber
+" Show line numbers in netrw
+let g:netrw_bufsettings="noma nomod nobl nowrap ro nornu"
 
 " set a consistent width to the line numbers column
 set numberwidth=4
