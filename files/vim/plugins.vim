@@ -1,3 +1,7 @@
+" More powerful dot repeating for plugins
+" See: https://github.com/tpope/vim-repeat
+Plug 'tpope/vim-repeat'
+
 " Fuzzy finder
 " See: https://github.com/junegunn/fzf
 Plug '/usr/local/opt/fzf'

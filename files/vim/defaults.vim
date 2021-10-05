@@ -6,6 +6,20 @@
 " just yank from the cursor to the end of the line.
 nnoremap Y y$
 
+" Keep things aligned when moving
+" next search result
+nnoremap n nzz
+
+" previous search result
+nnoremap N Nzz
+
+" don't move the cursor when concating lines
+nnoremap J mzJ`z
+
+" Show next method at the top of the screen
+nnoremap [[ [[zt
+nnoremap ]] ]]zt
+
 nnoremap gx :call OpenURLUnderCursor()<CR>
 function! OpenURLUnderCursor()
   let s:uri = expand('<cWORD>')
@@ -40,6 +54,7 @@ set noswapfile
 " Persistent undo
 set undofile
 set undodir=$HOME/.vim/undo_history//
+
 
 " ----------------------------------------
 "  Editing
@@ -76,7 +91,7 @@ let g:list_of_disabled_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 set number
 set relativenumber
 " Show line numbers in netrw
-let g:netrw_bufsettings="noma nomod nobl nowrap ro nornu"
+let g:netrw_bufsettings="noma nomod nonu nobl nowrap ro rnu"
 
 " set a consistent width to the line numbers column
 set numberwidth=4
@@ -95,3 +110,6 @@ set noerrorbells
 set visualbell t_vb=
 
 set scrolloff=2
+
+" Increase the time allowed for vim to syntax highlight a file
+set redrawtime=10000
