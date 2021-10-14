@@ -54,6 +54,9 @@ export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
 # https://formulae.brew.sh/formula/gnu-which#default
 export PATH="$BREW_PREFIX/opt/gnu-which/libexec/gnubin:$PATH"
 
+# Java
+export PATH="$BREW_PREFIX/opt/openjdk/bin:$PATH"
+
 # composer
 # https://formulae.brew.sh/formula/composer#default
 export PATH="/Users/tim/.composer/vendor/bin:$PATH"

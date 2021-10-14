@@ -16,10 +16,6 @@ nnoremap N Nzz
 " don't move the cursor when concating lines
 nnoremap J mzJ`z
 
-" Show next method at the top of the screen
-nnoremap [[ [[zt
-nnoremap ]] ]]zt
-
 nnoremap gx :call OpenURLUnderCursor()<CR>
 function! OpenURLUnderCursor()
   let s:uri = expand('<cWORD>')

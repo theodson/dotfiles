@@ -1,3 +1,6 @@
+" Enter normal mode while in a terminal
+tnoremap <Esc><Esc> <C-\><C-n>
+
 " append ";" to end of line
 inoremap ;; <ESC>A;
 
@@ -48,6 +51,9 @@ inoremap <silent><expr> <c-@> coc#refresh()
 
 " Highlight symbol on hover
 autocmd vimrc CursorHold * silent call CocActionAsync('highlight')
+
+" Show signature on jump
+autocmd vimrc User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
 " Show CoC lists in FZF using my FZF settings
 let g:coc_fzf_preview = ''
