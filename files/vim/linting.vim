@@ -8,6 +8,18 @@ let g:ale_fix_on_save = 1
 " format (gq) a file (af)
 nnoremap gqaf :ALEFix<CR>
 
+" See: https://github.com/dense-analysis/ale#5xv-how-can-i-check-vue-files-with-eslint
+let g:ale_linter_aliases = {
+    \ 'vue': ['vue', 'javascript']
+\ }
+
+let g:ale_linters = {
+    \ 'json': []
+\ }
+
+let g:ale_fixers = {
+    \ 'php': ['php_cs_fixer'],
+\ }
 " -----------------------------------------------------------------------------
 "  Linters
 " -----------------------------------------------------------------------------

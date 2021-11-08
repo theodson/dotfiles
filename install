@@ -57,7 +57,7 @@ echo '==========================================================================
 
 echo '================================================================================'
 echo 'Installing and updating npm dependencies...'
-npm install -g npm@latest spaceship-prompt 
+npm install -g npm@latest
 npm update -g
 echo 'Done installing and updating npm dependencies.'
 echo '================================================================================'
@@ -65,6 +65,9 @@ echo '==========================================================================
 echo '================================================================================'
 echo 'Installing and updating pecl dependencies...'
 pecl update-channels
+# For whatever reason, brew is symlinking to the following directory, but it doesn't exist
+# and extensions can't be installed. This should resolve that.
+mkdir /usr/local/lib/php/pecl
 # pecl upgrade will also install if it isn't yet installed, where as pecl
 # install will fail if it is installed.
 pecl upgrade pcov

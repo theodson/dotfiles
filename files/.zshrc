@@ -126,9 +126,9 @@ update() {
 autoload -Uz compinit
 compinit
 
-# Set Spaceship ZSH as a prompt
+# Set pure prompt
 autoload -U promptinit; promptinit
-prompt spaceship
+prompt pure
 
 # always start in the code directory
 cd $HOME/Code

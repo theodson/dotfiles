@@ -1,3 +1,4 @@
+
 " Enter normal mode while in a terminal
 tnoremap <Esc><Esc> <C-\><C-n>
 

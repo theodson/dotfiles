@@ -14,15 +14,14 @@
    - Open Xcode
    - Run `xcode-select --install`
 3. Install and setup 1Password
-3. Run the installation script...
+4. Run the installation script...
 ```sh
 mkdir $HOME/Code && cd $HOME/Code
 git clone https://github.com/timacdonald/dotfiles.git && cd dotfiles
 bash install
-compaudit | xargs chmod g-w
 ```
-4. Open Karabiner elements
-4. Import GPG key
+5. Open Karabiner elements
+6. Import GPG key
 ```sh
 gpg —-import /path/to/secret-key-backup.asc
 gpg --list-keys
@@ -30,16 +29,18 @@ gpg --list-keys
 gpg --edit-key {keyid} trust quit
 # trust ultimately
 ```
-5. Drop SSH keys into ~/.ssh
-6. Add SSH key to agent
+7. Drop SSH keys into ~/.ssh
+8. Add SSH key to agent
 ```
 ssh-add -K ~/.ssh/id_ed25519
 ```
-6. Install browser plugins:
+9. Install browser plugins:
    - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
    - [1Password](https://1password.com/browsers/firefox/)
-7. Install home printer
-8. Install Monolisa font
+   - [Containers plugin](https://addons.mozilla.org/en-US/firefox/addon/multi-account-containers/)
+10. Install home printer
+11. Install Monolisa font
+
 
 # Updating
 

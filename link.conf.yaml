@@ -56,7 +56,6 @@
         create: true
         relink: true
 
-
 - create:
     - ~/.fzf_history
     - ~/.vim/undo_history

@@ -1,6 +1,3 @@
-" Don't use PHP Code Sniffer, only php_cs_fixer
-let b:ale_fixers = ['php_cs_fixer']
-
 " When the current project does not have a php-cs-fixer config, we will fall
 " back to a locally defined config file if it exists, otherwise we
 " will just use PSR2.
@@ -18,9 +15,6 @@ function! SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()
   endif
 endfunction
 call SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()
-
-" Use the following linters, in this order, when any are available
-let b:ale_linters = ['php', 'psalm', 'phpstan']
 
 " Wrap visual selection in a `dd` call
 vnoremap L cdd(<ESC>pa)<ESC>

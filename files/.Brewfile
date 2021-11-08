@@ -8,6 +8,7 @@ tap 'homebrew/services'
 brew 'pkg-config' # bunch of things
 
 # foundation
+brew 'pure'
 brew 'awscli'
 brew 'bat'
 brew 'composer'
@@ -25,6 +26,7 @@ brew 'gnupg'
 brew 'java'
 brew 'less'
 brew 'mas'
+brew 'exa'
 brew 'node'
 brew 'php@8.0'
 brew 'ripgrep'
@@ -51,6 +53,7 @@ cask 'postman'
 cask 'pritunl'
 cask 'skype'
 cask 'zoom'
+cash 'tableplus'
 
 # MAS apps
 mas '1Password 7', id: 1333542190
