@@ -67,7 +67,7 @@ echo 'Installing and updating pecl dependencies...'
 pecl update-channels
 # For whatever reason, brew is symlinking to the following directory, but it doesn't exist
 # and extensions can't be installed. This should resolve that.
-mkdir /usr/local/lib/php/pecl
+mkdir /usr/local/lib/php/pecl -p
 # pecl upgrade will also install if it isn't yet installed, where as pecl
 # install will fail if it is installed.
 pecl upgrade pcov

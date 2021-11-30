@@ -9,9 +9,9 @@ function! SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()
   if (filereadable('.php-cs-fixer.dist.php') || filereadable('.php-cs-fixer.php') || filereadable('.php_cs.dist') || filereadable('.php_cs'))
       let g:ale_php_cs_fixer_options = ''
   elseif filereadable('.php-cs-fixer.local.php')
-    let g:ale_php_cs_fixer_options = '--config=.php-cs-fixer.local.php'
+    let g:ale_php_cs_fixer_options = '--config=.php-cs-fixer.local.php --using-cache=no'
   else
-    let g:ale_php_cs_fixer_options = '--rules=@PSR2'
+    let g:ale_php_cs_fixer_options = '--rules=@PSR2 --using-cache=no'
   endif
 endfunction
 call SetCsFixerFallbackToCustomLocalOrPsr2PhpCsFixerConfig()

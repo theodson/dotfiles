@@ -53,7 +53,7 @@ cask 'postman'
 cask 'pritunl'
 cask 'skype'
 cask 'zoom'
-cash 'tableplus'
+cask 'tableplus'
 
 # MAS apps
 mas '1Password 7', id: 1333542190
