@@ -1,17 +1,90 @@
 BREW_PREFIX=$(brew --prefix)
 
-# "cd" by typing only the directory
-setopt autocd
-
 # brew shared bin
 export PATH="/usr/local/sbin:$PATH"
 
-# Use the terminal to enter GPG passphrase
-export GPG_TTY=$(tty)
+# sqlite
+# https://formulae.brew.sh/formula/sqlite
+export PATH="$BREW_PREFIX/opt/sqlite/bin:$PATH"
+
+# GNU findutils
+# https://formulae.brew.sh/formula/findutils
+export PATH="$BREW_PREFIX/opt/findutils/libexec/gnubin:$PATH"
+
+# GNU grep
+# https://formulae.brew.sh/formula/grep
+export PATH="$BREW_PREFIX/opt/grep/libexec/gnubin:$PATH"
+
+# GNU coreutils
+# https://formulae.brew.sh/formula/coreutils
+export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+
+# GNU sed
+# https://formulae.brew.sh/formula/gnu-sed
+export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
+
+# GNU which
+# https://formulae.brew.sh/formula/gnu-which
+export PATH="$BREW_PREFIX/opt/gnu-which/libexec/gnubin:$PATH"
+
+# Java
+# https://formulae.brew.sh/formula/openjdk
+export PATH="$BREW_PREFIX/opt/openjdk/bin:$PATH"
+
+# composer
+# https://formulae.brew.sh/formula/composer
+export PATH="/Users/tim/.composer/vendor/bin:$PATH"
+
+# locally installed composer install binaries
+# https://twitter.com/paulredmond/status/1189952205182226432
+export PATH="./vendor/bin:$PATH"
+
+# phpactor
+# https://github.com/phpactor/phpactor
+export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
 
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
 export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
+
+# Use the terminal to enter GPG passphrase
+export GPG_TTY=$(tty)
+
+# Use Dracula for the syntax highlighting theme
+export BAT_THEME="Dracula"
+
+# VIM, not nano
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
+# use 'fd' instead of 'find' for fzf file lookup
+export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
+
+alias cat="bat"
+alias sqlite="sqlite3"
+alias ":q"="exit"
+alias c="composer"
+alias a="php artisan"
+alias dcu="docker-compose up -d"
+alias dcd="docker-compose down"
+
+# Open in web browser
+browse() {
+    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
+    if [ ${#domain} -gt 0 ];
+    then
+        open http://$domain.test
+    else
+        open -a Firefox\ Developer\ Edition
+    fi
+}
+
+# A tinker env to play in
+play() {
+    cd $HOME/Code/playground
+
+    php artisan tinker
+}
 
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
@@ -33,94 +106,12 @@ bindkey '^n' history-substring-search-down
 # https://github.com/rupa/z/
 source "$BREW_PREFIX/etc/profile.d/z.sh"
 
-# sqlite
-# https://formulae.brew.sh/formula/sqlite#default
-export PATH="$BREW_PREFIX/opt/sqlite/bin:$PATH"
-alias sqlite="sqlite3"
-
-# GNU findutils
-# https://formulae.brew.sh/formula/findutils#default
-export PATH="$BREW_PREFIX/opt/findutils/libexec/gnubin:$PATH"
-
-# GNU coreutils
-# https://formulae.brew.sh/formula/coreutils#default
-export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
-
-# GNU sed
-# https://formulae.brew.sh/formula/gnu-sed#default
-export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
-
-# GNU which
-# https://formulae.brew.sh/formula/gnu-which#default
-export PATH="$BREW_PREFIX/opt/gnu-which/libexec/gnubin:$PATH"
-
-# Java
-export PATH="$BREW_PREFIX/opt/openjdk/bin:$PATH"
-
-# composer
-# https://formulae.brew.sh/formula/composer#default
-export PATH="/Users/tim/.composer/vendor/bin:$PATH"
-
-# locally installed composer install binaries
-# https://twitter.com/paulredmond/status/1189952205182226432
-export PATH="./vendor/bin:$PATH"
-
-# artisan commands
-alias c="composer"
-
-# artisan commands
-alias a="php artisan"
-
 # fzf
 # https://github.com/junegunn/fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# use 'fd' instead of 'find' for fzf file lookup
-export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
-
-# phpactor
-# https://github.com/phpactor/phpactor
-export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
-
-# bat, not cat 🦇
-# https://github.com/sharkdp/bat
-alias cat="bat"
-export BAT_THEME="Dracula"
-
-# VIM, not nano
-export VISUAL=vim
-export EDITOR="$VISUAL"
-alias ":q"="exit"
-
-# Docker compose
-alias dcu="docker-compose up -d"
-
-# Big Picture Medical deployment helper
-bpm-deploy() {
-    docker run -v "/Users/tim/Code:/bpm" -v "/Users/tim/.aws:/root/.aws" -it bpmdeploy/bpm-deploy:latest
-}
-
-# Open in web browser
-browse() {
-    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
-    if [ ${#domain} -gt 0 ];
-    then
-        open http://$domain.test
-    else
-        open -a Firefox\ Developer\ Edition
-    fi
-}
-
-# A tinker env to play in
-play() {
-    cd $HOME/Code/playground
-
-    php artisan tinker
-}
-
-update() {
-    bash $HOME/Code/dotfiles/install
-}
+# "cd" by typing only the directory
+setopt autocd
 
 # Setup completions
 autoload -Uz compinit
