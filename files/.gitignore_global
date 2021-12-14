@@ -35,6 +35,25 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+.apdisk
+.AppleDB
+.AppleDesktop
+.AppleDouble
+.directory
+
+# Windows
+Thumbs.db
+$RECYCLE.BIN/
+*.cab
+*.iml
+*.lnk
+*.msi
+*.msm
+*.msp
+._*
+
+# Idea 
+.idea/
 
 # Swap
 [._]*.s[a-v][a-z]
@@ -58,3 +77,7 @@ tags
 .php_cs.local
 .vimrc
 scratch.md
+
+# Node
+npm-debug.log
+node_modules/

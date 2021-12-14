@@ -33,15 +33,12 @@ export PATH="$BREW_PREFIX/opt/openjdk/bin:$PATH"
 
 # composer
 # https://formulae.brew.sh/formula/composer
-export PATH="/Users/tim/.composer/vendor/bin:$PATH"
+export PATH="\$HOME/.composer/vendor/bin:$PATH"
 
 # locally installed composer install binaries
 # https://twitter.com/paulredmond/status/1189952205182226432
 export PATH="./vendor/bin:$PATH"
 
-# phpactor
-# https://github.com/phpactor/phpactor
-export PATH="/Users/tim/.vim/plugged/phpactor/bin:$PATH"
 
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
@@ -79,12 +76,7 @@ browse() {
     fi
 }
 
-# A tinker env to play in
-play() {
-    cd $HOME/Code/playground
 
-    php artisan tinker
-}
 
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
@@ -121,5 +113,3 @@ compinit
 autoload -U promptinit; promptinit
 prompt pure
 
-# always start in the code directory
-cd $HOME/Code

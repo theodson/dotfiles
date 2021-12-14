@@ -1,7 +1,6 @@
 [user]
-    name = Tim MacDonald
-    email = hello@timacdonald.me
-    signingkey = E05B0D8446E02087
+    name = Theodson
+    email = theodson@gmail.com    
 [core]
     excludesfile = ~/.gitignore_global
     editor = vim
