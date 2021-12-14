@@ -18,18 +18,8 @@
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
-    ~/.vimrc:
-        path: files/vim/.vimrc
-        relink: true
-    ~/.hushlogin:
-        path: files/.hushlogin
-        relink: true
     ~/.gitignore_global:
         path: files/.gitignore_global
-        relink: true
-    ~/.vim/coc-settings.json:
-        path: files/vim/coc.json
-        create: true
         relink: true
     ~/.composer/composer.json:
         path: files/composer.json
@@ -39,20 +29,23 @@
         path: files/ssh_config
         create: true
         relink: true
-    ~/.config/karabiner/karabiner.json:
-        path: files/karabiner.json
+    ~/.bash_profile:
+        path: files/.bash_profile
         create: true
         relink: true
-    ~/.vim/after/ftplugin:
-        path: files/vim/after/ftplugin
+    ~/.bashrc:
+        path: files/.bashrc
         create: true
         relink: true
-    ~/.vim/ftdetect:
-        path: files/vim/ftdetect
+    ~/.mackup.cfg:
+        path: files/.mackup.cfg
         create: true
         relink: true
-
+    ~/.mackup:
+        path: files/.mackup
+        create: true         
 - create:
     - ~/.fzf_history
     - ~/.vim/undo_history
     - ~/.vim/autoload
+    # - ~/.m2/settings.xml
