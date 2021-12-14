@@ -5,6 +5,10 @@
         path: files/kitty.conf
         relink: true
         create: true
+    ~/.defaults:
+        path: files/.defaults
+        relink: true
+        create: true
     ~/.Brewfile:
         path: files/.Brewfile
         relink: true

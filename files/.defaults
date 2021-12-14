@@ -1,0 +1,56 @@
+# https://ss64.com/osx/syntax-defaults.html
+
+# ===========================================================================
+#   Dock
+
+# Show indicator lights for open applications in the dock:
+defaults write com.apple.dock show-process-indicators -bool true
+
+# Disable Bouncing dock icons
+defaults write com.apple.dock no-bouncing -bool False
+
+# Minimize windows into their application’s icon 
+defaults write com.apple.dock minimize-to-application -bool true
+
+
+# Make the Dock Icon of any 'Hidden' Applications Dim/Translucent:
+defaults write com.apple.Dock showhidden -bool YES 
+
+killall Dock
+
+# ===========================================================================
+#   Finder
+
+# Show hidden files:
+defaults write com.apple.finder AppleShowAllFiles TRUE
+
+# Show all filename extensions 
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show the Status Bar, this can also be toggled on the View menu:
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# When performing a search, search the current folder by default (the default 'This Mac' is "SCev")
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Show label column in search results:
+defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.label.visible -boolean
+
+# Show size column in search results:
+defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.size.visible -boolean
+
+# Disable the warning when changing a file extension 
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+killall Finder
+
+# ===========================================================================
+#   Preview
+# Scale images by default when printing:
+defaults write write com.apple.Preview PVImagePrintingScaleMode -boolean
+
+# Preview Auto-rotate by default when printing:
+defaults write write com.apple.Preview PVImagePrintingAutoRotate -boolean
+
+# ===========================================================================
+# 

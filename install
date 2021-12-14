@@ -95,7 +95,12 @@ echo '==========================================================================
 # see: https://docs.brew.sh/Shell-Completion
 # compaudit | xargs chmod g-w
 
-
+echo '================================================================================'
+echo 'Setting defaults.'
+if test -r $HOME/.defaults; then
+    source .defaults || true
+fi
+echo '================================================================================'
 echo 'Done!'
 
 

@@ -148,7 +148,7 @@ function ssh_prepare_keyexchange() {
 }
 
 # ===========================================================================
-#    JAVA / Maven
+# Java
 
 function show_manifest() { 
 	# show contents of JAR manifest
@@ -162,16 +162,15 @@ function show_manifest() {
 
 
 # ===========================================================================
-#    JS Node NPM
+# JS Node NPM 
 
 function js_env_install() {
 
 	type -p nvm || echo "Cannot find NVM - try 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash'"
 
 	# notify only as dotbot and Brewfile manage node and yarn install.
-    type -p node || echo "brew install node"
-    type -p yarn || echo "brew install yarn"
-    type -p nvm || echo "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash"
+    type -p node &>/dev/null || echo "brew install node"
+    type -p yarn &>/dev/null || echo "brew install yarn"
 	
     if type -p nvm; then
 		nvm use stable || nvm install stable
@@ -182,8 +181,8 @@ function js_env_install() {
 }
 
 
-# #########################################################
-#    Apps / Brew
+# ===========================================================================
+# Brew Apps
 
 # https://www.jetbrains.com/help/phpstorm/10.0/working-with-phpstorm-features-from-command-line.html
 # see 'Install Command Link Launcher from within the app itself.' /usr/local/bin/pstorm
@@ -233,8 +232,7 @@ function git_tag_relases() {
 
 
 # ===========================================================================
-#    Vagrant / VMWare
-#     macOs VMWare Fusion helper functions 
+# Vagrant / VMWare macOs VMWare Fusion helper functions 
 
 function vagrant_findvm() {
 
