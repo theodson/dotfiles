@@ -18,6 +18,9 @@
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
+    ~/.gitconfig_aliases:
+        path: files/.gitconfig_aliases
+        relink: true        
     ~/.gitignore_global:
         path: files/.gitignore_global
         relink: true

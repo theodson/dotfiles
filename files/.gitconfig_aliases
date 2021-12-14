@@ -1,0 +1,65 @@
+[alias]    
+    local-branches = !git fetch -p && git branch -vv
+    local-branches-sniff = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}'
+    # delete local branches no long present on origin
+    local-branches-delete = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D
+    # branch and checkout
+    bc ="checkout -b"
+    # checkout
+    c = "checkout"
+    # short status
+    s = "status -s -b --renames"
+    # pull
+    p = "pull"
+    # reset head hard
+    rshh="reset head --hard"
+    nope="reset head --hard"    
+    # nice log
+	logline = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+    l = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+    # tree
+    tree = "log --branches --remotes --tags --graph --pretty=format:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --"
+    # Deal with "There is no tracking information for the current branch."
+    # See: https://zarino.co.uk/post/git-set-upstream/
+    set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+    # Git flow shortcut
+    f = "flow feature start"
+    credentials = config --show-origin --local --get-regexp user.*    
+    # https://gist.github.com/nk9/b150542ef72abc7974cb#gistcomment-3715010
+    # requires 'brew install coreutils'
+    git-files-largest = "!f() { \
+            git rev-list --objects --all | \
+            git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | \
+            sed -n 's/^blob //p' | \
+            sort --numeric-sort --key=2 | \
+            cut -c 1-12,41- | /usr/local/bin/gnumfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=nearest; \
+        }; f"
+    #
+    diff-file-last-commit = "!f() { \
+            project_root_dir=$(git rev-parse --show-toplevel); \
+            echo finding full file path of $1 in $project_root_dir; \
+            filepath=$(find $project_root_dir -type f -name $1); \
+            echo full file path $filepath; \
+            last_modified_commit_hash=$(git rev-list -1 HEAD $filepath); \
+            echo last commit file modified $last_modified_commit_hash; \
+            git difftool $last_modified_commit_hash^ $filepath; \
+       }; f"
+    #
+    find-branches-for-file = "!f() { \
+            local search=$(printf "**/%s*" $1); \
+            echo looking for $search; \
+            for hsh in $(git log --all -- $search | grep '^commit '| awk '{print $2}'); do \
+                git branch -a --contains $hsh; \
+            done | sort | uniq; \
+        }; f"
+    #
+    tag-date-hash = "!f() { \
+            git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) \
+            obj=%(objectname:short)\" refs/tags | while read entry;do \
+                eval $entry; \
+                echo \"$ref,`git log -1 --date=format:'%Y %h %d' --format=\"%cd\" $obj` ($obj)\" | column -t -x -s ','; done \
+        }; f"
+[alias "credentials"]
+	helper = config --get-all --show-origin credential.helper
+	local = config --show-origin --local --get-regexp user.*
+	global = config --show-origin --global --get-regexp user.*
