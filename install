@@ -41,25 +41,6 @@ echo '==========================================================================
 
 
 echo '================================================================================'
-echo " Install older versions / override brew formula for older versions we use."
-# https://remarkablemark.org/blog/2017/02/03/install-brew-package-version/
-
-if test ! -z "$PG_INSTALL"; then
-    if test ! -d "/Applications/Navicat for PostgreSQL.app"; then
-        # no longer required - see tap tap 'bgdevlab/navicat-for-postgresql'
-        echo "  - Navicat 12 (12.0.27)"
-        cd $(find $(brew --repository) -name navicat-for-postgresql.rb -exec dirname {} \;)
-        # curl -o navicat-for-postgresql.rb -s https://raw.githubusercontent.com/Homebrew/homebrew-cask/ea872153138b0255ff7d52bcda996ec221e02b7d/Casks/navicat-for-postgresql.rb
-        curl -o navicat-for-postgresql.rb -s https://gist.githubusercontent.com/bgdevlab/3bd8c737ffa958ca79dc55e3a61681dd/raw/266879fcfa9df02706dca9766a77c831959cd4b7/navicat-cask-12.1.31.rb
-        brew install navicat-for-postgresql
-        git checkout navicat-for-postgresql.rb
-        echo '================================================================================'
-    fi
-fi
-
-
-echo "# Currently in directory ($(pwd))"
-echo '================================================================================'
 echo 'Installing, updating, and cleaning up brew dependencies...'
 brew bundle --global
 brew bundle cleanup --force --global
