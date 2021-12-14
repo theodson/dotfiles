@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+
+# Filesystem
+alias rm='rm -i'
+alias ll='ls -lGfha'
+# color=always causes more grief than its worth when pipelining commands
+# alias grep='grep --color=always'
+
+
+# Network
+alias whatport='what_port'
+
+
+# SSH
+alias sshgen='ssh-keygen -t rsa'
+alias sshkey='pbcopy < ~/.ssh/id_rsa.pub'
+
+
+# conveniences
+alias easytimenow='date +%Y%m%d_%H%M_%s'
+alias prettyjson='python -m json.tool'
+alias nospace='egrep -v "^#|^[[:space:]]*$"'
+alias no_commments_space='egrep -v "^;|^#|^[[:space:]]*$"'
+alias pwdtail='pwd | rev | cut -d/ -f1-2 | rev'
+
+
+# Git
+alias git_config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias git_credentials_show='echo -e "\n# git credentials (helper)";git credentials.helper;echo -e "\n# git credentials (global)";git credentials.global;echo -e "\n# git credentials (local)";git credentials.local'
+alias git_find_branches_for_hash='git branch -a --contains'
+
+# alias nah='git reset --hard; git clean -df' # Gone forever - Reset to last commit and remove untracked files and directories.
+alias nah='try nope - nah is too dangerous'
+
+# Recover with git reflog - Reset to last commit and remove untracked files and directories.
+alias nope='git reset --hard'
+
+# debug git
+alias git_debug="GIT_TRACE=true GIT_CURL_VERBOSE=true GIT_SSH_COMMAND=\"ssh -vvv\" GIT_TRACE_PACK_ACCESS=true GIT_TRACE_PACKET=true GIT_TRACE_PACKFILE=true GIT_TRACE_PERFORMANCE=true GIT_TRACE_SETUP=true GIT_TRACE_SHALLOW=true git $@"
+
+
+# Auto Complete
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion || echo -e "missing bash-completion, try\n\tbrew install bash-completion"
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh"
+
+
+# Brew
+alias bsl='sudo brew services list'
+
+
+# Get VSCode extensions
+alias codeextensions='code --list-extensions | xargs -L 1 echo code --install-extension'
+alias subl=code # no sublime - vscode only
+
+
+# Emotes
+alias shrug="echo '¯\_(ツ)_/¯' | pbcopy;echo '¯\_(ツ)_/¯'";
+
+
+# Defaults 
+# Show/Hide hidden files in Finder
+alias showhidden='defaults write com.apple.finder AppleShowAllFiles TRUE && killall Finder'
+alias hidehidden='defaults write com.apple.finder AppleShowAllFiles FALSE && killall Finder'
+
+
+# Force empty the trash
+alias forceempty='sudo rm -rf ~/.Trash; sudo rm -rf /Volumes/*/.Trashes;'
+alias ejectdisc='drutil tray eject'
+
+
+# Java JEnv - jenv http://www.jenv.be/
+# This is a non standard alias to set JAVA_HOME based on jenv environment.
+alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/$(jenv version-name)"'
+
+
+# JS Node NPM
+alias fixjs='rm -rf node_modules/;npm cache clear --force && npm install'
+alias ng='npm list -g --depth=0'
+alias nl='npm list --depth=0'
+alias switch-js='nvm'
+
+
+# VMWare Tools
+alias ovftool='/Applications/VMware\ Fusion.app/Contents/Library/VMware\ OVF\ Tool/ovftool'
+alias vmnet-cli='/Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli'
+
+
+# Jetbrains
+alias pstorm='phpstorm'
+alias diff_with_phpstorm='phpstorm diff'
+alias smartgit="launchSmartGit $1"
+
+
+# Docker
+alias dock_prune='docker container prune'
+
+
+# Vagrant
+alias vglob='vagrant global-status --prune 2>/dev/null | egrep -i --color=always "^.*$(pwd)[ ]*$|$"'
+alias vush='vagrant up && vssh'
+alias vnoprov='vagrant up --no-provision 2>&1 | grep -v VAGRANTFILE_API_VERSION | grep already && vagrant reload --no-provision' 
+#alias v_glob='vagrant global-status --prune 2>&1 | grep -v VAGRANTFILE_API_VERSION | egrep -i --color=always "^.*$(pwd).*$|$"'
+

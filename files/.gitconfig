@@ -70,16 +70,15 @@
     # Git flow shortcut
     f = "flow feature start"
     credentials = config --show-origin --local --get-regexp user.*    
-
     # https://gist.github.com/nk9/b150542ef72abc7974cb#gistcomment-3715010
     # requires 'brew install coreutils'
     git-files-largest = "!f() { \
-        git rev-list --objects --all | \
-        git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | \
-        sed -n 's/^blob //p' | \
-        sort --numeric-sort --key=2 | \
-        cut -c 1-12,41- | /usr/local/bin/gnumfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=nearest; \
-    }; f"
+            git rev-list --objects --all | \
+            git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | \
+            sed -n 's/^blob //p' | \
+            sort --numeric-sort --key=2 | \
+            cut -c 1-12,41- | /usr/local/bin/gnumfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=nearest; \
+        }; f"
     #
     diff-file-last-commit = "!f() { \
             project_root_dir=$(git rev-parse --show-toplevel); \
@@ -92,20 +91,19 @@
        }; f"
     #
     find-branches-for-file = "!f() { \
-        local search=$(printf "**/%s*" $1); \
-        echo looking for $search; \
-        for hsh in $(git log --all -- $search | grep '^commit '| awk '{print $2}'); do \
-            git branch -a --contains $hsh; \
-        done | sort | uniq; \
-       }; f"
+            local search=$(printf "**/%s*" $1); \
+            echo looking for $search; \
+            for hsh in $(git log --all -- $search | grep '^commit '| awk '{print $2}'); do \
+                git branch -a --contains $hsh; \
+            done | sort | uniq; \
+        }; f"
     #
     tag-date-hash = "!f() { \
-        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) \
-        obj=%(objectname:short)\" refs/tags | while read entry;do \
-            eval $entry; \
-            echo \"$ref,`git log -1 --date=format:'%Y %h %d' --format=\"%cd\" $obj` ($obj)\" | column -t -x -s ','; done \
-    }; f"
-
+            git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) \
+            obj=%(objectname:short)\" refs/tags | while read entry;do \
+                eval $entry; \
+                echo \"$ref,`git log -1 --date=format:'%Y %h %d' --format=\"%cd\" $obj` ($obj)\" | column -t -x -s ','; done \
+        }; f"
 [alias "credentials"]
 	helper = config --get-all --show-origin credential.helper
 	local = config --show-origin --local --get-regexp user.*

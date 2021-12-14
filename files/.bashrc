@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
+
+#
+# https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
+# https://books.apple.com/book/moving-to-zsh/id1483591353
+#
+# Standardising on $HOME.bashrc over $HOME/.profile as $HOME/.bash_profile makes $HOME/.profile obsolete and ignores it
+#
+
+[ -r $BASEDIR/.ps1 ] && source $BASEDIR/.ps1 || true # start aware prompt
+[ -r $BASEDIR/.credentials ] && source $BASEDIR/.credentials || true
+[ -r $BASEDIR/.profile ] && source $BASEDIR/.profile || true
+[ -r $BASEDIR/.functions ] && source $BASEDIR/.functions || true
+[ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
+[ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
+
+
+# Ensure these bin-paths are included in our search PATH
+for searchpath in $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
+do
+	if test -e "${searchpath}"; then
+		echo $PATH | grep "$searchpath" &>/dev/null && true || export PATH="$PATH:$searchpath" # add path if missing
+	fi 
+done
+
+
+
+
+# Node Version Manager
+if test ! -z "${NVM_DIR}"; then    
+    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+fi
+
+# Jave Env - http://www.jenv.be/ - install multiple java environments
+if test -r "$HOME/.jenv"; then
+	eval "$(jenv init -)" || echo "jenv failed to initialise"
+fi
+
+
+
+# ===========================================================================
+#		Auto Complete
+
+# Twilio Auto Complete
+[ -f $HOME/.twilio-cli/autocomplete/bash_setup ] && source $HOME/.twilio-cli/autocomplete/bash_setup || true;
+
+# Bash Auto Complete
+[ -f /usr/local/etc/bash_completion ] && source /usr/local/etc/bash_completion || echo -e "missing bash-completion, try\n\tbrew install bash-completion"
+[ -r /usr/local/etc/profile.d/bash_completion.sh ] && source /usr/local/etc/profile.d/bash_completion.sh || true
+
+# Node Version Manager - Auto Complete
+if test ! -z "${NVM_DIR}"; then    
+    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi	

@@ -1,0 +1,363 @@
+#!/usr/bin/env bash
+
+# `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
+# the `.git` directory, listing directories first. The output gets piped into
+# `less` with options to preserve color and line numbers, unless the output is
+# small enough for one screen.
+
+function tre() {
+	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
+}
+
+
+function sudo_using_touchid() { 
+	sudo sed -i.bak 's/^auth.*sufficient.*\.so/auth       sufficient     pam_tid.so/' /etc/pam.d/sudo; 
+}
+
+
+function sudo_using_default() { 	
+	sudo sed -i.bak 's/^auth.*sufficient.*\.so/auth       sufficient     pam_smartcard.so/' /etc/pam.d/sudo; 
+}
+
+
+function dockspace {
+	# default - add space tile to dock
+	defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}'
+	killall Dock
+}
+
+
+function genRandom() {
+	# Allow "tr" to process non-utf8 byte sequences, read random bytes and keep only alphanumerics
+	length=${1:-32}
+	LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | head -c$length
+}
+
+
+function scriptdir() {
+	# get the folder the 'current' script (as called from) is working under, https://stackoverflow.com/questions/59895
+	echo "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+}
+
+
+function killport () { 
+    [ $# -eq 1 ] && kill $(lsof -t -i4TCP:$1) && echo 'done'
+}
+
+
+function what_port() {
+
+	# macOs - what app is running on a port
+
+	if [ $# -ne 1 ]; then 
+		echo "need to know the port"; 
+		return 1;
+	fi	
+	echo "looking for '$1'"
+	lsof -nP -iTCP -sTCP:LISTEN | grep "${1}"
+	# ps -Ao user,pid,command | grep -v grep | grep $(netstat -anv | grep "$searchport " | awk '{print $9}')
+}
+
+
+function op() {
+	#
+	# Function to open specified project in projects folder
+	#	
+	
+	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
+	rootfolder="${WORKSPACE:-$HOME/Documents}"
+
+	echo "ENV(WORKSPACE:${WORKSPACE})"
+	
+
+	found=0 # 0 = Not Found; 1 = Found
+	project="$1" # Name of project given
+	repo="$2" # Name of repository given
+	count=0 # Array counter
+
+	# Following is in order of preference
+	if [[ $repo != "" ]]; then # Change to project repo
+		directories[$count]=${rootfolder}/${project}/${repo}; ((count++));
+		directories[$count]=${rootfolder}/${project}*/${repo}*; ((count++));    
+		directories[$count]=${rootfolder}/${project}*/bgdevlab-${repo}; ((count++));
+	fi
+
+	# Usually webapp is the common repo if no repo was specified
+	directories[$count]=${rootfolder}/${project}/webapp; ((count++));
+	directories[$count]=${rootfolder}/${project}/${project}; ((count++));
+	directories[$count]=${rootfolder}/${project}/scratch; ((count++));
+	directories[$count]=${rootfolder}/${project}; ((count++));
+	directories[$count]=${rootfolder}/${project}*; ((count++));
+
+	# Look for possible project folders and change into it if one found.
+	for dir in ${directories[@]}; do
+		if [[ -d $dir ]]; then
+			found=1
+			pushd $dir
+			echo -e "Changed directory to: $(echo_color green)'$dir'${echo_normal}"
+			break
+		fi
+	done
+
+	# Was folder changed?
+	if [[ $found == 0 ]]; then
+		echo -e "$(echo_color red)Project directory not found.${echo_normal}"
+	fi
+}
+
+
+function sshrem() {
+	# TODO : look at ssh-keyscan -H for another option
+	if [ $# -lt 1 ]; then
+		echo -e "missing argument: host[s]"
+		return 1;
+	fi
+	for s in $@
+	do
+	echo -e "\n>> removing '$s'";
+	for khfile in $(find ~/.ssh -regex '.*known_hosts[0-9]*$')
+		do 
+			target_server="${s}"
+			target_server_ip=$(dig +search +short ${target_server})
+			target_server_shortname=$(echo ${target_server} | cut -d. -f1)
+			echo "Scanning : ${khfile} for '${target_server}', '${target_server_ip}', '${target_server_shortname}'"
+			ssh-keygen -R ${target_server} -f ${khfile} &>/dev/null && echo "success removed $target_server" || echo "problem removing $target_server"
+			ssh-keygen -R ${target_server_ip} -f ${khfile} &>/dev/null && echo "success removed $target_server_ip" || echo "problem removing $target_server_ip"
+			ssh-keygen -R ${target_server_shortname} -f ${khfile} &>/dev/null && echo "success removed $target_server_shortname" || echo "problem removing $target_server_shortname"
+		done
+	done
+}
+
+
+function ssh_prepare_keyexchange() {
+	# allow easy remote access - authorize key for current user
+	if [ $# -lt 1 ]; then
+		echo "args: host [user]"
+		return 1;
+	fi
+
+	target_site=$1
+	user="${2:-root}"
+
+	for khfile in $(find ~/.ssh -regex '.*known_hosts[0-9]*$')
+	do
+		ssh-keyscan -H ${target_site} >> ${khfile}
+	done
+	ssh-copy-id ${user}@${target_site}
+
+}
+
+# ===========================================================================
+#    JAVA / Maven
+
+function show_manifest() { 
+	# show contents of JAR manifest
+	if [ $# -eq 1 ] && [ -f $1 ]; then
+		unzip -q -c "$1" "META-INF/MANIFEST.MF" | sort
+	else
+		echo "Purpose: view JAR files MANIFEST.MF"
+		echo "Usage: $0 jarfilename"
+	fi
+}
+
+
+# ===========================================================================
+#    JS Node NPM
+
+function js_env_install() {
+
+	type -p nvm || echo "Cannot find NVM - try 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash'"
+
+	# notify only as dotbot and Brewfile manage node and yarn install.
+    type -p node || echo "brew install node"
+    type -p yarn || echo "brew install yarn"
+    type -p nvm || echo "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash"
+	
+    if type -p nvm; then
+		nvm use stable || nvm install stable
+		nvm use stable && npm install twilio-cli -g
+	fi
+	# add
+    
+}
+
+
+# #########################################################
+#    Apps / Brew
+
+# https://www.jetbrains.com/help/phpstorm/10.0/working-with-phpstorm-features-from-command-line.html
+# see 'Install Command Link Launcher from within the app itself.' /usr/local/bin/pstorm
+
+function launchSmartGit() {
+
+	dir="${1:-$(pwd)}"
+
+	if [ ! -d ${dir} ]; then
+		echo -e "$(echo_color red)'${dir}' is not a valid directory.${echo_normal}"
+		return 1
+	fi
+
+	pushd "$dir" 1>/dev/null
+
+	if [ git rev-parse --is-inside-work-tree &>/dev/null ]; then
+		local app="/Applications/SmartGit.app/Contents/MacOS/SmartGit"
+		nohup "${app}" --log "${1}" &>/dev/null &
+	else
+		echo -e "$(echo_color red)'${dir}' is not a GIT directory.${echo_normal}"
+	fi
+
+	popd 1>/dev/null
+  
+}
+
+
+function git_add_to_osxkeychain() {
+	# https://opensource.apple.com/source/Git/Git-33/src/git/contrib/credential/osxkeychain/git-credential-osxkeychain.c.auto.html
+	[ $# -ne 3 ] && { 
+		echo 'Usage: host username password'
+		return 1
+	}
+	printf "protocol=https\nhost=%s\nusername=%s\npassword=%s\n" "$1" "$2" "$3" | git "credential-osxkeychain" store
+}
+
+function git_tag_relases() {
+    git for-each-ref --sort=-creatordate --format '## %(refname)
+
+**Released:**  %(creatordate) %(object:short) - %(*objectname:short)
+
+   -  %(*subject)
+
+' refs/tags | sed -e 's-refs/tags/--'
+
+}
+
+
+# ===========================================================================
+#    Vagrant / VMWare
+#     macOs VMWare Fusion helper functions 
+
+function vagrant_findvm() {
+
+	local __resultvar=${1:-vmid}
+	local path=${2:-.}
+	
+	# try sub folder for VMs
+	echo "searching subfolders for .vagrant" 
+	local options=()
+	local optionsid=()
+
+	for vf in $(find $path -type f -path "*/.vagrant/machines/default/*/index_uuid"); do 
+		optionid=$(printf "%b " "$(cat $vf)"); 
+		option=$(printf "%b________%b\n" "$(cat $vf)" $vf);
+		optionsid+=($optionid)    
+		options+=($option)    
+	done
+
+	PS3='Which VM: '
+	if (( ${#options[@]} )); then
+
+		select opt in "${options[@]}"
+		do
+			case $opt in
+				*) break
+				;;
+			esac
+		done  
+
+		lvmid=${optionsid[$((REPLY-1))]}
+		if [[ "$__resultvar" ]]; then
+			eval $__resultvar="'$lvmid'"
+		fi
+	fi
+
+}
+
+
+function vagrant_ssh() {
+
+	# Vagrant SSH
+	if [ $# -eq 0 ]; then 
+		vagrant ssh 2>/dev/null && return || echo 'no VM found in current folder'; 
+	fi;
+	
+	# try arg as VM ID
+	if [ $# -eq 1 ]; then 
+		vagrant ssh $1 2>/dev/null && return || echo "no VM found with argument specified"
+	fi
+	
+	# find VM and assign VMID to var_name passed 
+	vagrant_findvm vmid
+	if [ ! -z "${vmid}" ];then 
+		echo "trying ssh for $vmid"
+		vagrant ssh $vmid
+		echo "finished ssh for $vmid"
+	else
+		echo "no VMs found in subfolder"
+	fi
+
+}
+
+
+function vagrant_reload() { 
+	
+	# Vagrant Reload
+	if [ $# -eq 0 ]; then 
+		vagrant reload 2>/dev/null && return || echo 'no VM found in current folder'; 
+	fi;
+	
+	# try arg as VM ID
+	if [ $# -eq 1 ]; then 
+		vagrant reload $1 2>/dev/null && return || echo "no VM found with argument specified"
+	fi
+	
+	# find VM and assign VMID to var_name passed 
+	vagrant_findvm vmid
+	if [ ! -z "${vmid}" ];then 
+		echo "trying reload for $vmid"
+		vagrant reload $vmid
+		echo "finished reload for $vmid"
+	else
+		echo "no VMs found in subfolder"
+	fi    
+}
+
+
+function vagrant_kill() {
+
+	# find VM and assign VMID to var_name passed 
+	vagrant_findvm vmid
+	if [ ! -z "${vmid}" ];then  
+		echo "trying destroy for $vmid"
+		vagrant destroy -f $vmid
+		echo "finished destroy for $vmid"
+	else
+		echo "no VMs found in subfolder"
+	fi
+
+}
+
+
+function vagrant_stat() {
+	# find VM and assign VMID to var_name passed 
+	vagrant_findvm vmid
+	if [ ! -z "${vmid}" ];then 
+		echo "trying status for $vmid"
+		vagrant status $vmid
+		echo "finished status for $vmid"
+	else
+		echo "no VMs found in subfolder"
+	fi        
+}
+
+
+function launchVM() {
+	# wip
+	[ $# -ne 1 ] && echo "Specify a path to an OVA file to use."
+	SRC_OVF=$1
+
+	vm_name=${1:-$(date +%F-%H%M%S)}
+	vm_path=${2:-vms}/$vm_name
+
+	mkdir -p $vm_path && ovftool $SRC_OVF $vm_path/${vm_name}.vmx && vmrun -T fusion start $vm_path/${vm_name}.vmx
+	# vmrun -T fusion addNetworkAdapter ${vm_name}.vmx bridged && vmrun -T fusion start ${vm_name}.vmx
+}

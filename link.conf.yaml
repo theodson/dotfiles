@@ -37,15 +37,23 @@
         path: files/.bashrc
         create: true
         relink: true
-    ~/.mackup.cfg:
-        path: files/.mackup.cfg
+    ~/.aliases:
+        path: files/.bash/.aliases
         create: true
-        relink: true
-    ~/.mackup:
-        path: files/.mackup
-        create: true         
+        relink: true  
+    ~/.exports:
+        path: files/.bash/.exports
+        create: true
+        relink: true          
+    ~/.functions:
+        path: files/.bash/.functions
+        create: true
+        relink: true        
+    ~/.ps1:
+        path: files/.bash/.ps1
+        create: true
+        relink: true                     
 - create:
     - ~/.fzf_history
     - ~/.vim/undo_history
     - ~/.vim/autoload
-    # - ~/.m2/settings.xml

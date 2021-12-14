@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+# Developer Workspace
+export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
+
+# Make vim the default editor.
+export EDITOR='vim';
+
+# ls command colours 
+export CLICOLOR=1
+export LSCOLORS=GxFxCxDxBxegedabagaced
+
+# Enable persistent REPL history for `node`.
+export NODE_REPL_HISTORY=~/.node_history;
+# Allow 32³ entries; the default is 1000.
+export NODE_REPL_HISTORY_SIZE='32768';
+# Use sloppy mode by default, matching web browsers.
+export NODE_REPL_MODE='sloppy';
+
+# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+export PYTHONIOENCODING='UTF-8';
+
+# Increase Bash history size. Allow 32³ entries; the default is 500.
+export HISTSIZE='32768';
+export HISTFILESIZE="${HISTSIZE}";
+# Omit duplicates and commands that begin with a space from history.
+export HISTCONTROL='ignoreboth';
+# history log entry format.
+export HISTTIMEFORMAT='%F %T '
+
+# Prefer US English and use UTF-8.
+export LANG='en_US.UTF-8';
+export LC_ALL='en_US.UTF-8';
+
+# Highlight section titles in manual pages.
+export LESS_TERMCAP_md="${yellow}";
+
+# Don’t clear the screen after quitting a manual page.
+export MANPAGER='less -X';
+
+# Avoid issues with `gpg` as installed via Homebrew.
+# https://stackoverflow.com/a/42265848/96656
+export GPG_TTY=$(tty);
+
+# Hide the “default interactive shell is now zsh” warning on macOS.
+export BASH_SILENCE_DEPRECATION_WARNING=1;
+
+# Vagrant 
+export VAGRANT_DEFAULT_PROVIDER="${VAGRANT_DEFAULT_PROVIDER:-vmware_fusion}"
+
+
+# Postgres - align to linux and connect as postgres by default
+export PGHOST="${PGHOST:-localhost}"
+export PGUSER="${PGUSER:-postgres}"
+export PGDATABASE="${PGDATABASE:-postgres}"
+export PGVERSION="${PGVERSION:-9.5}" # this is not a standard PG ENV VAR
+
+# =============================================================================
+#   Conditional Exports 
+
+# Postgres - align to linux and connect as postgres by default
+[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
+[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"
+[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export CPPFLAGS="-I/usr/local/opt/postgresql@${PGVERSION}/include"
+
+
+
+# Perl 5 - can't remember what this was required for... keep it for now.
+if test ! -z "${USING_PERL}"; then
+    PATH="$HOME/perl5/bin${PATH:+:${PATH}}"; export PATH;
+    PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+    PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+    PERL_MB_OPT="--install_base \"$HOME/perl5\""; export PERL_MB_OPT;
+    PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
+fi
+
+# Node Version Manager
+if test -d "$HOME/.nvm"; then
+    export NVM_DIR="$HOME/.nvm"
+fi
+
+# Jave Env - http://www.jenv.be/ - install multiple java environments
+if test -d "$HOME/.jenv/versions"; then
+    export JAVA_HOME="$HOME/.jenv/versions/$(jenv version-name)"
+    export PATH="$HOME/.jenv/bin:$PATH"
+fi
+
