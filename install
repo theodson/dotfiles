@@ -39,6 +39,26 @@ echo 'Linking dotfiles...'
 echo 'Done linking dotfiles.'
 echo '================================================================================'
 
+
+echo '================================================================================'
+echo " Install older versions / override brew formula for older versions we use."
+# https://remarkablemark.org/blog/2017/02/03/install-brew-package-version/
+
+if test ! -z "$PG_INSTALL"; then
+    if test ! -d "/Applications/Navicat for PostgreSQL.app"; then
+        # no longer required - see tap tap 'bgdevlab/navicat-for-postgresql'
+        echo "  - Navicat 12 (12.0.27)"
+        cd $(find $(brew --repository) -name navicat-for-postgresql.rb -exec dirname {} \;)
+        # curl -o navicat-for-postgresql.rb -s https://raw.githubusercontent.com/Homebrew/homebrew-cask/ea872153138b0255ff7d52bcda996ec221e02b7d/Casks/navicat-for-postgresql.rb
+        curl -o navicat-for-postgresql.rb -s https://gist.githubusercontent.com/bgdevlab/3bd8c737ffa958ca79dc55e3a61681dd/raw/266879fcfa9df02706dca9766a77c831959cd4b7/navicat-cask-12.1.31.rb
+        brew install navicat-for-postgresql
+        git checkout navicat-for-postgresql.rb
+        echo '================================================================================'
+    fi
+fi
+
+
+echo "# Currently in directory ($(pwd))"
 echo '================================================================================'
 echo 'Installing, updating, and cleaning up brew dependencies...'
 brew bundle --global
@@ -75,40 +95,28 @@ echo '==========================================================================
 # echo '================================================================================'
 
 # echo '================================================================================'
-# echo 'Installing and updating vim-plug and its dependencies...'
-# vim -es -u $HOME/.vimrc -i NONE -c "PlugInstall" -c "qa"
-# vim -es -u $HOME/.vimrc -i NONE -c "PlugUpgrade" -c "qa"
-# vim -es -u $HOME/.vimrc -i NONE -c "PlugUpdate" -c "qa"
-# vim -es -u $HOME/.vimrc -i NONE -c 'PlugClean!' -c "qa"
-# vim -es -u $HOME/.vimrc -i NONE -c "CocUpdateSync" -c "qa"
-# echo 'Done installing and updating vim-plug and its dependencies.'
-# echo '================================================================================'
-
-# echo '================================================================================'
 # echo 'Installing and updating FZF...'
 # /usr/local/opt/fzf/install --key-bindings --completion --update-rc --no-bash --no-fish
 # echo 'Done installing and updating FZF.'
 # echo '================================================================================'
 
-# echo '================================================================================'
-# echo 'Installing and updating terminal theme...'
-# curl --create-dirs -fLo $HOME/.config/kitty/dracula.conf https://raw.githubusercontent.com/dracula/kitty/master/dracula.conf
-# echo 'Done installing and updating terminal theme.'
-# echo '================================================================================'
-
-# echo '================================================================================'
-# echo 'Setting up a fresh Laravel playground...'
-# rm -rf $HOME/Code/playground
-# mkdir -p $HOME/Code
-# composer create-project laravel/laravel $HOME/Code/playground
-# echo 'Done setting up a fresh Laravel playground.'
-# echo '================================================================================'
-
-# cd $STARTING_DIR
+echo '================================================================================'
+echo 'Installing and updating terminal themes...'
+for theme in 3024_Day AtomOneLight PencilLight Material Spring ayu_light; do 
+    THEME=https://raw.githubusercontent.com/dexpota/kitty-themes/master/themes/${theme}.conf
+    wget -q "$THEME" -P ~/.config/kitty/themes
+done
+echo 'Done installing and updating terminal themes.'
+echo '================================================================================'
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
 # see: https://docs.brew.sh/Shell-Completion
 # compaudit | xargs chmod g-w
 
+
 echo 'Done!'
+
+
+# https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
+# Alternative to dotfiles - https://yadm.io
