@@ -1,13 +1,19 @@
 [user]
     name = Theodson
     email = theodson@gmail.com    
+	signingKey = ""
 [core]
-    excludesfile = ~/.gitignore_global
-    editor = vim
-    pager = delta
+	autocrlf = input    
 [commit]
-    gpgsign = true
+    gpgsign = false
     template = ~/.gitmessage
+[mergetool]
+	keepBackup = true
+	prompt = false
+[difftool]
+	prompt = false
+[gc]
+	autoDetach = false
 [gpg]
     program = gpg
 [color]
@@ -37,9 +43,11 @@
     oldHighlight = red reverse
     newNormal = green
     newHighlight = green reverse
-[alias]
+[alias]    
+    local-branches = !git fetch -p && git branch -vv
+    local-branches-sniff = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}'
     # delete local branches no long present on origin
-    forget = "! /usr/local/bin/git fetch -p && /usr/local/bin/git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D"
+    local-branches-delete = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs /usr/local/bin/git branch -D
     # branch and checkout
     bc ="checkout -b"
     # checkout
@@ -50,21 +58,67 @@
     p = "pull"
     # reset head hard
     rshh="reset head --hard"
+    nope="reset head --hard"    
     # nice log
+	logline = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
     l = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+    # tree
+    tree = "log --branches --remotes --tags --graph --pretty=format:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --"
     # Deal with "There is no tracking information for the current branch."
     # See: https://zarino.co.uk/post/git-set-upstream/
     set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
     # Git flow shortcut
     f = "flow feature start"
-[push]
-    default = current
-[fetch]
-    prune = true
-[pull]
-    rebase = true
+    credentials = config --show-origin --local --get-regexp user.*    
+
+    # https://gist.github.com/nk9/b150542ef72abc7974cb#gistcomment-3715010
+    # requires 'brew install coreutils'
+    git-files-largest = "!f() { \
+        git rev-list --objects --all | \
+        git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | \
+        sed -n 's/^blob //p' | \
+        sort --numeric-sort --key=2 | \
+        cut -c 1-12,41- | /usr/local/bin/gnumfmt --field=2 --to=iec-i --suffix=B --padding=7 --round=nearest; \
+    }; f"
+    #
+    diff-file-last-commit = "!f() { \
+            project_root_dir=$(git rev-parse --show-toplevel); \
+            echo finding full file path of $1 in $project_root_dir; \
+            filepath=$(find $project_root_dir -type f -name $1); \
+            echo full file path $filepath; \
+            last_modified_commit_hash=$(git rev-list -1 HEAD $filepath); \
+            echo last commit file modified $last_modified_commit_hash; \
+            git difftool $last_modified_commit_hash^ $filepath; \
+       }; f"
+    #
+    find-branches-for-file = "!f() { \
+        local search=$(printf "**/%s*" $1); \
+        echo looking for $search; \
+        for hsh in $(git log --all -- $search | grep '^commit '| awk '{print $2}'); do \
+            git branch -a --contains $hsh; \
+        done | sort | uniq; \
+       }; f"
+    #
+    tag-date-hash = "!f() { \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) \
+        obj=%(objectname:short)\" refs/tags | while read entry;do \
+            eval $entry; \
+            echo \"$ref,`git log -1 --date=format:'%Y %h %d' --format=\"%cd\" $obj` ($obj)\" | column -t -x -s ','; done \
+    }; f"
+
+[alias "credentials"]
+	helper = config --get-all --show-origin credential.helper
+	local = config --show-origin --local --get-regexp user.*
+	global = config --show-origin --global --get-regexp user.*
+# [push]
+#     default = current
+# [fetch]
+#     prune = true
+# [pull]
+#     rebase = true
 [diff]
     colorMoved = default
+	submodule = log
 [stash]
     showPatch = true
 [interactive]
@@ -72,7 +126,7 @@
     diffFilter = delta --color-only
 [delta]
     features = line-numbers decorations
-    syntax-theme = Dracula
+    #syntax-theme = Dracula
     plus-style = syntax "#003800"
     minus-style = syntax "#3f0001"
 [delta "decorations"]
@@ -86,4 +140,9 @@
     line-numbers-minus-style = 124
     line-numbers-plus-style = 28
 [init]
-    defaultBranch = main
+	defaultBranch = master
+[status]
+    # working with submodules - https://medium.com/@porteneuve/mastering-git-submodules-34c65e940407
+	submoduleSummary = true
+[tag]
+	forceSignAnnotated = false
