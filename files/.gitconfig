@@ -1,11 +1,11 @@
 [user]
-    name = Theodson
-    email = theodson@gmail.com    
+	name = Theo
+	email = theodson@gmail.com
 	signingKey = ""
 [core]
 	autocrlf = input    
 [commit]
-    gpgsign = false
+	gpgSign = false
     template = ~/.gitmessage
 [mergetool]
 	keepBackup = true

@@ -10,6 +10,7 @@ alias ll='ls -lGfha'
 
 # Network
 alias whatport='what_port'
+alias killport='kill_port'
 
 
 # SSH
@@ -46,7 +47,7 @@ alias git_debug="GIT_TRACE=true GIT_CURL_VERBOSE=true GIT_SSH_COMMAND=\"ssh -vvv
 
 
 # Brew
-alias bsl='sudo brew services list'
+alias bsl='sudo brew services list && brew services list'
 
 
 # Get VSCode extensions
@@ -74,13 +75,6 @@ alias ejectdisc='drutil tray eject'
 alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/$(jenv version-name)"'
 
 
-# JS Node NPM
-alias fixjs='rm -rf node_modules/;npm cache clear --force && npm install'
-alias ng='npm list -g --depth=0'
-alias nl='npm list --depth=0'
-alias switch-js='nvm'
-
-
 # VMWare Tools
 alias ovftool='/Applications/VMware\ Fusion.app/Contents/Library/VMware\ OVF\ Tool/ovftool'
 alias vmnet-cli='/Applications/VMware\ Fusion.app/Contents/Library/vmnet-cli'
@@ -97,8 +91,49 @@ alias dock_prune='docker container prune'
 
 
 # Vagrant
+alias vagrant='HOMESTEADVM='\''centos'\'' vagrant' 
 alias vglob='vagrant global-status --prune 2>/dev/null | egrep -i --color=always "^.*$(pwd)[ ]*$|$"'
 alias vush='vagrant up && vssh'
 alias vnoprov='vagrant up --no-provision 2>&1 | grep -v VAGRANTFILE_API_VERSION | grep already && vagrant reload --no-provision' 
 #alias v_glob='vagrant global-status --prune 2>&1 | grep -v VAGRANTFILE_API_VERSION | egrep -i --color=always "^.*$(pwd).*$|$"'
 
+
+
+# JS Node NPM
+alias fixjs='rm -rf node_modules/;npm cache clear --force && npm install'
+alias ng='npm list -g --depth=0'
+alias nl='npm list --depth=0'
+alias switch_js='nvm'
+
+
+# PHP Laravel Valet 
+alias sphp70='switch_php 7.0'
+alias sphp72='switch_php 7.2'
+alias sphp73='switch_php 7.3'
+alias sphp74='switch_php 7.4'
+alias sphp80='switch_php 8.0'
+alias sphp81='switch_php 8.1'
+
+alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
+
+# Laravel
+alias art='php artisan'
+alias artisan='php artisan'
+alias tinker='php artisan tinker'
+alias sail='bash vendor/bin/sail' # docker 
+
+# PhpUnit
+alias phpunit='/usr/local/bin/phpunit'
+alias phpunit='vendor/bin/phpunit --log-junit scratch/phpunit_release_report.$(date "+%Y_%m_%d.%H%M%S").xml'
+# support env var 'phpunitpart' as part of the filename
+alias phpunit='vendor/bin/phpunit --log-junit $(echo ${phpunitdir:-scratch})/phpunit_$(echo ${phpunitpart:-report}).xml'
+
+alias phpspec='/usr/local/bin/phpspec'
+
+# xDebug
+alias xdebug_disable='xdbgfile=$(php -m | grep Xdebug -q && php --ini | grep xdebug) && [ -n "$xdbgfile" ] && mv $xdbgfile "${xdbgfile}"_disabled || echo "xdebug is not enabled"'
+alias xdebug_restore='incpath=$(php --ini | grep "Scan for additional .ini files" | cut -d: -f2 | xargs) && [ -n "$incpath" ] && xdbgfile=$(ls "${incpath}/"xdebug*disabled) && [ -n "$xdbgfile}" ] && mv $xdbgfile "${incpath}/xdebug.ini" || echo "cannot determine php ini include path"'
+
+# PHPDeployer - https://deployer.org
+alias dep='vendor/bin/dep'                    # no global install - (composer 2 issue) - use project's vendor install.
+alias prov='APP_ENV=deployer dep -f=prov.php' # custom deployer command for provisioning

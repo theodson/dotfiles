@@ -56,6 +56,10 @@ echo '==========================================================================
 # echo 'Done installing and updating composer dependencies.'
 # echo '================================================================================'
 
+
+/bin/bash $HOME/dotfiles/link
+
+
 # echo '================================================================================'
 # echo 'Installing and updating npm dependencies...'
 # npm install -g npm@latest

@@ -1,4 +1,6 @@
+#
 # https://ss64.com/osx/syntax-defaults.html
+# https://macos-defaults.com/dock/show-recents.html
 
 # ===========================================================================
 #   Dock
@@ -14,9 +16,18 @@ defaults write com.apple.dock minimize-to-application -bool true
 
 
 # Make the Dock Icon of any 'Hidden' Applications Dim/Translucent:
-defaults write com.apple.Dock showhidden -bool YES 
+defaults write com.apple.dock showhidden -bool YES 
+
+# Display recent apps in the Dock
+defaults write com.apple.dock "show-recents" -bool "false" 
 
 killall Dock
+
+# ===========================================================================
+#   Screenshots
+
+defaults write com.apple.screencapture "location" -string "~/Desktop/screenshots"
+killall SystemUIServer
 
 # ===========================================================================
 #   Finder
@@ -34,23 +45,13 @@ defaults write com.apple.finder ShowStatusBar -bool true
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 # Show label column in search results:
-defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.label.visible -boolean
+defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.label.visible -bool true
 
 # Show size column in search results:
-defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.size.visible -boolean
+defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.size.visible -bool true
 
 # Disable the warning when changing a file extension 
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 killall Finder
 
-# ===========================================================================
-#   Preview
-# Scale images by default when printing:
-defaults write write com.apple.Preview PVImagePrintingScaleMode -boolean
-
-# Preview Auto-rotate by default when printing:
-defaults write write com.apple.Preview PVImagePrintingAutoRotate -boolean
-
-# ===========================================================================
-# 

@@ -19,6 +19,9 @@
     ~/.zshrc:
         path: files/.zshrc
         relink: true
+    ~/.vimrc:
+        path: files/.vim/.vimrc
+        relink: true        
     ~/.gitconfig:
         path: files/.gitconfig
         relink: true
@@ -28,10 +31,10 @@
     ~/.gitignore_global:
         path: files/.gitignore_global
         relink: true
-    ~/.composer/composer.json:
-        path: files/composer.json
-        create: true
-        relink: true
+    # ~/.composer/composer.json:
+    #     path: files/composer.json
+    #     create: true
+    #     relink: true
     ~/.ssh/config:
         path: files/ssh_config
         create: true
@@ -59,7 +62,7 @@
     ~/.ps1:
         path: files/.bash/.ps1
         create: true
-        relink: true                     
+        relink: true              
 - create:
     - ~/.fzf_history
     - ~/.vim/undo_history

@@ -6,6 +6,8 @@ tap 'homebrew/services'
 tap 'buo/cask-upgrade'
 tap 'timothyye/tap'
 tap 'bgdevlab/navicat-for-postgresql'
+tap 'shivammathur/php'
+tap 'shivammathur/extensions'
 
 # dependencies
 brew 'pkg-config' # bunch of things
@@ -38,9 +40,13 @@ brew 'less'
 brew 'mackup'
 brew 'mas'
 brew 'node'
-brew 'php@8.0'
+# brew 'php@8.0'
+brew 'postgresql@9.5'
 brew 'redis'
 brew 'ripgrep'
+brew 'shivammathur/php/php@7.0'
+brew 'shivammathur/php/php@8.0'
+brew 'shivammathur/php/php@8.1'
 brew 'skm'
 brew 'sqlite'
 brew 'svn' # source-code-pro requires it

@@ -16,17 +16,16 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 [ -r $BASEDIR/.functions ] && source $BASEDIR/.functions || true
 [ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
 [ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
+[ -r $BASEDIR/dotfiles/files/switch_php ] && source $BASEDIR/dotfiles/files/switch_php || true
 
 
-# Ensure these bin-paths are included in our search PATH
-for searchpath in $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
+# Add folder to search PATH if it exists
+for folder in $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
 do
-	if test -e "${searchpath}"; then
-		echo $PATH | grep "$searchpath" &>/dev/null && true || export PATH="$PATH:$searchpath" # add path if missing
+	if test -e "${folder}"; then
+		echo $PATH | grep "$folder" &>/dev/null && true || export PATH="$PATH:$folder" # add path later in seach path if missing 
 	fi 
 done
-
-
 
 
 # Node Version Manager

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Developer Workspace
-export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
-
 # Make vim the default editor.
 export EDITOR='vim';
 
@@ -32,8 +29,9 @@ export HISTTIMEFORMAT='%F %T '
 export LANG='en_US.UTF-8';
 export LC_ALL='en_US.UTF-8';
 
-# Highlight section titles in manual pages.
-export LESS_TERMCAP_md="${yellow}";
+# Less - Highlight section titles in manual pages.
+# export LESS_TERMCAP_md="${yellow}";
+
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X';
@@ -44,6 +42,7 @@ export GPG_TTY=$(tty);
 
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
+
 
 # Vagrant 
 export VAGRANT_DEFAULT_PROVIDER="${VAGRANT_DEFAULT_PROVIDER:-vmware_fusion}"
@@ -56,14 +55,27 @@ export PGDATABASE="${PGDATABASE:-postgres}"
 export PGVERSION="${PGVERSION:-9.5}" # this is not a standard PG ENV VAR
 
 # =============================================================================
-#   Conditional Exports 
+
+# Developer Workspace
+export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
+
+
+if test composer -v &>/dev/null; then
+    export COMPOSER_HOME="$(composer global config -q --absolute home)"
+fi
+
+# PHP Laravel Valet 
+# PHP_EXTENSIONS Used in custom bash function 'switch_php'
+export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+
+
 
 # Postgres - align to linux and connect as postgres by default
-[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
-[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"
-[ -e /usr/local/opt/postgresql@${PGVERSION} ] && export CPPFLAGS="-I/usr/local/opt/postgresql@${PGVERSION}/include"
-
-
+if test -e /usr/local/opt/postgresql@${PGVERSION}; then
+    export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
+    export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"
+    export CPPFLAGS="-I/usr/local/opt/postgresql@${PGVERSION}/include"
+fi
 
 # Perl 5 - can't remember what this was required for... keep it for now.
 if test ! -z "${USING_PERL}"; then

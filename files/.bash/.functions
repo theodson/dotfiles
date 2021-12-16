@@ -20,6 +20,38 @@ function sudo_using_default() {
 }
 
 
+function brew_service_pluck() {
+    case $# in
+        1 )
+            sudo brew services info --json $1 | jq -e -r .[]
+            ;;
+        2 )
+            sudo brew services info --json $1 | jq -e -r .[].$2 
+            ;;
+        * )
+            ;;
+    esac
+}
+
+
+function plist_pluck() {
+    # e.g. show the path for php 7.0 brew service 
+    # plist_pluck $(brew_service_pluck php@7.0 file) ProgramArguments | jq .[0]
+    
+    [ $# -lt 1 ] && { echo "usage:$0 plist_file [key]" > /dev/stderr ; return 1; }
+    case $# in
+        1 )
+            plutil -convert json -o - $1 | jq .
+            ;;
+        2 )
+            plutil -convert json -o - $1 | jq -e -r .$2
+            ;;
+        * )
+            ;;
+    esac
+}
+
+
 function dockspace {
 	# default - add space tile to dock
 	defaults write com.apple.dock persistent-apps -array-add '{"tile-type"="spacer-tile";}'
@@ -27,7 +59,7 @@ function dockspace {
 }
 
 
-function genRandom() {
+function gen_random() {
 	# Allow "tr" to process non-utf8 byte sequences, read random bytes and keep only alphanumerics
 	length=${1:-32}
 	LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | head -c$length
@@ -40,8 +72,16 @@ function scriptdir() {
 }
 
 
-function killport () { 
+function kill_port () { 
     [ $# -eq 1 ] && kill $(lsof -t -i4TCP:$1) && echo 'done'
+}
+
+
+function postgres_dev_init() {
+    # after fresh install of postgres - setup basics
+    if test ! -z "$PGUSER"; then
+        createuser -s ${$PGUSER}
+    fi
 }
 
 
@@ -106,6 +146,19 @@ function op() {
 }
 
 
+function man() {
+    # colour for man pages
+	env \
+		LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+		LESS_TERMCAP_md=$(printf "\e[1;31m") \
+		LESS_TERMCAP_me=$(printf "\e[0m") \
+		LESS_TERMCAP_se=$(printf "\e[0m") \
+		LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+		LESS_TERMCAP_ue=$(printf "\e[0m") \
+		LESS_TERMCAP_us=$(printf "\e[1;32m") \
+		man "$@"
+}
+
 function sshrem() {
 	# TODO : look at ssh-keyscan -H for another option
 	if [ $# -lt 1 ]; then
@@ -148,7 +201,7 @@ function ssh_prepare_keyexchange() {
 }
 
 # ===========================================================================
-# Java
+#   Java
 
 function show_manifest() { 
 	# show contents of JAR manifest
@@ -162,15 +215,15 @@ function show_manifest() {
 
 
 # ===========================================================================
-# JS Node NPM 
+#   JS Node NPM 
 
 function js_env_install() {
 
 	type -p nvm || echo "Cannot find NVM - try 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash'"
 
 	# notify only as dotbot and Brewfile manage node and yarn install.
-    type -p node &>/dev/null || echo "brew install node"
-    type -p yarn &>/dev/null || echo "brew install yarn"
+    type -p node &>/dev/null || echo "brew install node - see .Brewfile"
+    type -p yarn &>/dev/null || echo "brew install yarn - see .Brewfile"
 	
     if type -p nvm; then
 		nvm use stable || nvm install stable
@@ -182,7 +235,85 @@ function js_env_install() {
 
 
 # ===========================================================================
-# Brew Apps
+#   PHP Laravel Valet Composer
+
+
+function clearall() {
+    [ ! -e ./artisan ] && echo "no artisan" && return
+    artisan cache:clear
+    artisan config:clear
+    artisan route:clear
+    [ "$1" == 'oc' ] && artisan opcache:clear || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+    artisan optimize
+}
+
+# TODO - move to autocomplete section
+# autocomplete - PHP - Deployer - add auto-complete for 'prov' alias, an alias to 'dep' (see deployer/deployer )
+type -t _deployer ^ >/dev/null && complete -o default -F _deployer prov
+
+# autocomplete - Laravel - Artisan - https://gist.github.com/jhoff/8fbe4116d74931751ecc9e8203dfb7c4
+_artisan() {
+    COMP_WORDBREAKS=${COMP_WORDBREAKS//:/}
+    COMMANDS=$(php artisan --raw --no-ansi list | sed "s/[[:space:]].*//g")
+    COMPREPLY=($(compgen -W "$COMMANDS" -- "${COMP_WORDS[COMP_CWORD]}"))
+    return 0
+}
+complete -F _artisan art
+complete -F _artisan artisan
+
+
+# TODO - move to autocomplete section
+# provision autocomplete
+_prov() {
+    COMP_WORDBREAKS=${COMP_WORDBREAKS//:/}
+    COMMANDS=$(dep -f=prov.php --raw --no-ansi list | sed "s/[[:space:]].*//g")
+    COMPREPLY=($(compgen -W "$COMMANDS" -- "${COMP_WORDS[COMP_CWORD]}"))
+    return 0
+}
+complete -F _prov prov
+
+
+function imagick_test() {
+
+    if [ $# -ne 1 ]; then
+        echo "usage: ${FUNCNAME[0]} filename"
+        return 1
+    fi
+
+    [ type -p php &>/dev/null ] || {
+        echo "cannot find php"
+        return 1
+    }
+
+    outputfile=$1
+    php <<"IMAGICK_TEST" >$outputfile
+<?php
+$im = new Imagick();
+$im->newPseudoImage(650, 250, "gradient:red-black");
+$im->setImageFormat('png');
+header("Content-Type: image/png");
+echo $im;
+IMAGICK_TEST
+    file $outputfile | grep 'PNG image data'
+    return $?
+}
+
+
+function valet_config_backup() {
+    # backup any existing composer global definitions.
+    backup_config="$HOME/backup_composer_and_valet_config.$(date +%Y%m%d_%H%M_%s).tar.gz"
+    tar -czf $backup_config $(composer global config --absolute home 2>/dev/null)/config.json $HOME/.valet $HOME/.config/valet &>/dev/null
+    
+    if test -e "$backup_config"; then 
+        echo "👍 backup of composer and valet configuration completed - see $backup_config"
+    else
+        echo "👎 backup of composer and valet configuration ($backup_config) FAILED"
+    fi
+}
+
+
+# ===========================================================================
+#   Brew Apps
 
 # https://www.jetbrains.com/help/phpstorm/10.0/working-with-phpstorm-features-from-command-line.html
 # see 'Install Command Link Launcher from within the app itself.' /usr/local/bin/pstorm
@@ -232,7 +363,7 @@ function git_tag_relases() {
 
 
 # ===========================================================================
-# Vagrant / VMWare macOs VMWare Fusion helper functions 
+#   Vagrant / VMWare macOs VMWare Fusion helper functions 
 
 function vagrant_findvm() {
 
