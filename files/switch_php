@@ -108,21 +108,6 @@ function composer_global_install() {
 }
 
 
-function valet_composer_install() {
-
-    echo "${FUNCNAME[0]} $@"
-
-    # remove older valet install location
-    /bin/rm -f $(brew --prefix)/bin/valet &>/dev/null || true
-
-    # Valet::symlinkToUsersBin handles creating this, called as part of command 'valet install'.
-    
-    composer global update -q 2>/dev/null || true
-    composer global require -q laravel/valet:^2.17 || return 1
-
-}
-
-
 function valet_uninstall() {
 
     echo "${FUNCNAME[0]}"
@@ -154,6 +139,12 @@ function valet_uninstall() {
 
 
 function switch_php() {
+    
+    if test -r $HOME/.dotfile_lastrun; then
+        # likely php/valet need resetting - force this by removing valet
+        valet=$(brew --prefix)/bin/valet || { echo 'brew has issues'; return 1; }
+        /bin/rm -f $valet;
+    fi
     
     echo "${FUNCNAME[0]}"
 

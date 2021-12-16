@@ -107,6 +107,9 @@ fi
 echo '================================================================================'
 echo 'Done!'
 
+# As we rely on valet, switch_php and php_install for handling the differences in php installation
+# we need to inform those scripts that dotfiles and brew bundle has recently run.
+date > $HOME/.dotfile_lastrun
 
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
