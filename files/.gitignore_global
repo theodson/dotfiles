@@ -81,3 +81,41 @@ scratch.md
 # Node
 npm-debug.log
 node_modules/
+
+# Mac
+.DS_Store
+*.DS_Store
+.apdisk
+.AppleDB
+.AppleDesktop
+.AppleDouble
+.directory
+
+# Windows
+Thumbs.db
+$RECYCLE.BIN/
+*.cab
+*.iml
+*.lnk
+*.msi
+*.msm
+*.msp
+._*
+
+
+# Idea 
+.idea/
+
+# vi
+*~
+
+# Php - Composer
+# vendor/ # not this as resources/views/vendor is published to and should be under version control
+
+# General
+log/
+*.log
+scratch/
+
+# laravel 
+/tailwind.config_full.js
