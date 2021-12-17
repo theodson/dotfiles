@@ -142,10 +142,11 @@ mas 'Gemini 2', id: 1090488118
 mas 'ReadKit: Read Later and RSS', id: 588726889  
 mas 'DaisyDisk', id: 411643860  
 
-mas 'Microsoft Word', id: 462054704
-mas 'Microsoft Excel', id: 462058435
-mas 'Microsoft PowerPoint', id: 462062816
-mas 'Microsoft OneNote', id: 784801555
+# Office 365 - not standalone 2019 compatible.
+# mas 'Microsoft Word', id: 462054704
+# mas 'Microsoft Excel', id: 462058435
+# mas 'Microsoft PowerPoint', id: 462062816
+# mas 'Microsoft OneNote', id: 784801555
 mas 'WhatsApp Desktop', id: 1147396723
 
 

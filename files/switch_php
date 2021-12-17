@@ -143,7 +143,7 @@ function switch_php() {
     if test -r $HOME/.dotfile_lastrun; then
         # likely php/valet need resetting - force this by removing valet
         valet=$(brew --prefix)/bin/valet || { echo 'brew has issues'; return 1; }
-        /bin/rm -f $valet;
+        /bin/rm -f $valet $HOME/.dotfile_lastrun
     fi
     
     echo "${FUNCNAME[0]}"
