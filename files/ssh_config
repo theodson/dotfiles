@@ -1,3 +1,13 @@
+# https://linuxize.com/post/using-the-ssh-config-file/
+Host backup01
+  KexAlgorithms +diffie-hellman-group1-sha1
+
+Host 10.20.1.*
+  LogLevel INFO
+  User root
+  KexAlgorithms +diffie-hellman-group1-sha1
+
 Host *
   AddKeysToAgent yes
   UseKeychain no
+
