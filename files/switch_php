@@ -115,7 +115,7 @@ function valet_uninstall() {
     echo "🤞 Uninstall valet"
     type -p valet &>/dev/null && valet uninstall --force --no-interaction &>/dev/null || true
 
-    composer global remove laravel/valet &>/dev/null || echo ' Valet not installed via composer global'
+    composer global remove --no-interaction laravel/valet &>/dev/null || echo ' Valet not installed via composer global'
 
     echo "🤞 Uninstall brew services"
     for formula in dnsmasq nginx; do
@@ -230,8 +230,8 @@ function switch_php() {
 
     echo "⚡️ Composer Global update for ${php_version_target}"
     composer_global_install ${php_version_target}
-    echo "✨ "    
-    composer global show -D 2>/dev/null | awk '{print $1":"$2}'
+    echo "✨ "
+    composer global show -D --no-interaction 2>/dev/null | awk '{print $1":"$2}'
 
     #
     # Stop existing php-fpm services - ( might not need to ??? )
@@ -281,7 +281,7 @@ function php_install() {
     composer_global_install $current_php_version
     
     echo "✨ "    
-    composer global show -D 2>/dev/null | awk '{print $1":"$2}'
+    composer global show -D --no-interaction 2>/dev/null | awk '{print $1":"$2}'
 
     switch_php $target_php_version
 
