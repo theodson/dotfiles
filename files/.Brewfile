@@ -86,8 +86,8 @@ cask 'typora'
 cask 'visual-studio-code'
 cask 'vagrant'
 cask 'vmware-fusion'
-#cask 'vagrant-manager'
-#cask 'navicat' # https://download3.navicat.com/download/navicat120_pgsql_en.dmg
+# cask 'vagrant-manager'
+# cask 'navicat' # https://download3.navicat.com/download/navicat120_pgsql_en.dmg
 cask 'vlc'
 # cask 'phpmon' - https://github.com/nicoverbruggen/phpmon
 # cask 'mongodb-compass'
@@ -124,11 +124,6 @@ mas 'Jump Desktop (RDP, VNC, Fluid)', id: 524141863
 mas 'SerialTools', id: 611021963    
 
 
-# TODO
-# cask 'xcode' # ?
-
-
-
 # =========================================================
 #   home
 # =========================================================
@@ -147,9 +142,11 @@ mas 'DaisyDisk', id: 411643860
 mas 'Surfshark', id: 1437809329    
 mas 'WhatsApp Desktop', id: 1147396723
 mas 'World Clock Pro', id: 858446756 
-mas 'Banktivity', id: 1480779512
-mas 'Controller for HomeKit', id: 1198176727
-mas 'Home Assistant', id: 1099568401
+mas 'HomePass for HomeKit', id: 1330266650  
+mas 'HomeCam for HomeKit', id: 1292995895
+# mas 'Banktivity', id: 1480779512
+# mas 'Controller for HomeKit', id: 1198176727
+# mas 'Home Assistant', id: 1099568401
 
 # =========================================================
 # AppStore Account Switching - Manually Install from AppStore (other account)
