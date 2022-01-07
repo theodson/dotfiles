@@ -4,6 +4,9 @@
 - Review `mackup` - https://github.com/lra/mackup
 - Review `restic` - https://restic.readthedocs.io/en/stable/040_backup.html
 
+- Store Keys safely - investigate 
+-   https://github.com/elasticdog/transcrypt
+
 
 # TimeMachine App Data / Config recovery / Backups
 Don't forget to deal with these Apps as well as private dotfiles (see mackup/restic above)

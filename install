@@ -4,6 +4,11 @@ set -e
 
 STARTING_DIR=$PWD
 cd $HOME
+echo '================================================================================'
+echo 'Preparing dotfile install ...'
+sudo -v # ensure we only type password once
+echo -e "Reinstall Valet and Php (yN) ? " && read valetphp
+# echo '================================================================================'
 
 if test ! $(which brew); then
     echo '================================================================================'
@@ -37,18 +42,22 @@ echo '==========================================================================
 echo 'Linking dotfiles...'
 /bin/bash $HOME/dotfiles/link
 echo 'Done linking dotfiles.'
-echo '================================================================================'
+# echo '================================================================================'
+
 
 
 echo '================================================================================'
 echo 'Installing, updating, and cleaning up brew dependencies...'
+
+#sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
+
 brew bundle --global
 brew bundle cleanup --force --global
 # brew services cleanup
 # sudo brew services cleanup
 brew cleanup
 echo 'Done installing, updating, and cleaning up brew dependencies.'
-echo '================================================================================'
+# echo '================================================================================'
 
 # echo '================================================================================'
 # echo 'Installing and updating composer dependencies...'
@@ -57,7 +66,7 @@ echo '==========================================================================
 # echo '================================================================================'
 
 
-/bin/bash $HOME/dotfiles/link
+# /bin/bash $HOME/dotfiles/link
 
 
 # echo '================================================================================'
@@ -92,7 +101,7 @@ for theme in 3024_Day AtomOneLight PencilLight Material Spring ayu_light; do
     wget -q "$THEME" -P ~/.config/kitty/themes
 done
 echo 'Done installing and updating terminal themes.'
-echo '================================================================================'
+# echo '================================================================================'
 
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
@@ -104,8 +113,7 @@ echo 'Setting defaults.'
 if test -r $HOME/.defaults; then
     source .defaults || true
 fi
-echo '================================================================================'
-echo 'Done!'
+# echo '================================================================================'
 
 # As we rely on valet, switch_php and php_install for handling the differences in php installation
 # we need to inform those scripts that dotfiles and brew bundle has recently run.
@@ -113,3 +121,17 @@ date > $HOME/.dotfile_lastrun
 
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
+
+case $valetphp in
+    [Yy]* )        
+        [ -r $HOME/dotfiles/files/switch_php ] && {
+            sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
+            source $HOME/dotfiles/files/switch_php
+            valet_uninstall
+            switch_php 8.1
+            # if this fails run php_uninstall and then switch_php 8.1
+        }
+        ;;
+esac
+
+echo 'Done!'
