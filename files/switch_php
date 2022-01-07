@@ -112,6 +112,11 @@ function valet_uninstall() {
 
     echo "${FUNCNAME[0]}"
 
+    #
+    # Help brew after valet's touched things.
+    #
+    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
+
     echo "🤞 Uninstall valet"
     type -p valet &>/dev/null && valet uninstall --force --no-interaction &>/dev/null || true
 
@@ -139,6 +144,9 @@ function valet_uninstall() {
 
 
 function switch_php() {
+
+    echo "${FUNCNAME[0]}"
+    sudo -v
     
     if test -r $HOME/.dotfile_lastrun; then
         # likely php/valet need resetting - force this by removing valet
@@ -146,8 +154,6 @@ function switch_php() {
         /bin/rm -f $valet $HOME/.dotfile_lastrun
     fi
     
-    echo "${FUNCNAME[0]}"
-
     #
     # https://laracasts.com/discuss/channels/general-discussion/issues-with-laravel-valet-when-installing-old-php-version
     # https://freek.dev/1185-easily-switch-php-versions-in-laravel-valet
@@ -250,6 +256,11 @@ function switch_php() {
  
     echo "⚡️ Valet installing php ${php_version_target}"
     $valet install
+
+    #
+    # Help brew after valet's touched things.
+    #
+    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
 
     # read -p "Press enter to continue ( about to run Valet Restart )"
     echo "⚡️ Valet Restart ( to be sure, to be sure !! )"
