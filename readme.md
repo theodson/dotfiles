@@ -11,7 +11,7 @@ Fork this repo and change to your liking... You'll probably want to change these
 - `dotfiles/files/.gitconfig`
 - `dotfiles/files/.Brewfile`
 
-You should compare your generated `$HOME/predotfiles.Brewfile` file with the `dotfiles/files/.Brewfile`
+
 
 ### Install
 
@@ -46,20 +46,27 @@ ssh-add -K ~/.ssh/id_ed25519
 
 
 
-
 ## Snapshot - before install or nuking  🧨 
 
-- Archive list of existing apps installed via brew or App Store
+Take a Snapshot before doing anything...
+
+- Update brew ( optional )
 ```
-brew update
+  brew update
+```
+- **Archive list of existing apps** installed via brew, brew bundle or App Store
+```
+brew bundle dump --file $HOME/predotfiles.Brewfile
 
-brew bundle dump --file $HOME/predotfiles.Brewfile && echo "Your current brew and AppStore environment is archived here $HOME/predotfiles.Brewfile"
-
-ls /Applications/ > predotfiles.MacAppStore_list
+ls /Applications/ > $HOME/predotfiles.MacAppStore_list
 ```
 - make a copy of existing important configurations in HOME directory
 ```
-tar -czLf $HOME/predotfiles.my-configuration.tar.gz $HOME/{.m2/settings*, .vim,.bash_profile,.bashrc,.profile,.config,.zshrc,.ssh,ssh_config,.netrc,.gnupg,.Brewfile.lock.json} $HOME/predotfiles.Brewfile $HOME/.composer/{composer.json,composer.lock} 2>/dev/null
+tar -czLf $HOME/predotfiles.my-configuration.tar.gz \
+$HOME/{.m2/settings*, .vim,.bash_profile,.bashrc,.profile,.config} \
+$HOME/{.zshrc,.ssh,ssh_config,.netrc,.gnupg,.Brewfile.lock.json} \
+$HOME/predotfiles.Brewfile \
+$HOME/.composer/{composer.json,composer.lock} 2>/dev/null
 ```
 > Important: move these archived files __off machine__ somewhere safe ☁️  e.g. 
 >
@@ -116,7 +123,16 @@ Which can be represented as a `mas` entry in the Brewfile
 mas 'WhatsApp Desktop', id: 1147396723
 ```
 
+Notes:
 
+1. Already installed Apps (not through the `mas` command) should be removed first and then added to the Brewfile.
+2. Some Apps will not install unless already purchased, you may need to manually via the AppStore application purchase/install the app first.
+
+
+
+## Update my Brewfile with my Apps - how to ?
+
+In summary, you should compare your generated `$HOME/predotfiles.Brewfile` file with the `dotfiles/files/.Brewfile` and to determine any new `mas` entries review the `$HOME/predotfiles.MacAppStore_list` list of applications. See Troubleshooting for some help of using the `mas` command and searching for Apps.
 
 
 
