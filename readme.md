@@ -2,12 +2,30 @@
 
 > See **Snapshot - before install or nuking** BEFORE INSTALLING !
 
-- Run the installation script...
 
+### Fork it!
+... make it your own! 
+
+Fork this repo and change to your liking... You'll probably want to change these files once forked.
+
+- `dotfiles/files/.gitconfig`
+- `dotfiles/files/.Brewfile`
+
+You should compare your generated `$HOME/predotfiles.Brewfile` file with the `dotfiles/files/.Brewfile`
+
+### Install
+
+- Now run the instasllation script
 ```sh
-git clone https://github.com/theodson/dotfiles.git 
+# change reponame to your forked repo
+reponame=theodson
+
+git clone https://github.com/$reponame/dotfiles.git 
 bash dotfiles/install
 ```
+
+
+
 
 - Import GPG key
 
@@ -36,6 +54,8 @@ ssh-add -K ~/.ssh/id_ed25519
 brew update
 
 brew bundle dump --file $HOME/predotfiles.Brewfile && echo "Your current brew and AppStore environment is archived here $HOME/predotfiles.Brewfile"
+
+ls /Applications/ > predotfiles.MacAppStore_list
 ```
 - make a copy of existing important configurations in HOME directory
 ```
@@ -48,7 +68,7 @@ tar -czLf $HOME/predotfiles.my-configuration.tar.gz $HOME/{.m2/settings*, .vim,.
 - unpushed changes / branches / repos 
 - Ensure TimeMachine/BackBlaze/etc is recently synced.
 - ~~run `mackup backup`~~
-- run `restic`
+- ~~run `restic`~~
 
 # Updating
 
@@ -58,11 +78,19 @@ Re-run the installation script
 bash dotfiles/install
 ```
 
+Sometimes this breaks php/valet - see troubleshooting below.
+
+
+
 # Troubleshooting
 
 Lets face it, its likely, brew changes and constant WIP...!
 
+## Valet - Php breaks 
+
 If our custom **`switch_php`** fails to work, try this sequence of tasks.
+
+> These functions all exist in `dotfiles/files/switch_php` ( loaded by `.bashrc`)
 
 ```
 php_uninstall
@@ -71,10 +99,27 @@ switch_php 7.0
 ```
 
 
-# ToDo
-- Fix SHIFT+CMD+A conflict on PHPStorm and macOs
-- ~jump to next/previous word ALT+R ALT+L in kitty~
-- ~CMD+F for find in kitty - how ?~
-- Review `mackup` - https://github.com/lra/mackup
-- Review `restic` - https://restic.readthedocs.io/en/stable/040_backup.html
 
+## How to add MacAppStore Apps 
+
+Example search for WhatsApp reveals an MacAppStore ID
+
+```
+mas search WhatsApp | head -1
+
+1147396723  WhatsApp Desktop                          (2.2147.16)
+```
+
+Which can be represented as a `mas` entry in the Brewfile 
+
+```
+mas 'WhatsApp Desktop', id: 1147396723
+```
+
+
+
+
+
+# ToDo
+
+- See [todo.md](todo.md)
