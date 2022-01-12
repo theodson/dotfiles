@@ -29,8 +29,13 @@ done
 
 
 # Node Version Manager
-if test ! -z "${NVM_DIR}"; then    
-    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # This loads nvm
+if test -s "/usr/local/opt/nvm/nvm.sh"; then
+    mkdir -p "${NVM_HOME:-$HOME/.nvm}" || true
+    source "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+
+    if test -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm"; then 
+        source "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+    fi
 fi
 
 # Jave Env - http://www.jenv.be/ - install multiple java environments
