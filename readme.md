@@ -28,6 +28,7 @@ ssh-add -K ~/.ssh/id_ed25519
 
 
 
+
 ## Snapshot - before install or nuking  🧨 
 
 - Archive list of existing apps installed via brew or App Store
@@ -38,16 +39,16 @@ brew bundle dump --file $HOME/predotfiles.Brewfile && echo "Your current brew an
 ```
 - make a copy of existing important configurations in HOME directory
 ```
-tar -czLf $HOME/predotfiles.my-configuration.tar.gz $HOME/{.vim,.bash_profile,.bashrc,.profile,.config,.zshrc,.ssh,ssh_config,.netrc,.gnupg,.Brewfile.lock.json} $HOME/predotfiles.Brewfile $HOME/.composer/{composer.json,composer.lock} 2>/dev/null
+tar -czLf $HOME/predotfiles.my-configuration.tar.gz $HOME/{.m2/settings*, .vim,.bash_profile,.bashrc,.profile,.config,.zshrc,.ssh,ssh_config,.netrc,.gnupg,.Brewfile.lock.json} $HOME/predotfiles.Brewfile $HOME/.composer/{composer.json,composer.lock} 2>/dev/null
 ```
-> Important: move these archived files __off machine__ somewhere sage ☁️  e.g. 
+> Important: move these archived files __off machine__ somewhere safe ☁️  e.g. 
 >
-> ```scp $HOME/predotfiles.my-configuration.tar.gz user@sagehost:safeplace```
+> ```scp $HOME/predotfiles.my-configuration.tar.gz user@safehost:safeplace```
 
 - unpushed changes / branches / repos 
 - Ensure TimeMachine/BackBlaze/etc is recently synced.
-
 - ~~run `mackup backup`~~
+- run `restic`
 
 # Updating
 
@@ -76,3 +77,4 @@ switch_php 7.0
 - ~CMD+F for find in kitty - how ?~
 - Review `mackup` - https://github.com/lra/mackup
 - Review `restic` - https://restic.readthedocs.io/en/stable/040_backup.html
+
