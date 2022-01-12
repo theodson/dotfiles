@@ -490,3 +490,14 @@ function launchVM() {
 	mkdir -p $vm_path && ovftool $SRC_OVF $vm_path/${vm_name}.vmx && vmrun -T fusion start $vm_path/${vm_name}.vmx
 	# vmrun -T fusion addNetworkAdapter ${vm_name}.vmx bridged && vmrun -T fusion start ${vm_name}.vmx
 }
+
+function clear_dns_cache() {
+    
+    [ "$(uname)" == 'Darwin' ] && { 
+        sudo dscacheutil -flushcache
+        sudo killall -HUP mDNSResponder
+        echo "cleared"
+    }
+}
+
+
