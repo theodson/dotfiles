@@ -65,34 +65,25 @@ brew 'zsh-autosuggestions'
 brew 'zsh-history-substring-search'
 brew 'zsh-syntax-highlighting'
 brew 'zsh'
+#
 # apps
+#
 cask 'docker'
 cask 'firefox-developer-edition'
 cask 'google-chrome'
 cask 'imageoptim'
-cask 'helo'
 cask 'kitty'
-cask 'navicat-for-postgresql'
-cask 'pinegrow'
-cask 'postbox'
+# cask 'mongodb-compass'
+cask 'notion'
 cask 'postman'
+# cask 'phpmon'
 cask 'zoom'
-cask 'gitkraken'
 cask 'launchcontrol'
 cask 'rectangle'
-cask 'tinkerwell'
-cask 'jetbrains-toolbox'
-cask 'typora'
 cask 'visual-studio-code'
 cask 'vagrant'
-cask 'vmware-fusion'
 # cask 'vagrant-manager'
-# cask 'navicat' # https://download3.navicat.com/download/navicat120_pgsql_en.dmg
 cask 'vlc'
-# cask 'phpmon' - https://github.com/nicoverbruggen/phpmon
-# cask 'mongodb-compass'
-
-# Key management https://golangrepo.com/repo/TimothyYe-skm-go-devops-tools
 
 # fonts
 cask 'font-jetbrains-mono' # may not be required given jetbrains-toolbox install
@@ -107,8 +98,20 @@ cask 'font-monoid'
 cask 'font-monoid-nerd-font'
 cask 'font-dejavu'
 
+#
+# paid apps (license required)
+#
+cask 'helo'
+cask 'navicat-for-postgresql'
+cask 'pinegrow'
+cask 'postbox'
+cask 'gitkraken'
+cask 'tinkerwell'
+cask 'jetbrains-toolbox'
+cask 'typora'
+cask 'vmware-fusion'
 
-# work - app store 
+# work - mac app store 
 mas '1Password 7', id: 1333542190
 mas 'Numbers', id: 409203825
 mas 'Pages', id: 409201541
@@ -125,33 +128,40 @@ mas 'SerialTools', id: 611021963
 
 
 # =========================================================
-#   home
+#   home 
 # =========================================================
 
 brew 'handbrake'
 
-cask 'setapp'
-cask 'shimo'      # vpn  
+mas 'ReadKit: Read Later and RSS', id: 588726889  
+mas 'Surfshark', id: 1437809329    
+mas 'WhatsApp Desktop', id: 1147396723
+
+# =========================================================
+#   home - paid apps
+# =========================================================
+
+cask 'shimo'      
 cask 'little-snitch'
 
 mas 'Affinity Photo', id: 824183456
 mas 'Affinity Designer', id: 824171161
 mas 'Gemini 2', id: 1090488118  
-mas 'ReadKit: Read Later and RSS', id: 588726889  
+
 mas 'DaisyDisk', id: 411643860  
-mas 'Surfshark', id: 1437809329    
-mas 'WhatsApp Desktop', id: 1147396723
+
 mas 'World Clock Pro', id: 858446756 
 mas 'HomePass for HomeKit', id: 1330266650  
 mas 'HomeCam for HomeKit', id: 1292995895
+
 # mas 'Banktivity', id: 1480779512
 # mas 'Controller for HomeKit', id: 1198176727
 # mas 'Home Assistant', id: 1099568401
 
-# =========================================================
+# 
 # AppStore Account Switching - Manually Install from AppStore (other account)
 #       Having issues with shared apps amongst family members - app purchased against other accounts
-# =========================================================
+#
 
 # mas 'PDFOptim - The PDF Compressor', id: 621276561
 # mas 'Photos Exif Editor', id: 1202851767
@@ -174,6 +184,8 @@ mas 'HomeCam for HomeKit', id: 1292995895
 # =========================================================
 #   Manual Installs - downloads
 # =========================================================
+
+# Hostbuddy (retired - old licenses only) - https://clickontyler.com/support/s/7/
 
 # SIP 2 - screen
 # sip # https://sipapp.fra1.digitaloceanspaces.com/updates/v2/sip.dmg
@@ -200,3 +212,19 @@ mas 'HomeCam for HomeKit', id: 1292995895
 # mas 'Microsoft Excel', id: 462058435
 # mas 'Microsoft PowerPoint', id: 462062816
 # mas 'Microsoft OneNote', id: 784801555
+
+
+# =========================================================
+# SetApp - includes some perviosuly purchased apps
+#
+
+# BusyCal
+# Cleanshot
+# Paste
+# Shimo
+# Jump Desktop
+
+# -- nice to haves
+# Folx
+# Sip
+# Taskheat https://apps.apple.com/app/apple-store/id1431995750
