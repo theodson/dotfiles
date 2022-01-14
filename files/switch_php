@@ -11,7 +11,9 @@ export COMPOSER_PROCESS_TIMEOUT="${COMPOSER_PROCESS_TIMEOUT:-900}" # default is 
 export COMPOSER_MEMORY_LIMIT="${COMPOSER_MEMORY_LIMIT:-2G}"
 export COMPOSER_HOME="$HOME/.composer"
 
-if test composer -v &>/dev/null; then
+export DBGLOG=/tmp/switch_php.debug.log
+
+if test composer -v >>$DBGLOG 2>&1; then
 
     # add composer to path if possible
     
@@ -22,7 +24,7 @@ if test composer -v &>/dev/null; then
         # ensure composer/bin comes later in search path
         #
         folder="$(composer global config -q --absolute vendor-dir)/bin"
-        echo $PATH | grep "$folder" &>/dev/null && true || export PATH="$PATH:$folder" # add path later in seach path if missing 
+        echo $PATH | grep "$folder" >>$DBGLOG 2>&1 && true || export PATH="$PATH:$folder" # add path later in seach path if missing 
     fi
 
 fi
@@ -49,7 +51,7 @@ function composer_global_clean() {
         return 1
     fi
 
-    composer global dump &>/dev/null || true # dump autoloader to generate 'platform_check.php'
+    composer global dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
 }
 
 
@@ -104,7 +106,7 @@ function composer_global_install() {
             ;;            
     esac
     
-    # composer global show -D 2>/dev/null | awk '{print $1":"$2}'
+    # composer global show -D 2>>$DBGLOG | awk '{print $1":"$2}'
 }
 
 
@@ -115,37 +117,39 @@ function valet_uninstall() {
     #
     # Help brew after valet's touched things.
     #
-    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
+    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
 
     echo "🤞 Uninstall valet"
-    type -p valet &>/dev/null && valet uninstall --force --no-interaction &>/dev/null || true
+    type -p valet >>$DBGLOG 2>&1 && yes | valet uninstall --force --no-interaction >>$DBGLOG 2>&1 || true
 
-    composer global remove --no-interaction laravel/valet &>/dev/null || echo ' Valet not installed via composer global'
+    composer global remove --no-interaction laravel/valet >>$DBGLOG 2>&1 || echo ' Valet not installed via composer global'
 
     echo "🤞 Uninstall brew services"
     for formula in dnsmasq nginx; do
-        sudo brew services stop $formula &>/dev/null || true
-        sudo brew uninstall --force --ignore-dependencies "$formula" &>/dev/null || sudo rm -rf /usr/local/Cellar/$formula || true
-        brew uninstall --force --ignore-dependencies "$formula" &>/dev/null || sudo rm -rf /usr/local/Cellar/$formula || true
+        sudo brew services stop $formula >>$DBGLOG 2>&1 || true
+        sudo brew uninstall --force --ignore-dependencies "$formula" >>$DBGLOG 2>&1 || sudo rm -rf /usr/local/Cellar/$formula || true
+        brew uninstall --force --ignore-dependencies "$formula" >>$DBGLOG 2>&1 || sudo rm -rf /usr/local/Cellar/$formula || true
     done
 
     echo "🤞 Force tidyup of empty brew formula directories"
     find /usr/local/Cellar -type d -empty -maxdepth 1 -exec rm -rf {} \; || true
 
-    [ -d ~/.valet ] && sudo rm -r ~/.valet &>/dev/null || true
-    [ -d ~/.config/valet ] && sudo rm -r ~/.config/valet &>/dev/null || true
+    [ -d ~/.valet ] && sudo rm -r ~/.valet >>$DBGLOG 2>&1 || true
+    [ -d ~/.config/valet ] && sudo rm -r ~/.config/valet >>$DBGLOG 2>&1 || true
 
     echo "🤞 Force tidyup of php / pecl / pear directories"
-    sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* &>/dev/null || true
-    sudo rm -rf /private/tmp/pear/ &>/dev/null || true
+    sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* >>$DBGLOG 2>&1 || true
+    sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* >>$DBGLOG 2>&1 || true
+    sudo rm -rf /private/tmp/pear/ >>$DBGLOG 2>&1 || true
+    sudo rm -rf /usr/local/bin/valet
 
-    brew cleanup -q &>/dev/null || true
+    brew cleanup -q >>$DBGLOG 2>&1 || true
 }
 
 
 function switch_php() {
 
-    echo "${FUNCNAME[0]}"
+    echo "${FUNCNAME[0]} $@"
     sudo -v
     
     if test -r $HOME/.dotfile_lastrun; then
@@ -164,13 +168,17 @@ function switch_php() {
         return 1
     }
     
-    if ! type -p composer &>/dev/null; then
+    if ! type -p composer >>$DBGLOG 2>&1; then
         echo "🤔 Cannot find composer - cannot progress!"
         return 1 # composer is not installed
     fi 
 
-    local php_version_current=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
+    
+    
+    local php_version_available=$(brew list -1 --formula | grep php@ | head -1) 
     local php_version_target=$1 # n.n format
+    local php_version_current=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
+    
 
     # =========================================================================
     #
@@ -187,12 +195,13 @@ function switch_php() {
         composer_global_install ${php_version_current} 
 
         if ! test -e ${valet}; then 
-            echo "🤔 Still cannot find valet - run .composer/vendor/bin/valet install"
+            echo "🤔 Still cannot find valet - running .composer/vendor/bin/valet install"
             $COMPOSER_HOME/vendor/bin/valet install
         fi
 
-        if ! test -e ${valet} && ! ${valet} -v &>/dev/null; then 
+        if ! test -e ${valet} && ! ${valet} -v >>$DBGLOG 2>&1; then 
             echo "🤔 Looks like we broke it - still can't find valet at ${valet}!"
+            echo -e "🧐 Try\nphp_install $php_version_target\n"
             return 1
         else
             echo "⚡️ Valet restored at $valet"
@@ -203,7 +212,7 @@ function switch_php() {
     echo "⚡️ Trust in Valet !"
     sudo -v && $valet trust
     
-    #echo "⚡️ Switching php versions using Valet - php:${php_version_current}"
+    #echo "⚡️ Switching php versions using Valet - php@${php_version_current}"
     # possibly skip this - or call it if valet trust fails ( essentially we need a check that valet is installed and ready to call 'valet use' )
     echo "$valet install || return 1"
     
@@ -213,11 +222,45 @@ function switch_php() {
     #   Switch PHP to the target version
     #
 
-    echo "⚡️ Switch from php:${php_version_current}"
+    echo "⚡️ Switching from php@${php_version_current}"
     
+    echo "⚡️ Brew Services - stop all php-fpm ( before switching )" 
+    (   
+        # it appears when switching to a lower php version the valet command for the lower version
+        # is unable to shutdown php-fpm of newer php versions leaving duplicate php-fpm services
+        # this might not be an issue if multiple php-fpm are able to run at the same time (different ports possibly)
+        brew services stop -q php@${php_version_current} &&
+        brew services stop -q php  # most recent version (doesnt specify a version)
+        
+    ) &> $DBGLOG || {
+        # force php-fpm down when graceful request to stop fails
+        sudo brew services stop -q php@${php_version_current} >>$DBGLOG 2>&1 || true
+        sudo brew services stop -q php >>$DBGLOG 2>&1 || true
+        echo -n "🤔 Force all php-fpm down " 
+        killall -9 php-fpm >>$DBGLOG 2>&1 && echo "👍" || echo "👎"
+    }
+
+    ( 
+        # setup permissions for successful install
+        pushd /usr/local/etc/; 
+        sudo chown -R $(whoami) php*; 
+        popd 
+    ) >>$DBGLOG 2>&1 || true
+
     $valet use php@${php_version_target} --force || return 1
 
-    echo "⚡️ Switch to php:${php_version_target}"
+    ( 
+        # sometimes brew services php-fpm fails - this is a permissions issue that creeps in somewhere.
+        pushd /usr/local/etc/; sudo chown -R $(whoami) php*; popd ) >>$DBGLOG 2>&1 || {
+        echo -n "🤔 Looks like permissions reset failed"
+        echo -e "try\n  brew postinstall php@${php_version_target} --verbose --debug"
+    }
+
+    # this might be required as brew services 
+    echo "⚡️ brew postinstall php@${php_version_target} (forced to run)" 
+    brew postinstall php@${php_version_target} | grep -E 'Postinstalling|update-channels'
+
+    echo "⚡️ Switched  to php@${php_version_target}"
 
     #
     # Php Extensions 
@@ -236,8 +279,8 @@ function switch_php() {
 
     echo "⚡️ Composer Global update for ${php_version_target}"
     composer_global_install ${php_version_target}
-    echo "✨ "
-    composer global show -D --no-interaction 2>/dev/null | awk '{print $1":"$2}'
+    echo "✨ Composer Global root packages "
+    composer global show -D --no-interaction 2>>$DBGLOG | awk '{print $1":"$2}'
 
     #
     # Stop existing php-fpm services - ( might not need to ??? )
@@ -249,8 +292,11 @@ function switch_php() {
     for phpver in $(echo $PHP_VERSIONS | xargs -n 1 | grep -v "${php_version_target}" ); # for all php versions except chosen version
     do 
         brewservice="php@$phpver"
-        echo "✨ Stopping php-fpm : $phpver"    
-        sudo brew services stop -q $brewservice || echo "🧨 failed to stop $brewservice"
+        echo "✨ Stopping php-fpm : $phpver"
+        sudo brew services stop -q $brewservice || {
+            echo "🧨 failed to stop $brewservice"
+            # htop -F php-fpm might help
+        }
     done
 
  
@@ -260,13 +306,14 @@ function switch_php() {
     #
     # Help brew after valet's touched things.
     #
-    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
+    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
 
     # read -p "Press enter to continue ( about to run Valet Restart )"
-    echo "⚡️ Valet Restart ( to be sure, to be sure !! )"
+    # echo "⚡️ Valet Restart ( to be sure, to be sure !! )"
     $valet restart
 
     sudo brew services list
+    echo "🪲 debug logs at $DBGLOG"
 
 }
 
@@ -278,10 +325,10 @@ function php_install() {
     echo "${FUNCNAME[0]}"
 
     sudo -v
-    # Assumption is vis brew bundle .Brewfile we have tapped 'shivammathur/php' and 'shivammathur/extensions'
-    if ! test php -v &>/dev/null; then
-        #HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php
-        brew reinstall --force -q shivammathur/php/php
+    # Assumption is via brew bundle .Brewfile we have tapped 'shivammathur/php' and 'shivammathur/extensions'
+    if ! test php -v >>$DBGLOG 2>&1; then
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php
+        #brew reinstall --force -q shivammathur/php/php
         brew install --ignore-dependencies composer
     fi
     brew cleanup -q
@@ -291,8 +338,8 @@ function php_install() {
 
     composer_global_install $current_php_version
     
-    echo "✨ "    
-    composer global show -D --no-interaction 2>/dev/null | awk '{print $1":"$2}'
+    echo "✨ Composer Global root packages "
+    composer global show -D --no-interaction 2>>$DBGLOG | awk '{print $1":"$2}'
 
     switch_php $target_php_version
 
@@ -322,18 +369,18 @@ function php_uninstall() {
   
     echo "🤞 Uninstall brew services"
     for formula in $(brew services list | grep '^php' | cut -d' ' -f1); do
-        sudo brew services stop $formula &>/dev/null
-        sudo brew services remove $formula &>/dev/null
-        brew services stop $formula &>/dev/null
-        brew services remove $formula &>/dev/null
+        sudo brew services stop $formula >>$DBGLOG 2>&1
+        sudo brew services remove $formula >>$DBGLOG 2>&1
+        brew services stop $formula >>$DBGLOG 2>&1
+        brew services remove $formula >>$DBGLOG 2>&1
     done
 
 
     echo "🤞 Tidy brew folders"    
     find /usr/local/Cellar -type d -empty -maxdepth 1 -exec rm -rf {} \; || true
     sudo /bin/rm -rf /usr/local/Cellar/php@* /usr/local/Cellar/php || true
-    sudo /bin/rm -f $(brew --prefix)/bin/valet &>/dev/null || true
-    brew cleanup -q &>/dev/null || true
+    sudo /bin/rm -f $(brew --prefix)/bin/valet >>$DBGLOG 2>&1 || true
+    brew cleanup -q >>$DBGLOG 2>&1 || true
     
     composer_global_clean
 

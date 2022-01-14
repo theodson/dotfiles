@@ -107,12 +107,12 @@ alias switch_js='nvm'
 
 
 # PHP Laravel Valet 
-alias sphp70='switch_php 7.0'
-alias sphp72='switch_php 7.2'
-alias sphp73='switch_php 7.3'
-alias sphp74='switch_php 7.4'
-alias sphp80='switch_php 8.0'
-alias sphp81='switch_php 8.1'
+alias sphp70='time switch_php 7.0'
+alias sphp72='time switch_php 7.2'
+alias sphp73='time switch_php 7.3'
+alias sphp74='time switch_php 7.4'
+alias sphp80='time switch_php 8.0'
+alias sphp81='time switch_php 8.1'
 
 alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
 
