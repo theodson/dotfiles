@@ -7,7 +7,9 @@ cd $HOME
 echo '================================================================================'
 echo 'Preparing dotfile install ...'
 sudo -v # ensure we only type password once
-echo -e "Reinstall Valet and Php (yN) ? " && read valetphp
+
+type php &>/dev/null && current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2) 
+
 # echo '================================================================================'
 
 if test ! $(which brew); then
@@ -51,11 +53,13 @@ echo 'Installing, updating, and cleaning up brew dependencies...'
 
 #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
 
+export HOMEBREW_NO_INSTALL_CLEANUP=true 
+
 brew bundle --global
-brew bundle cleanup --force --global
+#brew bundle cleanup --force --global
 # brew services cleanup
 # sudo brew services cleanup
-brew cleanup
+#brew cleanup
 echo 'Done installing, updating, and cleaning up brew dependencies.'
 # echo '================================================================================'
 
@@ -122,13 +126,21 @@ date > $HOME/.dotfile_lastrun
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
 
+
+source $HOME/dotfiles/files/switch_php
+switch_php "${current_php_version:-8.1}"
+echo "Done"
+exit 0
+
+# for now for a php restart as we are often in old 7.0
+
+echo -e "Check and Fix Php (yN) ? " && read valetphp
 case $valetphp in
     [Yy]* )        
         [ -r $HOME/dotfiles/files/switch_php ] && {
-            sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
             source $HOME/dotfiles/files/switch_php
-            valet_uninstall
-            switch_php 8.1
+            switch_php "${current_php_version:-8.1}"
+            #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
             # if this fails run php_uninstall and then switch_php 8.1
         }
         ;;
