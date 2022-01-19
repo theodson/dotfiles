@@ -54,11 +54,43 @@
         }; f"
     #
     tag-date-hash = "!f() { \
-            git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) \
-            obj=%(objectname:short)\" refs/tags | while read entry;do \
+            git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname:short)\" refs/tags \
+            | while read entry;do \
                 eval $entry; \
                 echo \"$ref,`git log -1 --date=format:'%Y %h %d' --format=\"%cd\" $obj` ($obj)\" | column -t -x -s ','; done \
         }; f"
+    #
+    list-lightweight-tags = "!f() {  \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname:short) type=%(objecttype) objdate=%(creatordate:unix)\" refs/tags \
+        | while read entry; \
+            do eval $entry; \
+            [ $type = commit ] && echo "$ref $obj $type $objdate"; \
+        done ; \
+    }; f"
+    #
+    list-annotated-tags = "!f() {  \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname) type=%(objecttype) objdate=%(creatordate:unix)\" refs/tags \
+        | while read entry; \
+            do eval $entry; \
+            annotated_origin=$(git rev-list -n 1 $obj); \
+            [ $type = tag ] && echo "$ref $obj $type $objdate $annotated_origin"; \
+        done ; \
+    }; f"
+    #    
+    list-all-tags-annotated-resolved = "!f() {  \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname) type=%(objecttype) objdate=%(creatordate:unix) objdatefull=%(creatordate:iso)\" refs/tags \
+        | while read entry; \
+            do eval $entry; \
+            prettydate=$(echo \"$objdatefull\"|tr ' ' _); \
+            [ $type = tag ] && { \
+                annotated_origin=$(git rev-list -n 1 $obj); \
+                objdate=$(git show --date=iso $annotated_origin --format=%at | head -1 ); \
+                echo "$ref $annotated_origin tag $objdate $prettydate"; \
+            }; \
+            [ $type = commit ] && echo "$ref $obj $type $objdate $prettydate"; \
+        done ; \
+    }; f"
+    #      
 [alias "credentials"]
 	helper = config --get-all --show-origin credential.helper
 	local = config --show-origin --local --get-regexp user.*
