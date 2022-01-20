@@ -75,6 +75,7 @@
 	submoduleSummary = true
 [tag]
 	forceSignAnnotated = false
+	sort = v:refname
 [include]
     path = .gitconfig_aliases
     
