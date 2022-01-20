@@ -69,7 +69,7 @@
     }; f"
     #
     list-annotated-tags = "!f() {  \
-        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname) type=%(objecttype) objdate=%(creatordate:unix)\" refs/tags \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname:short) type=%(objecttype) objdate=%(creatordate:unix)\" refs/tags \
         | while read entry; \
             do eval $entry; \
             annotated_origin=$(git rev-list -n 1 $obj); \
@@ -78,7 +78,7 @@
     }; f"
     #    
     list-all-tags-annotated-resolved = "!f() {  \
-        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname) type=%(objecttype) objdate=%(creatordate:unix) objdatefull=%(creatordate:iso)\" refs/tags \
+        git for-each-ref --sort=creatordate --shell --format=\"ref=%(refname:short) obj=%(objectname:short) type=%(objecttype) objdate=%(creatordate:unix) objdatefull=%(creatordate:iso)\" refs/tags \
         | while read entry; \
             do eval $entry; \
             prettydate=$(echo \"$objdatefull\"|tr ' ' _); \
