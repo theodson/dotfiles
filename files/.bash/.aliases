@@ -30,6 +30,7 @@ alias pwdtail='pwd | rev | cut -d/ -f1-2 | rev'
 alias git_config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias git_credentials_show='echo -e "\n# git credentials (helper)";git credentials.helper;echo -e "\n# git credentials (global)";git credentials.global;echo -e "\n# git credentials (local)";git credentials.local'
 alias git_find_branches_for_hash='git branch -a --contains'
+alias tower='gittower git rev-parse --show-toplevel'
 
 # alias nah='git reset --hard; git clean -df' # Gone forever - Reset to last commit and remove untracked files and directories.
 alias nah='try nope - nah is too dangerous'
