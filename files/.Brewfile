@@ -79,7 +79,7 @@ cask 'kitty'
 # cask 'mongodb-compass'
 cask 'notion'
 cask 'postman'
-# cask 'phpmon'
+cask 'phpmon'
 cask 'zoom'
 cask 'launchcontrol'
 cask 'rectangle'
@@ -87,6 +87,10 @@ cask 'visual-studio-code'
 cask 'vagrant'
 # cask 'vagrant-manager'
 cask 'vlc'
+cask 'microsoft-teams'
+cask 'obsidian'
+cask 'raspberry-pi-imager'
+cask 'vnc-viewer'
 
 # fonts
 cask 'font-jetbrains-mono' # may not be required given jetbrains-toolbox install
@@ -106,6 +110,7 @@ cask 'font-dejavu'
 #
 cask 'helo'
 cask 'navicat-for-postgresql'
+cask 'cleanshot'
 cask 'pinegrow'
 cask 'postbox'
 cask 'gitkraken'
@@ -128,6 +133,8 @@ mas 'SQLiteFlow - SQLite Editor', id: 1378587993
 
 mas 'Jump Desktop (RDP, VNC, Fluid)', id: 524141863
 mas 'SerialTools', id: 611021963    
+
+
 
 
 # =========================================================
