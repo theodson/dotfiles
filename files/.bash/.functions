@@ -511,6 +511,21 @@ function enter_directory() {
 }
 
 
+function pghashlib_install() {
+    
+    brew install docutils # provides rst2html command
+    cd /tmp && \
+    wget --quiet https://github.com/markokr/pghashlib/archive/master.zip -O pghashlib.zip && \
+    unzip pghashlib.zip && \
+    pushd pghashlib-master && \
+    make && \
+    make install && \
+    popd && \
+    rm -rf pghashlib-master && \
+    rm -f pghashlib.zip
+}
+
+
 # https://gist.githubusercontent.com/nachoparker/c93a8675ba9a93bc5f422b060561a169/raw/483685ac78bccfba4277315559ece375cc287eed/git-forget-blob.sh
 # Completely remove a file from a git repository history
 #
