@@ -503,11 +503,12 @@ function clear_dns_cache() {
 
 function enter_directory() {
 
-	if [[ $PWD == $PREV_PWD ]]; then
+	if [[ $PWD == $PREV_PWD ]]; then    
 		return
 	fi
 	PREV_PWD=$PWD
-	[[ -f ".nvmrc" ]] && nvm use # Use correct node version
+	[[ -f ".nvmrc" ]] && nvm use && read -p "updage npm Yn ?" upg && test "${upg:-n}" == "Y" && nvm install-latest-npm || true
+     # Use correct node version AND use latest compatible NPM
 }
 
 
