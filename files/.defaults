@@ -55,3 +55,9 @@ defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 killall Finder
 
+# ===========================================================================
+# Disable Command-Shift-A and Command-Shift-M from the Command Line
+#   https://intellij-support.jetbrains.com/hc/en-us/articles/360005137400-Cmd-Shift-A-hotkey-opens-Terminal-with-apropos-search-instead-of-the-Find-Action-dialog
+#   https://gist.github.com/theodson/b4282a3b6e54091db4d52a4c3c10ad25
+#
+defaults import pbs $HOME/dotfiles/files/manpage_fix_CMD_SHIFT_A.xml

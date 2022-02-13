@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSServicesStatus</key>
+	<dict>
+		<key>com.apple.Terminal - Open man Page in Terminal - openManPage</key>
+		<dict>
+			<key>enabled_context_menu</key>
+			<false/>
+			<key>enabled_services_menu</key>
+			<false/>
+			<key>presentation_modes</key>
+			<dict>
+				<key>ContextMenu</key>
+				<false/>
+				<key>ServicesMenu</key>
+				<false/>
+			</dict>
+		</dict>
+		<key>com.apple.Terminal - Search man Page Index in Terminal - searchManPages</key>
+		<dict>
+			<key>enabled_context_menu</key>
+			<false/>
+			<key>enabled_services_menu</key>
+			<false/>
+			<key>presentation_modes</key>
+			<dict>
+				<key>ContextMenu</key>
+				<false/>
+				<key>ServicesMenu</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>

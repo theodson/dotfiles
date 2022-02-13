@@ -1,6 +1,6 @@
 # TODO 
 
-- [ ] Fix SHIFT+CMD+A conflict on PHPStorm and macOs
+- [x] Fix SHIFT+CMD+A conflict on PHPStorm and macOs
 - [ ] jump to next/previous word ALT+R ALT+L in kitty
 - [ ] **CMD+F for find** in kitty - how ?
 - [ ] Review `mackup` - https://github.com/lra/mackup
