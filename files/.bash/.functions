@@ -240,11 +240,11 @@ function js_env_install() {
 
 function clearall() {
     [ ! -e ./artisan ] && echo "no artisan" && return
-    artisan cache:clear
-    artisan config:clear
-    artisan route:clear
-    [ "$1" == 'oc' ] && artisan opcache:clear || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
-    artisan optimize
+    php artisan cache:clear
+    php artisan config:clear
+    php artisan route:clear
+    [ "$1" == 'oc' ] && php artisan opcache:clear || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+    php artisan optimize
 }
 
 # TODO - move to autocomplete section
