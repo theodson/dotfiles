@@ -1,12 +1,14 @@
 # TODO 
 
 - [x] Fix SHIFT+CMD+A conflict on PHPStorm and macOs
+- [ ] Top of Page - https://second-cup-of-coffee.com/move-cursor-to-the-top-of-the-page-in-phpstorm/
 - [ ] jump to next/previous word ALT+R ALT+L in kitty
 - [ ] **CMD+F for find** in kitty - how ?
 - [ ] Review `mackup` - https://github.com/lra/mackup
 - [ ] Review `restic` - backups https://restic.readthedocs.io/en/stable/040_backup.html
 
 - [ ] Store Keys safely - investigate https://github.com/elasticdog/transcrypt
+- [ ] VSCode - Sync Settings - https://code.visualstudio.com/docs/editor/settings-sync
 
 # Key management 
 
