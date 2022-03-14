@@ -52,7 +52,7 @@ $RECYCLE.BIN/
 *.msp
 ._*
 
-# Idea 
+# Idea
 .idea/
 
 # Swap
@@ -103,7 +103,7 @@ $RECYCLE.BIN/
 ._*
 
 
-# Idea 
+# Idea
 .idea/
 
 # vi
@@ -117,5 +117,8 @@ log/
 *.log
 scratch/
 
-# laravel 
+# laravel
 /tailwind.config_full.js
+
+# Php
+.php-cs-fixer.cache
