@@ -16,15 +16,15 @@ export DBGLOG=/tmp/switch_php.debug.log
 if test composer -v >>$DBGLOG 2>&1; then
 
     # add composer to path if possible
-    
+
     export COMPOSER_HOME="$(composer global config -q --absolute home)"
 
-    if test -e "$(composer global config -q --absolute vendor-dir)/bin"; then 
+    if test -e "$(composer global config -q --absolute vendor-dir)/bin"; then
         #
         # ensure composer/bin comes later in search path
         #
         folder="$(composer global config -q --absolute vendor-dir)/bin"
-        echo $PATH | grep "$folder" >>$DBGLOG 2>&1 && true || export PATH="$PATH:$folder" # add path later in seach path if missing 
+        echo $PATH | grep "$folder" >>$DBGLOG 2>&1 && true || export PATH="$PATH:$folder" # add path later in seach path if missing
     fi
 
 fi
@@ -32,8 +32,8 @@ fi
 
 function php_show_modules() {
 
-    # show loaded modules 
-    
+    # show loaded modules
+
     local modules="$(echo $PHP_EXTENSIONS|sed 's#shivammathur/extensions/##g'| tr ' ' '|')"
     echo "php-fpm modules : $(php-fpm -m | grep -iE "$modules" | tr A-Z a-z | sort | uniq | xargs)"
     echo "php modules     : $(php -m | grep -iE "$modules" | tr A-Z a-z | sort | uniq | xargs)"
@@ -44,7 +44,7 @@ function composer_global_clean() {
 
     echo "${FUNCNAME[0]} $@"
 
-    if test ! -z "$COMPOSER_HOME" && test -d "$COMPOSER_HOME"; then   
+    if test ! -z "$COMPOSER_HOME" && test -d "$COMPOSER_HOME"; then
         /bin/rm -f "${COMPOSER_HOME}"/composer.{json,lock} || true
     else
         echo "problem with composer"
@@ -67,7 +67,7 @@ function composer_global_install() {
 
     composer_global_clean
 
-    # 
+    #
     echo "composer global require for php@$phpversion"
     case "$phpversion" in
         5.6 )
@@ -95,17 +95,17 @@ function composer_global_install() {
                 "jorijn/laravel-security-checker" \
                 "tightenco/takeout"
             ;;
-        * ) 
+        * )
             composer global require --quiet --with-all-dependencies --no-interaction \
                 "friendsofphp/php-cs-fixer"  \
                 "laravel/installer" \
                 "laravel/valet:^2.17" \
                 "laravel/envoy" \
                 "slince/composer-registry-manager" \
-                "jorijn/laravel-security-checker" 
-            ;;            
+                "jorijn/laravel-security-checker"
+            ;;
     esac
-    
+
     # composer global show -D 2>>$DBGLOG | awk '{print $1":"$2}'
 }
 
@@ -151,13 +151,13 @@ function switch_php() {
 
     echo "${FUNCNAME[0]} $@"
     sudo -v
-    
+
     if test -r $HOME/.dotfile_lastrun; then
         # likely php/valet need resetting - force this by removing valet
         valet=$(brew --prefix)/bin/valet || { echo 'brew has issues'; return 1; }
         /bin/rm -f $valet $HOME/.dotfile_lastrun
     fi
-    
+
     #
     # https://laracasts.com/discuss/channels/general-discussion/issues-with-laravel-valet-when-installing-old-php-version
     # https://freek.dev/1185-easily-switch-php-versions-in-laravel-valet
@@ -167,18 +167,18 @@ function switch_php() {
         echo "function ${FUNCNAME} php_version - required use n.n style"
         return 1
     }
-    
+
     if ! type -p composer >>$DBGLOG 2>&1; then
         echo "🤔 Cannot find composer - cannot progress!"
         return 1 # composer is not installed
-    fi 
+    fi
 
-    
-    
-    local php_version_available=$(brew list -1 --formula | grep php@ | head -1) 
+
+
+    local php_version_available=$(brew list -1 --formula | grep php@ | head -1)
     local php_version_target=$1 # n.n format
     local php_version_current=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
-    
+
 
     # =========================================================================
     #
@@ -190,16 +190,16 @@ function switch_php() {
     # We need valet to continue
     valet=$(brew --prefix)/bin/valet
 
-    if ! test -e ${valet}; then 
+    if ! test -e ${valet}; then
         echo "🤔 Missing php/valet - restoring via composer"
-        composer_global_install ${php_version_current} 
+        composer_global_install ${php_version_current}
 
-        if ! test -e ${valet}; then 
+        if ! test -e ${valet}; then
             echo "🤔 Still cannot find valet - running .composer/vendor/bin/valet install"
             $COMPOSER_HOME/vendor/bin/valet install
         fi
 
-        if ! test -e ${valet} && ! ${valet} -v >>$DBGLOG 2>&1; then 
+        if ! test -e ${valet} && ! ${valet} -v >>$DBGLOG 2>&1; then
             echo "🤔 Looks like we broke it - still can't find valet at ${valet}!"
             echo -e "🧐 Try\nphp_install $php_version_target\n"
             return 1
@@ -208,14 +208,14 @@ function switch_php() {
         fi
     fi
 
-    # permissions for interupt free switching 
+    # permissions for interupt free switching
     echo "⚡️ Trust in Valet !"
     sudo -v && $valet trust
-    
+
     #echo "⚡️ Switching php versions using Valet - php@${php_version_current}"
     # possibly skip this - or call it if valet trust fails ( essentially we need a check that valet is installed and ready to call 'valet use' )
     echo "$valet install || return 1"
-    
+
 
     # =========================================================================
     #
@@ -223,50 +223,50 @@ function switch_php() {
     #
 
     echo "⚡️ Switching from php@${php_version_current}"
-    
-    echo "⚡️ Brew Services - stop all php-fpm ( before switching )" 
-    (   
+
+    echo "⚡️ Brew Services - stop all php-fpm ( before switching )"
+    (
         # it appears when switching to a lower php version the valet command for the lower version
         # is unable to shutdown php-fpm of newer php versions leaving duplicate php-fpm services
         # this might not be an issue if multiple php-fpm are able to run at the same time (different ports possibly)
         brew services stop -q php@${php_version_current} &&
         brew services stop -q php  # most recent version (doesnt specify a version)
-        
+
     ) &> $DBGLOG || {
         # force php-fpm down when graceful request to stop fails
         sudo brew services stop -q php@${php_version_current} >>$DBGLOG 2>&1 || true
         sudo brew services stop -q php >>$DBGLOG 2>&1 || true
-        echo -n "🤔 Force all php-fpm down " 
+        echo -n "🤔 Force all php-fpm down "
         killall -9 php-fpm >>$DBGLOG 2>&1 && echo "👍" || echo "👎"
     }
 
-    ( 
+    (
         # setup permissions for successful install
-        pushd /usr/local/etc/; 
-        sudo chown -R $(whoami) php*; 
-        popd 
+        pushd /usr/local/etc/;
+        sudo chown -R $(whoami) php*;
+        popd
     ) >>$DBGLOG 2>&1 || true
 
     $valet use php@${php_version_target} --force || return 1
 
-    ( 
+    (
         # sometimes brew services php-fpm fails - this is a permissions issue that creeps in somewhere.
         pushd /usr/local/etc/; sudo chown -R $(whoami) php*; popd ) >>$DBGLOG 2>&1 || {
         echo -n "🤔 Looks like permissions reset failed"
         echo -e "try\n  brew postinstall php@${php_version_target} --verbose --debug"
     }
 
-    # this might be required as brew services 
-    echo "⚡️ brew postinstall php@${php_version_target} (forced to run)" 
+    # this might be required as brew services
+    echo "⚡️ brew postinstall php@${php_version_target} (forced to run)"
     brew postinstall php@${php_version_target} | grep -E 'Postinstalling|update-channels'
 
     echo "⚡️ Switched  to php@${php_version_target}"
 
     #
-    # Php Extensions 
+    # Php Extensions
     #
     echo -e "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS| xargs -n 1 )\n"
-    for ext in $PHP_EXTENSIONS; do 
+    for ext in $PHP_EXTENSIONS; do
         forumla="${ext}@${php_version_target}"
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | grep -E '^=.*nstalling'
     done
@@ -286,11 +286,11 @@ function switch_php() {
     # Stop existing php-fpm services - ( might not need to ??? )
     #
 
-    echo "⚡️ Brew Services - stop all php-fpm " 
+    echo "⚡️ Brew Services - stop all php-fpm "
     sudo brew services stop -q php # most recent version (doesnt specify a version)
 
     for phpver in $(echo $PHP_VERSIONS | xargs -n 1 | grep -v "${php_version_target}" ); # for all php versions except chosen version
-    do 
+    do
         brewservice="php@$phpver"
         echo "✨ Stopping php-fpm : $phpver"
         sudo brew services stop -q $brewservice || {
@@ -299,7 +299,7 @@ function switch_php() {
         }
     done
 
- 
+
     echo "⚡️ Valet installing php ${php_version_target}"
     $valet install
 
@@ -334,10 +334,10 @@ function php_install() {
     brew cleanup -q
 
     target_php_version="${1:-8.1}"
-    current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2) 
+    current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
 
     composer_global_install $current_php_version
-    
+
     echo "✨ Composer Global root packages "
     composer global show -D --no-interaction 2>>$DBGLOG | awk '{print $1":"$2}'
 
@@ -364,9 +364,9 @@ function php_uninstall() {
     phps="shivammathur/php/php $(for ver in $PHP_VERSIONS; do echo shivammathur/php/php@$ver; done;)"
     formulas="$(for ext in $PHP_EXTENSIONS; do  for ver in $PHP_VERSIONS; do echo $ext@$ver; done; done | xargs)"
 
-    HOMEBREW_NO_INSTALL_CLEANUP=true brew uninstall --force composer php $phps $formulas composer 
+    HOMEBREW_NO_INSTALL_CLEANUP=true brew uninstall --force composer php $phps $formulas composer
 
-  
+
     echo "🤞 Uninstall brew services"
     for formula in $(brew services list | grep '^php' | cut -d' ' -f1); do
         sudo brew services stop $formula >>$DBGLOG 2>&1
@@ -376,12 +376,12 @@ function php_uninstall() {
     done
 
 
-    echo "🤞 Tidy brew folders"    
+    echo "🤞 Tidy brew folders"
     find /usr/local/Cellar -type d -empty -maxdepth 1 -exec rm -rf {} \; || true
     sudo /bin/rm -rf /usr/local/Cellar/php@* /usr/local/Cellar/php || true
     sudo /bin/rm -f $(brew --prefix)/bin/valet >>$DBGLOG 2>&1 || true
     brew cleanup -q >>$DBGLOG 2>&1 || true
-    
+
     composer_global_clean
 
 }
