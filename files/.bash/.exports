@@ -3,7 +3,7 @@
 # Make vim the default editor.
 export EDITOR='vim';
 
-# ls command colours 
+# ls command colours
 export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
 
@@ -44,7 +44,7 @@ export GPG_TTY=$(tty);
 export BASH_SILENCE_DEPRECATION_WARNING=1;
 
 
-# Vagrant 
+# Vagrant
 export VAGRANT_DEFAULT_PROVIDER="${VAGRANT_DEFAULT_PROVIDER:-vmware_fusion}"
 
 
@@ -53,6 +53,10 @@ export PGHOST="${PGHOST:-localhost}"
 export PGUSER="${PGUSER:-postgres}"
 export PGDATABASE="${PGDATABASE:-postgres}"
 export PGVERSION="${PGVERSION:-9.5}" # this is not a standard PG ENV VAR
+
+# Themes
+
+export BAT_THEME="GitHub"
 
 # =============================================================================
 
@@ -64,7 +68,7 @@ if test composer -v &>/dev/null; then
     export COMPOSER_HOME="$(composer global config -q --absolute home)"
 fi
 
-# PHP Laravel Valet 
+# PHP Laravel Valet
 # PHP_EXTENSIONS Used in custom bash function 'switch_php'
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 
