@@ -3,7 +3,8 @@
 # - Valet is used to switch PHP versions
 #
 
-export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+#export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1}" # from shivammathur/extensions/imagick
 
 
@@ -177,7 +178,7 @@ function switch_php() {
 
     local php_version_available=$(brew list -1 --formula | grep php@ | head -1)
     local php_version_target=$1 # n.n format
-    local php_version_current=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
+    local php_version_current=$(php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2)
 
 
     # =========================================================================
