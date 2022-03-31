@@ -25,10 +25,56 @@ if test composer -v >>$DBGLOG 2>&1; then
         # ensure composer/bin comes later in search path
         #
         folder="$(composer global config -q --absolute vendor-dir)/bin"
-        echo $PATH | grep "$folder" >>$DBGLOG 2>&1 && true || export PATH="$PATH:$folder" # add path later in seach path if missing
+        echo $PATH | grep "$folder" >>$DBGLOG 2>&1 && true || export PATH="$PATH:$folder" # add later in search path if missing
     fi
 
 fi
+
+function php_cli_switch() {
+
+    local php_ver=$1 # n.n format
+    echo "$php_ver" | grep -q '.' || {
+        echo "PHP version required in N.N format"
+        return 2
+    }
+    echo "$php_ver" | grep -q '@' || php_ver="php@$php_ver" # ensure n.n format is converted to php@n.n
+    local php_path="$(brew --prefix)/opt/${php_ver}/bin"
+
+
+    # echo "$php_ver" | grep -q '@' && php_ver="$(echo $php_ver|cut -d@ -f2)" # ensure n.n format is converted to php@n.n
+    #local php_path=$(find -s /usr/local/Cellar/php* -path "/usr/local/Cellar/php*/${php_ver}*/bin" -type d -maxdepth 2 | tail -1)
+
+    if [ ! -z "$php_ver" -a -d "$php_path" ]; then
+
+        export COMPOSER_HOME="$HOME/.composer_${php_ver}"
+        #
+        # specified PHP version found in path 1st
+        # specified COMPOSER_HOME vendor binaries (per PHP version) found in path 1st (before /usr/local/)
+        #   this is to ensure valet uses a php specific composer global instead of the /usr/local/bin/valet
+        #   that is linked to a single composer global install (and hence php version).
+        #
+        export PATH="$php_path:${COMPOSER_HOME}/vendor/bin:$PATH" # add earlier in search path to override
+
+        echo -e "PATH temporarily updated to prefer $php_ver and composer global vendor at ${COMPOSER_HOME}/vendor/bin"
+
+        composer_global_install $(echo $php_ver|cut -d@ -f2)
+
+    else
+        echo "Cannot find php_path=$php_path"
+    fi
+
+}
+
+
+function php_cli_from_valet() {
+    [ -e .valetphprc ] || {
+        [ -e artisan ] && echo -e "Cannot find .valetphprc, try \necho php@8.1 > ./.valetphprc"
+        return 2
+    }
+    echo "Found '$(pwd)/.valetphprc' - upgrade to valet 3.x and use 'valet isolate php@n.n'"
+    local php_ver=`grep 'php@' .valetphprc`;
+    [ ! -z "$php_ver" ] && php_cli_switch $php_ver
+}
 
 
 function php_show_modules() {
@@ -44,6 +90,7 @@ function php_show_modules() {
 function composer_global_clean() {
 
     echo "${FUNCNAME[0]} $@"
+    # echo "using COMPOSER_HOME ${COMPOSER_HOME}"
 
     if test ! -z "$COMPOSER_HOME" && test -d "$COMPOSER_HOME"; then
         /bin/rm -f "${COMPOSER_HOME}"/composer.{json,lock} || true
@@ -67,43 +114,46 @@ function composer_global_install() {
     local phpversion=$1 # n.n format
 
     composer_global_clean
+    # echo "using COMPOSER_HOME ${COMPOSER_HOME}"
 
-    #
+    # other packages to consider
+    local consider_package="slince/composer-registry-manager "
+
     echo "composer global require for php@$phpversion"
     case "$phpversion" in
         5.6 )
             echo "not supported" && return 1
             ;;
         8.0 )
+            composer global config minimum-stability alpha
             composer global require --quiet --with-all-dependencies --no-interaction \
-                "tightenco/tlint" \
                 "friendsofphp/php-cs-fixer"  \
-                "laravel/installer" \
-                "laravel/valet:^2.17" \
-                "laravel/envoy" \
-                "slince/composer-registry-manager" \
                 "jorijn/laravel-security-checker" \
-                "tightenco/takeout"
+                "laravel/installer" \
+                "laravel/valet:^3.0" \
+                "laravel/envoy" \
+                "tightenco/takeout" \
+                "tightenco/tlint"
             ;;
         8.1 )
+            composer global config minimum-stability alpha
             composer global require --quiet --with-all-dependencies --no-interaction \
-                "tightenco/tlint" \
                 "friendsofphp/php-cs-fixer"  \
-                "laravel/installer" \
-                "laravel/valet:^2.17" \
-                "laravel/envoy" \
-                "slince/composer-registry-manager" \
                 "jorijn/laravel-security-checker" \
-                "tightenco/takeout"
+                "laravel/installer" \
+                "laravel/valet:^3.0" \
+                "laravel/envoy" \
+                "tightenco/takeout" \
+                "tightenco/tlint"
             ;;
         * )
+            composer global config minimum-stability alpha
             composer global require --quiet --with-all-dependencies --no-interaction \
                 "friendsofphp/php-cs-fixer"  \
+                "jorijn/laravel-security-checker" \
                 "laravel/installer" \
-                "laravel/valet:^2.17" \
-                "laravel/envoy" \
-                "slince/composer-registry-manager" \
-                "jorijn/laravel-security-checker"
+                "laravel/valet:^3.0" \
+                "laravel/envoy"
             ;;
     esac
 
