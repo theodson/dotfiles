@@ -8,7 +8,7 @@ echo '==========================================================================
 echo 'Preparing dotfile install ...'
 sudo -v # ensure we only type password once
 
-type php &>/dev/null && current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2) 
+type php &>/dev/null && current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
 
 # echo '================================================================================'
 
@@ -18,6 +18,12 @@ if test ! $(which brew); then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     echo 'Done installing homebrew.'
     echo '================================================================================'
+fi
+
+if test -f $HOME/.dotfile_lastrun; then
+    if test -f $HOME/dotfiles/preinstall; then
+        pushd $HOME/dotfiles && bash preinstall && popd || true
+    fi
 fi
 
 # if test ! -e $HOME/.vim/autoload/plug.vim; then
@@ -53,7 +59,7 @@ echo 'Installing, updating, and cleaning up brew dependencies...'
 
 #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
 
-export HOMEBREW_NO_INSTALL_CLEANUP=true 
+export HOMEBREW_NO_INSTALL_CLEANUP=true
 
 brew bundle --global
 #brew bundle cleanup --force --global
@@ -63,15 +69,18 @@ brew bundle --global
 echo 'Done installing, updating, and cleaning up brew dependencies.'
 # echo '================================================================================'
 
-# echo '================================================================================'
-# echo 'Installing and updating composer dependencies...'
+echo '================================================================================'
+echo 'Installing and updating composer dependencies...'
 # composer global update --with-all-dependencies
-# echo 'Done installing and updating composer dependencies.'
-# echo '================================================================================'
+type -p composer &>/dev/null && {
+    echo 'composer version --2.2 required for php < 7.2.5'
+    composer self-update --2.2 || true
+}
+echo 'Done installing and updating composer dependencies.'
+echo '================================================================================'
 
 
 # /bin/bash $HOME/dotfiles/link
-
 
 # echo '================================================================================'
 # echo 'Installing and updating npm dependencies...'
@@ -100,7 +109,7 @@ echo 'Done installing, updating, and cleaning up brew dependencies.'
 
 echo '================================================================================'
 echo 'Installing and updating terminal themes...'
-for theme in 3024_Day AtomOneLight PencilLight Material Spring ayu_light; do 
+for theme in 3024_Day AtomOneLight PencilLight Material Spring ayu_light; do
     THEME=https://raw.githubusercontent.com/dexpota/kitty-themes/master/themes/${theme}.conf
     wget -q "$THEME" -P ~/.config/kitty/themes
 done
@@ -126,24 +135,14 @@ date > $HOME/.dotfile_lastrun
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
 
-
+echo '================================================================================'
+echo 'Installing and updating php, composer and valet dependencies...'
 source $HOME/dotfiles/files/switch_php
-switch_php "${current_php_version:-8.1}"
-echo "Done"
-exit 0
-
-# for now for a php restart as we are often in old 7.0
-
-echo -e "Check and Fix Php (yN) ? " && read valetphp
-case $valetphp in
-    [Yy]* )        
-        [ -r $HOME/dotfiles/files/switch_php ] && {
-            source $HOME/dotfiles/files/switch_php
-            switch_php "${current_php_version:-8.1}"
-            #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} &>/dev/null || true
-            # if this fails run php_uninstall and then switch_php 8.1
-        }
-        ;;
-esac
+php_install "7.0"
+php_install "8.1"
+echo '================================================================================'
 
 echo 'Done!'
+env | egrep -i 'php|compos|valet' | sort
+set +e
+

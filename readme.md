@@ -39,9 +39,9 @@ brew update
   `preinstall` archives some existing dotfiles... 
 
 ```
-cd $HOME/dotfiles
-
-bash preinstall
+pushd $HOME/dotfiles && 
+bash preinstall 
+popd
 ```
 Important: move these archived files __off your machine__ to somewhere safe ☁️  e.g. 
 
@@ -89,7 +89,8 @@ source $HOME/.bashrc # or open a new terminal
 
 ```
 
-bash dotfiles/install
+source dotfiles/install
+
 
 ```
 
