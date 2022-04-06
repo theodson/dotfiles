@@ -112,7 +112,7 @@ cask 'font-dejavu'
 # paid apps (license required)
 #
 cask 'helo'
-cask 'navicat-for-postgresql'
+cask 'bgdevlab/navicat-for-postgresql/navicat-for-postgresql-12'
 cask 'cleanshot'
 cask 'pinegrow'
 cask 'postbox'
