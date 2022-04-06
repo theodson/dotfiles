@@ -20,7 +20,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 
 
 # Add folder to search PATH if it exists
-for folder in $HOME/.composer/vendor/bin $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
+for folder in $COMPOSER_HOME $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
 do
 	if test -e "${folder}"; then
 		echo $PATH | grep "$folder" &>/dev/null && true || export PATH="$PATH:$folder" # add path later in seach path if missing

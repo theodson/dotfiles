@@ -64,9 +64,6 @@ export BAT_THEME="GitHub"
 export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
 
 
-if test composer -v &>/dev/null; then
-    export COMPOSER_HOME="$(composer global config -q --absolute home)"
-fi
 
 # PHP Laravel Valet
 # PHP_EXTENSIONS Used in custom bash function 'switch_php'
