@@ -17,12 +17,16 @@ if test ! $(which brew); then
     echo 'Installing homebrew...'
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     echo 'Done installing homebrew.'
-    echo '================================================================================'
+#    echo '================================================================================'
 fi
 
 if test -f $HOME/.dotfile_lastrun; then
     if test -f $HOME/dotfiles/preinstall; then
+        echo '================================================================================'
+        echo 'Running PreInstall script ...'
         pushd $HOME/dotfiles && bash preinstall && popd || true
+        echo 'Done PreInstall.'
+#        echo '================================================================================'
     fi
 fi
 
@@ -62,6 +66,18 @@ echo 'Installing, updating, and cleaning up brew dependencies...'
 export HOMEBREW_NO_INSTALL_CLEANUP=true
 
 brew bundle --global
+# load and process custom brew bundle files
+if test -e $HOME/dotfiles/files/.brew_bundle_files; then # file contains list of brew bundle files
+    for bundle_file in $(cat $HOME/dotfiles/files/.brew_bundle_files); do
+        bundle_file=$(eval echo $bundle_file)
+        [ -e "$bundle_file" ] && brew bundle --file $bundle_file || echo "Cannot load brew bundle file $bundle_file"
+    done
+fi
+if test -n "$BREW_BUNDLE_FILES"; then # USE ENV if set ( space delimited list of files )
+    for bundle_file in $BREW_BUNDLE_FILES; do
+        [ -e $bundle_file ] && brew bundle --file $bundle_file
+    done
+fi
 #brew bundle cleanup --force --global
 # brew services cleanup
 # sudo brew services cleanup
@@ -77,7 +93,7 @@ type -p composer &>/dev/null && {
     composer self-update --2.2 || true
 }
 echo 'Done installing and updating composer dependencies.'
-echo '================================================================================'
+#echo '================================================================================'
 
 
 # /bin/bash $HOME/dotfiles/link
@@ -138,11 +154,11 @@ date > $HOME/.dotfile_lastrun
 echo '================================================================================'
 echo 'Installing and updating php, composer and valet dependencies...'
 source $HOME/dotfiles/files/switch_php
-php_install "7.0"
-php_install "8.1"
+echo -e "For each PHP version you wish to use please run 'php_install'. e.g.\nphp_install 7.0\nphp_install 8.1"
 echo '================================================================================'
+set +e
 
 echo 'Done!'
 env | egrep -i 'php|compos|valet' | sort
-set +e
+
 

@@ -41,7 +41,8 @@ function archive_existing_dotfiles() {
         $HOME/.mackup.cfg \
         $HOME/.gnupg \
         $HOME/.Brewfile.lock.json \
-        $HOME/predotfiles* \
+        $HOME/.predotfiles/predotfiles*.txt \
+        $HOME/predotfiles*.txt \
         $HOME/.composer/{composer.json,composer.lock} \
         2>/dev/null
 
@@ -54,12 +55,10 @@ function archive_existing_dotfiles() {
         do
             if test -L "$file"; then
                 # symlink - remove it
-                /bin/rm -f "$file" && \
-                    echo "removed symlink $file" || true
+                /bin/rm -f "$file" &&  echo "removed symlink $file" || true
             fi
             if test -f "$file"; then
-                /bin/mv "$file" "${file}_backup" && \
-                    echo "moved file $file to ${file}_backup" || true
+                /bin/mv "$file" "${file}_backup" && echo "moved file $file to ${file}_backup" || true
                 # [ -e "${file}_backup" ] && /bin/mv "${file}_backup" "$file"
             fi
         done
@@ -103,8 +102,8 @@ function macappstore_bundle_existing() {
 #
 
 datepart=$(date +"%Y%m%d_%H%M%S")
-
-brew_bundle_existing "$HOME/predotfiles.Brewfile_${datepart}.txt"
-macappstore_bundle_existing "$HOME/predotfiles.MacAppStore_list-${datepart}.txt"
-archive_existing_dotfiles "$HOME/predotfiles.my-configuration-${datepart}.tar.gz"
+mkdir -p $HOME/.predotfiles
+brew_bundle_existing "$HOME/.predotfiles/predotfiles.Brewfile_${datepart}.txt"
+macappstore_bundle_existing "$HOME/.predotfiles/predotfiles.MacAppStore_list-${datepart}.txt"
+archive_existing_dotfiles "$HOME/.predotfiles/predotfiles.my-configuration-${datepart}.tar.gz"
 
