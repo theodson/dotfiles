@@ -97,7 +97,7 @@ cask 'vnc-viewer'
 # fonts
 cask 'font-jetbrains-mono' # may not be required given jetbrains-toolbox install
 cask 'font-jetbrains-mono-nerd-font'
-cask 'font-source-code-pro'
+# cask 'font-source-code-pro' # requires svn for installation !
 cask 'font-inconsolata'
 cask 'font-inconsolata-nerd-font'
 cask 'font-hasklig'
