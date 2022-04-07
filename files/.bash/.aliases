@@ -124,7 +124,7 @@ alias tinker='php artisan tinker'
 alias sail='bash vendor/bin/sail' # docker
 
 # composer
-alias cgs='composer global show -D'
+alias cgs='composer global --no-interaction show -D'
 
 # PhpUnit
 alias phpunit='/usr/local/bin/phpunit'

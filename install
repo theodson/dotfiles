@@ -65,17 +65,25 @@ echo 'Installing, updating, and cleaning up brew dependencies...'
 
 export HOMEBREW_NO_INSTALL_CLEANUP=true
 
-brew bundle --global
+brew bundle --global || true
 # load and process custom brew bundle files
 if test -e $HOME/dotfiles/files/.brew_bundle_files; then # file contains list of brew bundle files
     for bundle_file in $(cat $HOME/dotfiles/files/.brew_bundle_files); do
         bundle_file=$(eval echo $bundle_file)
-        [ -e "$bundle_file" ] && brew bundle --file $bundle_file || echo "Cannot load brew bundle file $bundle_file"
+        if [ -e "$bundle_file" ]; then
+            brew bundle --file $bundle_file || true
+        else
+            echo "Cannot load brew bundle file $bundle_file"
+        fi
     done
 fi
 if test -n "$BREW_BUNDLE_FILES"; then # USE ENV if set ( space delimited list of files )
     for bundle_file in $BREW_BUNDLE_FILES; do
-        [ -e $bundle_file ] && brew bundle --file $bundle_file
+        if [ -e "$bundle_file" ]; then
+            brew bundle --file $bundle_file || true
+        else
+            echo "Cannot load brew bundle file $bundle_file"
+        fi
     done
 fi
 #brew bundle cleanup --force --global

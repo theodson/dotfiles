@@ -59,7 +59,7 @@ function get_composer_home() {
     resolve_php_ver $1 &>/dev/null || return 1
     local php_ver=$(resolve_php_ver $1) || return 1
     composer_php_ver="$HOME/.composer_$php_ver"
-    # echo "$(composer global config -q --absolute home)"
+    # echo "$(composer global config -n -q --absolute home)"
     echo $composer_php_ver
 }
 
@@ -163,7 +163,7 @@ function composer_global_clean() {
         return 1
     fi
 
-    composer global dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
+    composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
 }
 
 function composer_global_install() {
@@ -188,7 +188,7 @@ function composer_global_install() {
         echo "not supported" && return 1
         ;;
     8.0)
-        composer global config minimum-stability alpha
+        composer global config --no-interaction minimum-stability alpha
         composer global require --quiet --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
@@ -199,7 +199,7 @@ function composer_global_install() {
             "tightenco/tlint"
         ;;
     8.1)
-        composer global config minimum-stability alpha
+        composer global config --no-interaction minimum-stability alpha
         composer global require --quiet --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
@@ -210,7 +210,7 @@ function composer_global_install() {
             "tightenco/tlint"
         ;;
     *)
-        composer global config minimum-stability alpha
+        composer global config --no-interaction minimum-stability alpha
         composer global require --quiet --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
@@ -219,7 +219,7 @@ function composer_global_install() {
             "laravel/envoy"
         ;;
     esac
-    #composer global dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
+    #composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
     export_php_env_and_path $php_ver
 }
 
@@ -235,7 +235,7 @@ function valet_uninstall() {
     echo "🤞 Uninstall valet"
     type -p valet >>$DBGLOG 2>&1 && yes | valet uninstall --force --no-interaction >>$DBGLOG 2>&1 || true
 
-    if composer global remove --no-interaction laravel/valet >>$DBGLOG 2>&1; then
+    if composer global --no-interaction remove laravel/valet >>$DBGLOG 2>&1; then
         echo ' Valet removed via composer global $COMPOSER_HOME'
     else
         echo ' Valet not installed via composer global $COMPOSER_HOME'
@@ -434,7 +434,7 @@ function php_install() {
         # Is valet installed for this version
         #
         export_php_env_and_path $current_php_version
-        if ! composer global show -i -D laravel/valet &>/dev/null; then
+        if ! composer global --no-interaction show -i -D -n laravel/valet &>/dev/null; then
 
             echo "⚡️ Valet not installed for current php version via composer at $COMPOSER_HOME"
 
@@ -470,7 +470,7 @@ function php_install() {
     composer_global_install $target_php_version
 
     echo "✨ Composer Global root packages "
-    composer global show -D --no-interaction 2>>$DBGLOG | awk '{print $1":"$2}'
+    composer global --no-interaction show -D 2>>$DBGLOG | awk '{print $1":"$2}'
 
 }
 
