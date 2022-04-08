@@ -11,15 +11,15 @@ defaults write com.apple.dock show-process-indicators -bool true
 # Disable Bouncing dock icons
 defaults write com.apple.dock no-bouncing -bool False
 
-# Minimize windows into their application’s icon 
-defaults write com.apple.dock minimize-to-application -bool true
+# Minimize windows into their application’s icon
+defaults write com.apple.dock minimize-to-application -bool false
 
 
 # Make the Dock Icon of any 'Hidden' Applications Dim/Translucent:
-defaults write com.apple.dock showhidden -bool YES 
+defaults write com.apple.dock showhidden -bool YES
 
 # Display recent apps in the Dock
-defaults write com.apple.dock "show-recents" -bool "false" 
+defaults write com.apple.dock "show-recents" -bool "false"
 
 killall Dock
 
@@ -35,7 +35,7 @@ killall SystemUIServer
 # Show hidden files:
 defaults write com.apple.finder AppleShowAllFiles TRUE
 
-# Show all filename extensions 
+# Show all filename extensions
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 # Show the Status Bar, this can also be toggled on the View menu:
@@ -50,7 +50,7 @@ defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.labe
 # Show size column in search results:
 defaults write com.apple.finder SearchViewSettings.ListViewSettings.columns.size.visible -bool true
 
-# Disable the warning when changing a file extension 
+# Disable the warning when changing a file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
 killall Finder
