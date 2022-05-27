@@ -3,8 +3,8 @@
 # - Valet is used to switch PHP versions
 #
 
-#export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
-export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+# export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1}"
 export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.1}"
 
@@ -421,7 +421,6 @@ function php_install() {
     local PHP_VER_TARGET="$(resolve_php_ver $target_php_version)"
     local PHP_VER_CURRENT="$(resolve_php_ver $current_php_version)"
 
-
     echo "✨ Install PHP & Composer Global packages specific to PHP Version ($PHP_VER_TARGET)"
 
     if [ -n "$current_php_version" ]; then
@@ -468,6 +467,7 @@ function php_install() {
     #
     export_php_env_and_path $target_php_version
     composer_global_install $target_php_version
+    echo "returning....." && return
 
     echo "✨ Composer Global root packages "
     composer global --no-interaction show -D 2>>$DBGLOG | awk '{print $1":"$2}'
@@ -517,6 +517,8 @@ function php_uninstall() {
 }
 
 function switch_php() {
+
+    composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
 
     php_ver=$1
     switch_prompt="${2:-skip}" # prompt makes interactive

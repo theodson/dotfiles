@@ -125,7 +125,7 @@ Re-run the install script
 
 ```
 
-bash dotfiles/install
+source dotfiles/install
 
 ```
 
@@ -145,11 +145,17 @@ If our custom **`switch_php`** fails to work, try this sequence of tasks.
 
 ```
 php_uninstall
+brew doctor
 
-bash dotfiles/install
+source dotfiles/install
 
-switch_php 8.1
-switch_php 7.0
+php_install 8.1
+php_install_via_valet 8.1
+php_show_modules
+```
+
+```
+
 ```
 
 

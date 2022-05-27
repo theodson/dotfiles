@@ -76,7 +76,7 @@ brew 'zsh'
 #
 # apps
 #
-cask 'docker'
+# cask 'docker' # doesnt seem to install docker - manual download - https://desktop.docker.com/mac/main/arm64/Docker.dmg
 cask 'firefox-developer-edition'
 cask 'google-chrome'
 cask 'imageoptim'

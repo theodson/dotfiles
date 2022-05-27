@@ -141,3 +141,7 @@ alias xdebug_restore='incpath=$(php --ini | grep "Scan for additional .ini files
 # PHPDeployer - https://deployer.org
 alias dep='vendor/bin/dep'                    # no global install - (composer 2 issue) - use project's vendor install.
 alias prov='APP_ENV=deployer dep -f=prov.php' # custom deployer command for provisioning
+
+# https://github.com/ibraheemdev/modern-unix
+
+alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping gtop rg(ripgrep)'

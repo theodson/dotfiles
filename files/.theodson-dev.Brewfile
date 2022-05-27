@@ -14,6 +14,21 @@ tap 'nicoverbruggen/homebrew-cask'
 #       Developer - optional installs
 #
 
+
+
+# https://github.com/ibraheemdev/modern-unix
+brew 'bat'
+brew 'cheat'
+brew 'tldr'
+brew 'lsd'
+brew 'dog'
+brew 'curlie'
+brew 'duf'
+brew 'dust'
+brew 'gping'
+brew 'gtop'
+brew 'ripgrep'
+
 # cask 'launchcontrol'
 # cask 'vagrant-manager'
 
