@@ -117,6 +117,7 @@ alias sphp81='time switch_php 8.1 prompt'
 
 alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
 
+
 # Laravel
 alias art='php artisan'
 alias artisan='php artisan'
@@ -145,3 +146,6 @@ alias prov='APP_ENV=deployer dep -f=prov.php' # custom deployer command for prov
 # https://github.com/ibraheemdev/modern-unix
 
 alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping gtop rg(ripgrep)'
+
+# postgres
+alias fixpostgres="brew services stop postgresql@9.5;rm -f /usr/local/var/postgresql@9.5/postmaster.pid;kill -s HUP \$(ps ax  | grep postgre[s]ql\@ | awk '{print $1}');brew services start postgresql@9.5;sleep 2;psql -l"
