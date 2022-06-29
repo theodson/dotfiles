@@ -15,6 +15,7 @@ tap 'nicoverbruggen/homebrew-cask'
 #
 
 brew 'handbrake'
+brew '1password'
 
 mas 'ReadKit: Read Later and RSS', id: 588726889
 mas 'Surfshark', id: 1437809329

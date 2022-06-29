@@ -115,7 +115,7 @@ cask 'jetbrains-toolbox'
 cask 'typora'
 cask 'vmware-fusion'
 
-mas '1Password 7', id: 1333542190
+# mas '1Password 7', id: 1333542190 # installing 1password8 via brew
 mas 'Numbers', id: 409203825
 mas 'Pages', id: 409201541
 mas 'Slack', id: 803453959
