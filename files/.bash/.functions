@@ -322,6 +322,23 @@ function valet_config_backup() {
     fi
 }
 
+function xdebug_install_phpstorm() {
+    local PHP_VERSION="${1:-7.0}"
+    local XDEBUG_PORT="${2:-9001}"
+cat <<XDEBUG_CONF
+[xdebug]
+zend_extension="/usr/local/opt/xdebug@$PHP_VERSION/xdebug.so"
+# https://kevdees.com/installing-xdebug-for-php7/
+xdebug.remote_enable = 1
+xdebug.remote_connect_back=1
+xdebug.scream=1
+xdebug.show_local_vars=1
+xdebug.idekey=PHPSTORM
+xdebug.remote_port = $XDEBUG_PORT
+XDEBUG_CONF
+
+}
+
 
 # ===========================================================================
 #   Brew Apps
