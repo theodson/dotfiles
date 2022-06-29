@@ -5,7 +5,7 @@ tap 'homebrew/cask-versions'
 tap 'homebrew/services'
 tap 'buo/cask-upgrade'
 tap 'timothyye/tap'
-tap 'bgdevlab/navicat-for-postgresql'
+# tap 'bgdevlab/navicat-for-postgresql' # v12 upgraded to v16 - use default tap.
 tap 'shivammathur/php'
 tap 'shivammathur/extensions'
 tap 'nicoverbruggen/homebrew-cask'
