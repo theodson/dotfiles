@@ -9,6 +9,7 @@ tap 'bgdevlab/navicat-for-postgresql'
 tap 'shivammathur/php'
 tap 'shivammathur/extensions'
 tap 'nicoverbruggen/homebrew-cask'
+tap 'cantino/mcfly'
 
 # -----------------------------------------------------------------------------
 
@@ -42,6 +43,7 @@ brew 'java'
 brew 'jenv'
 brew 'jq'
 brew 'less'
+brew 'cantino/mcfly/mcfly'
 brew 'mackup'
 brew 'mas'
 brew 'nginx'

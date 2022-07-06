@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# macOS sed fix
+sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
+# usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
+
 # Make vim the default editor.
 export EDITOR='vim';
 
@@ -57,6 +61,7 @@ export PGVERSION="${PGVERSION:-9.5}" # this is not a standard PG ENV VAR
 # Themes
 
 export BAT_THEME="GitHub"
+export MCFLY_LIGHT=TRUE
 
 # =============================================================================
 
@@ -67,7 +72,8 @@ export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
 
 # PHP Laravel Valet
 # PHP_EXTENSIONS Used in custom bash function 'switch_php'
-export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}"
+# from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 
 
 
