@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# macOS sed fix - https://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux
+sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
+# usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
+
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
 # the `.git` directory, listing directories first. The output gets piped into
 # `less` with options to preserve color and line numbers, unless the output is
