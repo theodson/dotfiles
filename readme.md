@@ -155,7 +155,7 @@ php_show_modules
 ```
 
 ```
-
+php_install 7.0
 ```
 
 
