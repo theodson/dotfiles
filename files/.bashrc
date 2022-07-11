@@ -62,4 +62,4 @@ if test ! -z "${NVM_DIR}"; then
 fi
 
 # Mcfly - https://github.com/cantino/mcfly
-eval "$(mcfly init bash)"
+type mcfly &>/dev/null && eval "$(mcfly init bash)"
