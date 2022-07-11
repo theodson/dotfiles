@@ -148,4 +148,4 @@ alias prov='APP_ENV=deployer dep -f=prov.php' # custom deployer command for prov
 alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg - aka ripgrep'
 
 # postgres
-alias fixpostgres="brew services stop postgresql@9.5;rm -f /usr/local/var/postgresql@9.5/postmaster.pid;kill -s HUP \$(ps ax  | grep postgre[s]ql\@ | awk '{print $1}');brew services start postgresql@9.5;sleep 2;psql -l"
+alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"

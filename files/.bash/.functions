@@ -23,7 +23,6 @@ function sudo_using_default() {
 	sudo sed -i.bak 's/^auth.*sufficient.*\.so/auth       sufficient     pam_smartcard.so/' /etc/pam.d/sudo;
 }
 
-
 function brew_service_pluck() {
     case $# in
         1 )
@@ -554,15 +553,41 @@ function enter_directory() {
 function pghashlib_install() {
 
     brew install docutils # provides rst2html command
-    cd /tmp && \
+    pushd /tmp && \
     wget --quiet https://github.com/markokr/pghashlib/archive/master.zip -O pghashlib.zip && \
-    unzip pghashlib.zip && \
+    echo "unzip" && unzip pghashlib.zip &>/dev/null && \
     pushd pghashlib-master && \
-    make && \
-    make install && \
+    echo "hashlib install" && \
+    echo "make" make &>/dev/null && \
+    echo "make install" && make install &>/dev/null && \
+    echo "hashlib done"
+
     popd && \
-    rm -rf pghashlib-master && \
-    rm -f pghashlib.zip
+    [ -e pghashlib-master ] && rm -rf pghashlib-master && \
+    rm -f pghashlib.zip &>/dev/null || true
+
+    popd
+
+    psql -d postgres -c "drop extension hashlib" &>/dev/null && \
+    psql -d postgres -c "create extension hashlib" && \
+    [ $(psql -U postgres -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}') == '069b3c88000000000000000000000000' ] \
+        && echo 'pghashlib installed correctly' \
+        || 'pghashlib not installed correctly'
+
+}
+
+function fix_postgres() {
+    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
+
+    brew services stop postgresql@${PG_VERSION};
+    mkdir -p /usr/local/var/postgresql@${PG_VERSION}/{{pg_commit_ts,pg_dynshmem,pg_replslot,pg_serial,pg_snapshots,pg_stat,pg_stat_tmp,pg_tblspc,pg_twophase},pg_logical/{mappings,snapshots}}
+    rm -f /usr/local/var/postgresql@${PG_VERSION}/postmaster.pid &>/dev/null
+    pgpids="$(ps ax  | grep 'postgre[s]ql\@' | awk '{print $1}')"
+    [ -z "${pgpids}" ] && echo "NO postgres IDS found." || /bin/kill -SIGHUP "$pgpids" &>/dev/null
+    brew services start postgresql@${PG_VERSION}
+    sleep 2
+    pghashlib_install
+    psql -l
 }
 
 
