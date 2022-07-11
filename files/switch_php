@@ -189,6 +189,7 @@ function composer_global_install() {
         ;;
     8.0)
         composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
         composer global require --quiet --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
@@ -200,6 +201,7 @@ function composer_global_install() {
         ;;
     8.1)
         composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
         composer global require --quiet --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
@@ -211,7 +213,8 @@ function composer_global_install() {
         ;;
     *)
         composer global config --no-interaction minimum-stability alpha
-        composer global require --quiet --with-all-dependencies --no-interaction \
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --with-all-dependencies --no-interaction \
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
             "laravel/installer" \
