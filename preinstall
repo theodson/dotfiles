@@ -30,6 +30,7 @@ function archive_existing_dotfiles() {
     tar -czLf $archive $to_be_linked \
         "$HOME/.m2/settings*" \
         $HOME/.vim \
+        $HOME/.adhoc \
         $HOME/.ssh \
         $HOME/.bash_profile \
         $HOME/.bashrc \
