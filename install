@@ -86,6 +86,10 @@ if test -n "$BREW_BUNDLE_FILES"; then # USE ENV if set ( space delimited list of
         fi
     done
 fi
+
+# sometimes we need to ensure versions dont get upgraded, use brew pin as brew bundle doesn't support this.
+brew pin redis@6.2
+
 #brew bundle cleanup --force --global
 # brew services cleanup
 # sudo brew services cleanup
@@ -168,5 +172,6 @@ set +e
 
 echo 'Done!'
 env | egrep -i 'php|compos|valet' | sort
+brew list --pinned
 
 

@@ -373,16 +373,19 @@ function php_install_via_valet() {
     # we need to do this for php versions < 7.4
 
     logit "⚡️ Installing shivammathur/php/$PHP_VER_TARGET to ensure 'valet use' works for all version of php"
-    HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$PHP_VER_TARGET redis >>$DBGLOG 2>&1
+    HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$PHP_VER_TARGET >>$DBGLOG 2>&1
 
-    read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
+    #read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
     valet use $PHP_VER_TARGET # install php
+
+    # this might be needed to resolve conflicts between redis@7.0 and php-redis@7.0
+    # brew reinstall redis@6.2 && brew link redis@6.2 && brew pin redis@6.2
 
     logit "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
     php_ver=$(echo $PHP_VER_TARGET | cut -d@ -f2)
     for ext in $PHP_EXTENSIONS; do
         forumla="${ext}@${php_ver}"
-        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | grep -E '^=.*nstalling'
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
     done
 
     valet_install $PHP_VER_TARGET || return 2 # install valet via composer for this php
@@ -415,7 +418,7 @@ function php_install() {
     #
     if ! type -p php >>$DBGLOG 2>&1; then
         logit "✨ Install Brew's shivammathur/php/php"
-        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php redis | tee -a $DBGLOG &>/dev/null
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
         #brew reinstall --force -q shivammathur/php/php
     else
         logit "✨ PHP currently installed ($(php -v | head -1))"

@@ -50,7 +50,7 @@ brew 'nginx'
 brew 'nvm'
 # brew 'php@8.0'
 brew 'postgresql@9.5'
-brew 'redis'
+brew 'redis@6.2', restart_service: true, link: true, conflicts_with: ["redis"]
 brew 'ripgrep'
 brew 'shellcheck'
 brew 'shivammathur/php/php@7.0'
