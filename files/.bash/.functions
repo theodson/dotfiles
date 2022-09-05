@@ -148,6 +148,17 @@ function op() {
 	fi
 }
 
+function npmlist() {
+    # e.g. npmlist prebuild
+    # e.g. npmlist prebuild withdate
+    local s=""
+    local d=""
+    [ $# -eq 1 ] && s="_$1"
+    [ $# -eq 2 ] && d="_"$(date "+%Y_%m_%d.%H%M%S")
+    npm list --depth=0 > "npm${s}_list0${d}.txt"
+    npm list --depth=1 > "npm${s}_list1${d}.txt"
+    npm list --depth=2 > "npm${s}_list2${d}.txt"
+}
 
 function man() {
     # colour for man pages
@@ -251,14 +262,68 @@ function js_env_install() {
 # ===========================================================================
 #   PHP Laravel Valet Composer
 
+#   auth:clear-resets                               Flush expired password reset tokens
+#   cache:clear                                     Flush the application cache
+#   clear-compiled                                  Remove the compiled class file
+#   config:clear                                    Remove the configuration cache file
+#   debugbar:clear                                  Clear the Debugbar Storage
+#   email-suppressions:clear-bounced-emails         Clear Bounced Emails from SendGrid
+#   event:clear                                     Clear all cached events and listeners
+#   media-library:clear                             Delete all items in a media collection.
+#   opcache:clear                                   Clear OPCache
+#   optimize:clear                                  Remove the cached bootstrap files
+#   queue:clear                                     Delete all of the jobs from the specified queue
+#   route:clear                                     Remove the route cache file
+#   schedule:clear-cache                            Delete the cached mutex files created by scheduler
+#   view:clear                                      Clear all compiled view files
+
 
 function clearall() {
     [ ! -e ./artisan ] && echo "no artisan" && return
-    php artisan cache:clear
-    php artisan config:clear
-    php artisan route:clear
-    [ "$1" == 'oc' ] && php artisan opcache:clear || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
-    php artisan optimize
+    artisan="php artisan "
+    dotenv=.env
+    if [ $# -gt 0 ]; then
+        artisan="php artisan --env $1 "
+        dotenv=.env.$1
+        if [ "$1" = "local" ]; then
+            dotenv=.env
+        fi
+    fi
+    echo -e "\nUsing APP_ENV as '$1' with dotenv $dotenv \n"
+    grep -E '_CONNECTION|_DRIVER' $dotenv
+
+    $artisan cache:clear
+    $artisan clear-compiled
+    $artisan config:clear
+    $artisan event:clear
+    $artisan route:clear
+    # /bin/rm -f bootstrap/cache/*.php || true
+    $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+    $artisan optimize:clear
+    $artisan queue:clear
+    $artisan route:clear
+    $artisan schedule:clear-cache
+
+    if [ $# -gt 1 ]; then
+        # optimize things again.
+        $artisan optimize
+    fi
+
+    return
+
+    # php artisan cache:clear
+    # php artisan clear-compiled
+    # php artisan config:clear
+    # php artisan event:clear
+    # php artisan route:clear
+    # # /bin/rm -f bootstrap/cache/*.php || true
+    # php artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+    # php artisan optimize:clear
+    # php artisan queue:clear
+    # php artisan route:clear
+    # php artisan schedule:clear-cache
+    # # optimize things again.
+    # php artisan optimize
 }
 
 # TODO - move to autocomplete section

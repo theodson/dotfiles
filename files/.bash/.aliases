@@ -102,6 +102,9 @@ alias vnoprov='vagrant up --no-provision 2>&1 | grep -v VAGRANTFILE_API_VERSION 
 
 # JS Node NPM
 alias fixjs='rm -rf node_modules/;npm cache clear --force && npm install'
+alias rebuildjs='npmlist rebuilt_pre; rm -f package-lock.json && echo "⚡️ package-lock.json removed";npm cache clear --force && echo "⚡️ npm cache cleared";npm install;npmlist rebuilt;echo "⚡️ done: see rebuilt_pre"'
+alias reinstalljs='npmlist installed_pre; npm cache clear --force && echo "⚡️ npm cache cleared";npm ci;npmlist installed;echo "⚡️ done: see installed_pre"'
+alias revertjs='npmlist reverted_pre; git checkout package-lock.json && echo "⚡️ package-lock.json restored to git version";npm cache clear --force && echo "⚡️ npm cache cleared";npm ci;npmlist reverted;echo "⚡️ done: see reverted_pre"'
 alias ng='npm list -g --depth=0'
 alias nl='npm list --depth=0'
 alias switch_js='nvm'
@@ -114,6 +117,8 @@ alias sphp73='time switch_php 7.3 prompt'
 alias sphp74='time switch_php 7.4 prompt'
 alias sphp80='time switch_php 8.0 prompt'
 alias sphp81='time switch_php 8.1 prompt'
+
+alias vlsi='valet link && valet secure && valet isolate'
 
 alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
 
