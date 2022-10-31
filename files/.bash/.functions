@@ -282,32 +282,62 @@ function clearall() {
     [ ! -e ./artisan ] && echo "no artisan" && return
     artisan="php artisan "
     dotenv=.env
-    if [ $# -gt 0 ]; then
-        artisan="php artisan --env $1 "
-        dotenv=.env.$1
-        if [ "$1" = "local" ]; then
+    clearenv="${1:-${APP_ENV:-}}"
+    if [ ! -z $clearenv ]; then
+        artisan="php artisan --env $clearenv "
+        dotenv=.env.$clearenv
+        # reset if local
+        if [ "$clearenv" = "local" ]; then
             dotenv=.env
         fi
     fi
-    echo -e "\nUsing APP_ENV as '$1' with dotenv $dotenv \n"
-    grep -E '_CONNECTION|_DRIVER' $dotenv
+    echo -e "\nUsing APP_ENV as '${clearenv:-local}' with dotenv file $dotenv \n"
+    [ ! -e "${dotenv}" ] && {
+        echo "Stopping - cannot find dotenv file '$dotenv'"
+        return 1
+    }
+    grep -E 'APP_ENV|_CONNECTION|_DRIVER|PROCORE' $dotenv
 
-    $artisan cache:clear
-    $artisan clear-compiled
-    $artisan config:clear
-    $artisan event:clear
-    $artisan route:clear
-    # /bin/rm -f bootstrap/cache/*.php || true
-    $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
-    $artisan optimize:clear
-    $artisan queue:clear
-    $artisan route:clear
-    $artisan schedule:clear-cache
+    case "$php_ver" in
+    5.6)
+        logit "not supported" && return 1
+        ;;
+    7.0)
+        artisan="php artisan "
+        $artisan cache:clear
+        $artisan clear-compiled
+        $artisan config:clear
+        $artisan route:clear
+        # /bin/rm -f bootstrap/cache/*.php || true
+        $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+        $artisan queue:flush
+        $artisan route:clear
+        $artisan view:clear
 
-    if [ $# -gt 1 ]; then
-        # optimize things again.
-        $artisan optimize
-    fi
+        if [ $# -gt 1 ]; then
+            # optimize things again.
+            $artisan optimize
+        fi
+        ;;
+     *)
+        $artisan cache:clear
+        $artisan clear-compiled
+        $artisan config:clear
+        $artisan event:clear
+        $artisan route:clear
+        # /bin/rm -f bootstrap/cache/*.php || true
+        $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+        $artisan optimize:clear
+        $artisan queue:clear
+        $artisan route:clear
+        $artisan view:clear
+        $artisan schedule:clear-cache
+
+        if [ $# -gt 1 ]; then
+            # optimize things again.
+            $artisan optimize
+        fi
+    esac
 
     return
 
@@ -653,6 +683,12 @@ function fix_postgres() {
     sleep 2
     pghashlib_install
     psql -l
+}
+
+function rebuildOpenWith() {
+    /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+    killall Finder
+    # see https://mac-how-to.gadgethacks.com/how-to/remove-duplicates-customize-open-with-menu-mac-os-x-0157100/
 }
 
 
