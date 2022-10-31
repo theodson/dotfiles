@@ -169,6 +169,14 @@ function composer_global_clean() {
     composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
 }
 
+function get_latest_php()
+{
+    latest_php_path="$(ls /usr/local/Cellar/php*/*/bin*/php 2>/dev/null| grep '/8' | sort | head -1)"
+    if [ -e $latest_php_path ] && [ -f $latest_php_path ]; then
+        echo $latest_php_path
+    fi
+}
+
 function composer_global_install() {
 
     logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
@@ -179,8 +187,18 @@ function composer_global_install() {
     }
     local php_ver=$(resolve_php_ver $1) # n.n format
     export COMPOSER_HOME="$(get_composer_home $php_ver)"
+    echo "php_ver=$php_ver"
+    echo "COMPOSER_HOME=$COMPOSER_HOME"
 
     composer_global_clean $php_ver || true
+
+    # get the php_compatable_with_latest_composer_greater_than_2.2
+    newest_php="$(get_latest_php)"
+    if [ ! -z "$newest_php" ] && [ -e "$newest_php" ]; then
+        PATH=$(dirname $newest_php):$PATH composer self-update --2 | tee -a $DBGLOG # get latest composer
+        PATH=$(dirname $newest_php):$PATH composer self-update --2.2 | tee -a $DBGLOG # then switch to 2.2 as required for version of php < 7.2.5
+    fi
+    composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
 
     # other packages to consider
     local consider_package="slince/composer-registry-manager "
