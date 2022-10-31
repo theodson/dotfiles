@@ -1,11 +1,14 @@
 # https://linuxize.com/post/using-the-ssh-config-file/
+# https://unix.stackexchange.com/questions/340844/how-to-enable-diffie-hellman-group1-sha1-key-exchange-on-debian-8-0
 Host backup01
   KexAlgorithms +diffie-hellman-group1-sha1
+  HostKeyAlgorithms=+ssh-dss 
 
 Host 10.20.1.*
   LogLevel INFO
   User root
   KexAlgorithms +diffie-hellman-group1-sha1
+  HostKeyAlgorithms=+ssh-dss 
 
 Host *
   AddKeysToAgent yes
