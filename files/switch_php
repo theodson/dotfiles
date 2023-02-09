@@ -5,7 +5,7 @@
 
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 # export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
-export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1}"
+export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
 export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.1}"
 
 export DBGLOG=/tmp/switch_php.debug.log
@@ -124,6 +124,7 @@ function php_cli_switch() {
 
     else
         logit "Cannot find PHP_BIN_PATH=$PHP_BIN_PATH"
+        logit "Try running switch_php $php_ver"
     fi
 
 }
@@ -221,6 +222,18 @@ function composer_global_install() {
             "tightenco/tlint"
         ;;
     8.1)
+        composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --quiet --with-all-dependencies --no-interaction \
+            "friendsofphp/php-cs-fixer" \
+            "jorijn/laravel-security-checker" \
+            "laravel/installer" \
+            "laravel/valet:^3.0" \
+            "laravel/envoy" \
+            "tightenco/takeout" \
+            "tightenco/tlint"
+        ;;
+    8.2)
         composer global config --no-interaction minimum-stability alpha
         composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
         composer global require --quiet --with-all-dependencies --no-interaction \

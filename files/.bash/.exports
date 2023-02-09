@@ -89,6 +89,12 @@ if test ! -z "${USING_PERL}"; then
     PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
 fi
 
+# PNPM
+export PNPM_HOME="$HOME/Library/pnpm"
+if test -d "$PNPM_HOME"; then
+    export PATH="$PNPM_HOME:$PATH"
+fi
+
 # Node Version Manager
 if test -d "$HOME/.nvm"; then
     export NVM_DIR="$HOME/.nvm"
