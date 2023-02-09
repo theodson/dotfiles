@@ -739,3 +739,77 @@ function git-forget-blob()
     # Boston, MA  02111-1307  USA
 }
 
+function git_late_night_commits() {
+    [ $# -lt 2 ] && {
+        echo -e "Usage: ${FUNCNAME[0]} since-date author-name field_delim\n\tsince-data    YYYY-MM-DD\n\tauthor-name   any-text\n\tfield_delim    delimiter"
+        return 1
+    }
+    delim="${3:-~}"
+    git log --all --date=iso-local --pretty=format:"%h${delim}%ad${delim}%an %d${delim}%s " --since="$1" | grep -i "$2" | grep -E "( 1[89]:)|( 2[0-4]:)|( 0[0-5]:)";
+}
+
+
+function git_late_night_commits_daily() {
+    [ $# -lt 2 ] && {
+        echo -e "Usage: ${FUNCNAME[0]} since-date author-name field_delim\n\tsince-data    YYYY-MM-DD\n\tauthor-name   any-text\n\tfield_delim    delimiter"
+        return 1
+    }
+    delim="${3:-~}"
+    # group by day and list first and last commit for that day
+
+    list="$(git_late_night_commits $1 $2 $delim | cut -d$delim -f2,4-)"
+    days=$(echo "$list" | cut -d$delim -f1 | cut -d' ' -f1 | sort --unique)
+    starting=$(for day in $days; do echo "$list" | grep $day | sort -k2,2 | head -1;done)
+    ending=$(for day in $days; do echo "$list" | grep $day | sort -k2,2 | tail -1;done)
+    # combine and order again
+    (echo "$starting";echo "$ending") | sort -k1,1 -r -k2,2 --unique | sed -E 's/\+[0-9]{1,4}//g' | tr "$delim" " "
+    unset list days starting ending
+}
+
+function late_night_report() {
+    [ $# -lt 2 ] && {
+        echo -e "Usage: ${FUNCNAME[0]} since-date author-name field_delim\n\tsince-data    YYYY-MM-DD\n\tauthor-name   any-text\n\tfield_delim    delimiter"
+        return 1
+    }
+    for repo in $(find $WORKSPACE -type d -name '.git' -maxdepth 3); do echo $repo; pushd $repo &>/dev/null;git_late_night_commits_daily $1 $2 $3;popd &>/dev/null; done
+}
+
+
+function git_grouped_log () {
+  while read -r -u 9 since name
+  do
+    until=$(date -j -v+1d -f '%Y-%m-%d' $since +%Y-%m-%d)
+
+    echo "$since $name"
+    echo
+
+    GIT_PAGER=cat git log             \
+      --date=iso-local \
+      --committer="$name"             \
+      --since="$since 00:00:00 +0000" \
+      --until="$until 00:00:00 +0000" \
+      --pretty=format:"%h : %ad : %an %d : %s "
+
+    echo
+  done 9< <(git log --date=iso-local --format=$'%cd %cn' | grep -i "$2" | grep -E "( 1[89]:)|( 2[0-4]:)|( 0[0-5]:)"| sort --unique --reverse)
+}
+
+
+function git-grouped-log_original () {
+  while read -r -u 9 since name
+  do
+    until=$(date -j -v+1d -f '%Y-%m-%d' $since +%Y-%m-%d)
+
+    echo "$since $name"
+    echo
+
+    GIT_PAGER=cat git log             \
+      --no-merges                     \
+      --committer="$name"             \
+      --since="$since 00:00:00 +0000" \
+      --until="$until 00:00:00 +0000" \
+      --format='  * [%h] %s'
+
+    echo
+  done 9< <(git log --no-merges --format=$'%cd %cn' --date=short | sort --unique --reverse)
+}
