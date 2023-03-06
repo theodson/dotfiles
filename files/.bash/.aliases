@@ -24,7 +24,7 @@ alias prettyjson='python -m json.tool'
 alias nospace='egrep -v "^#|^[[:space:]]*$"'
 alias no_commments_space='egrep -v "^;|^#|^[[:space:]]*$"'
 alias pwdtail='pwd | rev | cut -d/ -f1-2 | rev'
-
+alias fd='fd --hidden --no-ignore "$@"'
 
 # Git
 alias git_config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
@@ -130,6 +130,7 @@ alias art='php artisan'
 alias artisan='php artisan'
 alias tinker='php artisan tinker'
 alias sail='bash vendor/bin/sail' # docker
+alias pint='[ -f vendor/bin/pint ] && vendor/bin/pint'
 
 # composer
 alias cgs='composer global --no-interaction show -D'

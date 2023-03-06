@@ -97,7 +97,7 @@ function what_port() {
 		return 1;
 	fi
 	echo "looking for '$1'"
-	lsof -nP -iTCP -sTCP:LISTEN | grep "${1}"
+	lsof -nP -iTCP -sTCP:LISTEN | grep ":${1}"
 	# ps -Ao user,pid,command | grep -v grep | grep $(netstat -anv | grep "$searchport " | awk '{print $9}')
 }
 
