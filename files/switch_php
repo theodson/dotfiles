@@ -597,4 +597,4 @@ function switch_php() {
 }
 
 # Set PHP and Composer Global PATH and ENV
-export_php_env_and_path
+export_php_env_and_path $PHP_DEFAULT_VERSION
