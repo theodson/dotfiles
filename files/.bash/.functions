@@ -36,6 +36,18 @@ function brew_service_pluck() {
     esac
 }
 
+function nah() {
+    archivelist="$(mktemp /tmp/nah-reset-list.XXXXXXXXX)" &&
+    safearchive="$archivelist.tar.gz" &&
+    git ls-files --others --exclude-standard -m > $archivelist &&
+    tar -czf $safearchive -T $archivelist &&
+    echo "Archived changes (just in case) at $safearchive" || {
+        echo "Failed to archive at $safearchive. Exiting"
+        return 1;
+    }
+
+    git reset --hard && git clean -df
+}
 
 function plist_pluck() {
     # e.g. show the path for php 7.0 brew service
