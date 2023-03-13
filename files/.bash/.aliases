@@ -131,12 +131,13 @@ alias art='php artisan'
 alias artisan='php artisan'
 alias tinker='php artisan tinker'
 alias sail='bash vendor/bin/sail' # docker
+alias pest='[ -f vendor/bin/pest ] && vendor/bin/pest'
 alias pint='[ -f vendor/bin/pint ] && vendor/bin/pint'
 alias duster='[ -f vendor/bin/duster ] && vendor/bin/duster'
 
-#
+# enough is enough
 alias boom='[ -d ./vendor -a -f .env ] && { rm -rf ./vendor/* && composer i -v;clearall;rm -rf node_modules && npm cache clear --force && npm install; }'
-
+alias kaboom='nah;boom'
 
 # composer
 alias cgs='composer global --no-interaction show -D'
