@@ -102,7 +102,7 @@ alias vnoprov='vagrant up --no-provision 2>&1 | grep -v VAGRANTFILE_API_VERSION 
 
 
 # JS Node NPM PNPM YARN
-alias fixjs='rm -rf node_modules/;npm cache clear --force && npm install'
+alias fixjs='[ -d ./node_modules ] && rm -rf node_modules/;nvm use;nvm install --latest-npm; npm cache clear --force && npm install'
 alias rebuildjs='npmlist rebuilt_pre; rm -f package-lock.json && echo "⚡️ package-lock.json removed";npm cache clear --force && echo "⚡️ npm cache cleared";npm install;npmlist rebuilt;echo "⚡️ done: see rebuilt_pre"'
 alias reinstalljs='npmlist installed_pre; npm cache clear --force && echo "⚡️ npm cache cleared";npm ci;npmlist installed;echo "⚡️ done: see installed_pre"'
 alias revertjs='npmlist reverted_pre; git checkout package-lock.json && echo "⚡️ package-lock.json restored to git version";npm cache clear --force && echo "⚡️ npm cache cleared";npm ci;npmlist reverted;echo "⚡️ done: see reverted_pre"'
@@ -136,11 +136,13 @@ alias pint='[ -f vendor/bin/pint ] && vendor/bin/pint'
 alias duster='[ -f vendor/bin/duster ] && vendor/bin/duster'
 
 # enough is enough
-alias boom='[ -d ./vendor -a -f .env ] && { rm -rf ./vendor/* && composer i -v;clearall;rm -rf node_modules && npm cache clear --force && npm install; }'
-alias kaboom='nah;boom'
+alias boom='fixcomposer; clearall; fixjs'
+alias kaboom='nah; boom'
 
 # composer
+alias c='composer'
 alias cgs='composer global --no-interaction show -D'
+alias fixcomposer='[ -d ./vendor -a -f .env ] && { rm -rf ./vendor/* && composer i -v; }'
 
 # PhpUnit
 alias phpunit='/usr/local/bin/phpunit'
