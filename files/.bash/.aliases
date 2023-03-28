@@ -129,6 +129,7 @@ alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php vers
 # Laravel
 alias art='php artisan'
 alias artisan='php artisan'
+alias amfs='php artisan migrate:fresh --seed --seeder=SetupSeeder --step -v'
 alias tinker='php artisan tinker'
 alias sail='bash vendor/bin/sail' # docker
 alias pest='[ -f vendor/bin/pest ] && vendor/bin/pest'
