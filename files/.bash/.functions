@@ -37,15 +37,11 @@ function brew_service_pluck() {
 }
 
 function nah() {
-    archivelist="$(mktemp /tmp/nah-reset-list.XXXXXXXXX)" &&
+    archivelist=$(mktemp "/tmp/nah-reset-list.$(basename $(pwd)).$(date "+%Y-%m-%d_%H%M").XXXXXXX") &&
     safearchive="$archivelist.tar.gz" &&
     git ls-files --others --exclude-standard -m > $archivelist &&
-    tar -czf $safearchive -T $archivelist &&
-    echo "Archived changes (just in case) at $safearchive" || {
-        echo "Failed to archive at $safearchive. Exiting"
-        return 1;
-    }
-
+    tar -czf $safearchive -T $archivelist &>/dev/null || true &&
+    echo -e "View contents of archived changes (just in case) with \ntar -tvf $safearchive\n" &&
     git reset --hard && git clean -df
 }
 
