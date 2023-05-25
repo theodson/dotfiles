@@ -139,11 +139,16 @@ alias duster='[ -f vendor/bin/duster ] && vendor/bin/duster'
 # enough is enough
 alias boom='fixcomposer; clearall; fixjs'
 alias kaboom='nah; boom'
+# enough is enough - level it all and test
+alias bosh='rm -f .env.testing .env.dusk; boom;composer test;composer test-dusk'
+alias kabosh='rm -f .env.testing .env.dusk; kaboom;composer test;composer test-dusk'
 
 # composer
 alias c='composer'
 alias cgs='composer global --no-interaction show -D'
 alias fixcomposer='[ -d ./vendor -a -f .env ] && { rm -rf ./vendor/* && composer i -v; }'
+alias vendor_mods_list="composer status -v |sed 's/^[ ]*//'| sed 's/^\.//'|sed 's/:$//'|sed 'N;s/\n//'| cut -d'(' -f1 | sed \"s:\$(pwd):.:\""
+alias vendor_mods_archive='tar -cvzf scratch/vendor_changes_$(date "+%Y_%m_%d.%H%M%S").tgz $(vendor_mods_list 2>/dev/null)'
 
 # PhpUnit
 alias phpunit='/usr/local/bin/phpunit'
