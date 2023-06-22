@@ -26,6 +26,7 @@ alias nospace='egrep -v "^#|^[[:space:]]*$"'
 alias no_commments_space='egrep -v "^;|^#|^[[:space:]]*$"'
 alias pwdtail='pwd | rev | cut -d/ -f1-2 | rev'
 alias fd='fd --hidden --no-ignore "$@"'
+alias resettty="printf '\e[?2004l'" # https://apple.stackexchange.com/questions/446859/when-pasting-in-terminal-app-00-is-pasted-at-the-start-and-01-at-the-end
 
 # Git
 alias git_config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
@@ -148,7 +149,8 @@ alias c='composer'
 alias cgs='composer global --no-interaction show -D'
 alias fixcomposer='[ -d ./vendor -a -f .env ] && { rm -rf ./vendor/* && composer i -v; }'
 alias vendor_mods_list="composer status -v |sed 's/^[ ]*//'| sed 's/^\.//'|sed 's/:$//'|sed 'N;s/\n//'| cut -d'(' -f1 | sed \"s:\$(pwd):.:\""
-alias vendor_mods_archive='tar -cvzf scratch/vendor_changes_$(date "+%Y_%m_%d.%H%M%S").tgz $(vendor_mods_list 2>/dev/null)'
+alias vendor_mods_archive='tar -cvzf scratch/vendor_changes_$(date "+%Y_%m_%d.%H%M%S").tgz $(vendor_mods_list 2>/dev/null) && ls -rt scratch/vendor_changes_* | tail -1'
+
 
 # PhpUnit
 alias phpunit='/usr/local/bin/phpunit'
