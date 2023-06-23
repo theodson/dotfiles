@@ -9,6 +9,7 @@
 
 - [ ] Store Keys safely - investigate https://github.com/elasticdog/transcrypt
 - [ ] VSCode - Sync Settings - https://code.visualstudio.com/docs/editor/settings-sync
+- [ ] driesvints/dotfiles - Take a Look at https://github.com/driesvints/dotfiles
 
 # Key management 
 
