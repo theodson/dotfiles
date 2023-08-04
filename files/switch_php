@@ -131,7 +131,7 @@ function php_cli_switch() {
 
     else
         logit "Cannot find PHP_BIN_PATH=$PHP_BIN_PATH"
-        logit "Try running switch_php $php_ver"
+        logit "✨ Try running switch_php $php_ver"
     fi
 
 }
@@ -280,9 +280,9 @@ function valet_uninstall() {
     type -p valet >>$DBGLOG 2>&1 && yes | valet uninstall --force --no-interaction >>$DBGLOG 2>&1 || true
 
     if composer global --no-interaction remove laravel/valet >>$DBGLOG 2>&1; then
-        echo ' Valet removed via composer global $COMPOSER_HOME'
+        echo '   Valet removed via composer global $COMPOSER_HOME'
     else
-        echo ' Valet not installed via composer global $COMPOSER_HOME'
+        echo '   Valet not installed via composer global $COMPOSER_HOME'
     fi
 
     logit "🤞 Uninstall brew services"
@@ -456,7 +456,8 @@ function php_install() {
     #
     if ! type -p php >>$DBGLOG 2>&1; then
         logit "✨ Install Brew's shivammathur/php/php"
-        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
+#        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
         #brew reinstall --force -q shivammathur/php/php
     else
         logit "✨ PHP currently installed ($(php -v | head -1))"
