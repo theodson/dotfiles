@@ -6,7 +6,7 @@
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 # export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
-export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.1}"
+export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.2}"
 
 export DBGLOG=/tmp/switch_php.debug.log
 
