@@ -83,10 +83,17 @@ function export_php_env_and_path() {
 
         # ensure composer/vendor/bin comes early in the search path
         export COMPOSER_HOME="$(get_composer_home $1)"
-        local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
 
         # strip any existing composer homes
         export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g")
+
+        if [ ! -e "$COMPOSER_HOME" ]; then
+            logit "🧐 Unable to update php $1's composer global PATH - missing dir '$COMPOSER_HOME'"
+            unset COMPOSER_HOME
+            return 1
+        fi
+        local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
+
         # add path early
         export PATH="$COMPOSER_BIN_PATH:$PATH"
 
