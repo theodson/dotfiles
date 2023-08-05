@@ -198,6 +198,10 @@ function composer_global_install() {
     echo "php_ver=$php_ver"
     echo "COMPOSER_HOME=$COMPOSER_HOME"
 
+    if [ "$php_ver" != "$(resolve_php_ver $(get_php_version))" ]; then
+        echo "php version mistmatch between running version ($(resolve_php_ver $(get_php_version))) and requested version ($php_ver)"
+        read -p "This is likely not expected .... CTRL + C to stop and review"
+    fi
     composer_global_clean $php_ver || true
 
     # get the php_compatable_with_latest_composer_greater_than_2.2
@@ -456,9 +460,8 @@ function php_install() {
     #
     if ! type -p php >>$DBGLOG 2>&1; then
         logit "✨ Install Brew's shivammathur/php/php"
-#        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
+        # HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
-        #brew reinstall --force -q shivammathur/php/php
     else
         logit "✨ PHP currently installed ($(php -v | head -1))"
     fi
@@ -470,6 +473,8 @@ function php_install() {
         logit "✨ Install missing composer"
         brew install composer | tee -a $DBGLOG && \
         composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
+        # set custom COMPOSER_HOME per Php Version
+        composer_global_install
     else
         logit "✨ Composer is installed ($(composer --version), $(which composer))" || true
     fi
