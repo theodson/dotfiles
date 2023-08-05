@@ -72,6 +72,7 @@ function __php_strip_path() {
      echo -e "⚡️ PRE "
     env|egrep '^PATH=|COMPOSER_HOME'
     export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
     echo -e "⚡️ POST "
     env|egrep '^PATH=|COMPOSER_HOME'
