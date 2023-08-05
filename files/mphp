@@ -71,12 +71,14 @@ function __php_strip_path() {
      # strip any existing composer homes
     export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g') || true
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g') || true
+    env|egrep '^PATH=|COMPOSER_HOME'
 }
 
 function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
     export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || true
+    env|egrep '^PATH=|COMPOSER_HOME'
 }
 
 function __php_install_latest() {
@@ -85,6 +87,94 @@ function __php_install_latest() {
     sudo -v
     __debug "✨ Install Brew's most recent php version"
     HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
+}
+
+function __php_install_extensions() {
+    if [ $# -eq 0 ]; then
+        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __debug "⇒ ${FUNCNAME[0]} $*"
+    fi
+    # this might be needed to resolve conflicts between redis@7.0 and php-redis@7.0
+    # brew reinstall redis@6.2 && brew link redis@6.2 && brew pin redis@6.2
+
+    local php_version="${1}"
+
+    __debug "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
+    for ext in $PHP_EXTENSIONS; do
+        forumla="${ext}@${php_version}"
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
+    done
+}
+
+function __php_install_via_valet() {
+    #
+    # https://laracasts.com/discuss/channels/general-discussion/issues-with-laravel-valet-when-installing-old-php-version
+    # https://freek.dev/1185-easily-switch-php-versions-in-laravel-valet
+    #
+
+    if [ $# -eq 0 ]; then
+        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __debug "⇒ ${FUNCNAME[0]} $*"
+    fi
+
+    sudo -v
+
+    # fix permissions
+    __debug "⚡️ fix php permissions"
+    #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+    sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+
+    # =========================================================================
+    #
+    #   CURRENT PHP VERSION: Ensure existing installation is ready
+    #
+    local php_version_available=$(brew list -1 --formula | grep php@ | head -1)
+
+    local php_version="${1}"
+    local php_valet_version="$(__php_@version $php_version)"
+
+#    __valet_install $php_valet_version || return 1
+    __debug "⚡️ Switching from $(__php_version_inpath)"
+    __debug "⚡️ fix php permissions"
+    #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+    sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+
+    # =========================================================================
+    #
+    #   TARGET PHP VERSION
+    #
+    # !!! We need to do this for php versions < 7.4
+
+    #__debug "⚡️ Installing shivammathur/php/$php_valet_version to ensure 'valet use' works for all version of php"
+    #HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$php_valet_version >>$DBGLOG 2>&1
+
+    __debug "✨ Install PHP via Valet 'use' command"
+    #read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
+    valet use $php_valet_version # install php
+
+    __php_install_extensions $php_version
+
+    #_composer_global_install "$target_php_version"
+    # valet_install $php_valet_version || return 2 # install valet via composer for this php
+
+    # This might be required as brew services sometimes fail
+    __debug "⚡️ brew postinstall $php_valet_version (forced to run)"
+    brew postinstall $php_valet_version | grep -E 'Postinstalling|update-channels'
+
+    __debug "⚡️ Switched to $php_valet_version"
+    __debug "⚡️ Valet restarting $php_valet_version"
+    # valet install
+    valet restart
+
+    sudo brew services list
+    __debug "🪲 debug logs at $DBGLOG"
+
 }
 
 function __composer_install() {
@@ -155,6 +245,8 @@ function __composer_packages_install() {
         __debug "⇒ ${FUNCNAME[0]} $*"
         #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
     fi
+
+    env|egrep 'PATH|COMPO|PHP'
 
     local php_ver
     php_ver=$1
@@ -241,10 +333,12 @@ function __php_install() {
 
     sudo -v
     if ! type -p php >>$DBGLOG 2>&1; then
+        # no php version detected in the path - this is for NEW installs and is required before other versions.
         __php_strip_path &&
         __composer_strip_path &&
         __php_install_latest &&
         phpversion=$(__php_version_inpath) &&
+        __php_install_extensions $phpversion &&
         __composer_install &&
         __php_export_env_path $phpversion &&
         __composer_clean $phpversion &&
@@ -252,12 +346,27 @@ function __php_install() {
         __valet_install || {
             echo "🧐 Failed to install default php.. suggest reviewing/tailing $DBGLOG and trying again."
         }
+    elif [ $# -ne 0 ]; then
+        echo "Lets try installing $1"
+        phpversion=$1
+        __php_install_via_valet $phpversion &&
+        __php_strip_path &&
+        __composer_strip_path &&
+        __php_export_env_path $phpversion &&
+        __composer_clean $phpversion &&
+        __composer_packages_install $phpversion || {
+            echo "🧐 Failed to install default php $phpversion.. suggest reviewing/tailing $DBGLOG and trying again."
+            env|egrep 'PATH|COMPO|PHP'
+            return 1
+        }
+        msg="✨ PHP finished installation ($(php -v | head -1))."
+        echo $msg && __debug "$msg"
 
     else
-        __debug "✨ PHP currently installed ($(php -v | head -1)). Nothing to do."
+        msg="✨ PHP currently installed ($(php -v | head -1)). Nothing to do."
+        echo $msg && __debug "$msg"
     fi
 
-    env|egrep 'PATH|COMPO|PHP'
 }
 
 
