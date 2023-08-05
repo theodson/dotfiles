@@ -16,7 +16,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 [ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
 [ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
 [ -r $BASEDIR/.ps1 ] && source $BASEDIR/.ps1 || true # start aware prompt
-[ -r $BASEDIR/dotfiles/files/switch_php ] && source $BASEDIR/dotfiles/files/switch_php || true
+[ -r $BASEDIR/dotfiles/files/mphp ] && source $BASEDIR/dotfiles/files/mphp || true
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
 

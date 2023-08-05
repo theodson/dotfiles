@@ -1,0 +1,613 @@
+#!/usr/bin/env bash
+#
+# - Valet is used to switch PHP versions
+#
+
+export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+# export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
+export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.2}"
+
+export DBGLOG=/tmp/switch_php.debug.log
+
+export COMPOSER_PROCESS_TIMEOUT="${COMPOSER_PROCESS_TIMEOUT:-900}" # default is COMPOSER_PROCESS_TIMEOUT=300
+export COMPOSER_MEMORY_LIMIT="${COMPOSER_MEMORY_LIMIT:-2G}"
+
+function logit() {
+    echo -e "$*" | tee -a "$DBGLOG"
+}
+
+type -p composer &>/dev/null || {
+    # composer_version=$(composer --version | cut -d ' ' -f3 | cut -d. -f-2 | tr -d '.')
+    # required for version of php < 7.2.5
+    composer self-update --2.2 >>$DBGLOG 2>&1 || true
+}
+
+function get_php_version() {
+    # get the php version in the path
+    type -p php &>/dev/null || return 1
+    echo $(php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2)
+}
+
+function resolve_php_ver() {
+    #
+    # handle 72, 7.2, php@7.2, php@72, php72, php7.2
+    # return php@7.2
+    #
+    php_ver=$1
+    if [ $# -ne 1 ]; then
+        get_php_version &>/dev/null || return 1
+        php_ver="$(get_php_version)"
+    fi
+
+    local cleaned_php_ver=$(echo "$php_ver" | tr -d . | sed 's,php,,' | tr -d '@')
+
+    if echo "$cleaned_php_ver" | grep -E '^[[:digit:]][[:digit:]]$' &>/dev/null; then
+        echo "php@$(echo $cleaned_php_ver | cut -c1).$(echo $cleaned_php_ver | cut -c2)"
+    else
+        return 2
+    fi
+}
+
+function get_php_path() {
+
+    resolve_php_ver $1 &>/dev/null || return 1
+    local php_ver=$(resolve_php_ver $1) || return 2
+    echo "$(brew --prefix)/opt/${php_ver}"
+}
+
+function get_composer_home() {
+
+    # can we resolve the PHP version, optionally supplied as arg1
+    resolve_php_ver $1 &>/dev/null || return 1
+    local php_ver=$(resolve_php_ver $1) || return 1
+    composer_php_ver="$HOME/.composer_$php_ver"
+    # echo "$(composer global config -n -q --absolute home)"
+    echo $composer_php_ver
+}
+
+function is_php_installed() {
+    get_php_path $1 &>/dev/null || return 1
+    local PHP_BIN_PATH
+    PHP_BIN_PATH="$(get_php_path $1)/bin"
+    if ! test -e $PHP_BIN_PATH; then
+        return 1
+    fi
+    echo $(${PHP_BIN_PATH}/php -r 'logit "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2)
+}
+
+function export_php_env_and_path() {
+    # Set PHP and Composer Global PATH and ENV
+
+    if get_composer_home $1 &>/dev/null; then
+
+        # ensure composer/vendor/bin comes early in the search path
+        export COMPOSER_HOME="$(get_composer_home $1)"
+
+        # strip any existing composer homes
+        export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g")
+
+        if [ ! -e "$COMPOSER_HOME" ]; then
+            logit "🧐 Unable to update php $1's composer global PATH - missing dir '$COMPOSER_HOME'"
+            unset COMPOSER_HOME
+            return 1
+        fi
+        local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
+
+        # add path early
+        export PATH="$COMPOSER_BIN_PATH:$PATH"
+
+        logit "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
+    fi
+
+    local PHP_BIN_PATH
+    if get_php_path $1 &>/dev/null; then
+        PHP_BIN_PATH="$(get_php_path $1)/bin"
+    fi
+
+    if [ -n "$PHP_BIN_PATH" ] && [ -d "$PHP_BIN_PATH" ]; then
+        # specified PHP version found in path 1st, add earlier in search path to override
+
+        # strip any existing composer homes
+        export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')
+        # add path early
+        export PATH="$PHP_BIN_PATH:$PATH"
+        logit "⚡️ PATH updated for PHP ${PHP_BIN_PATH}"
+    fi
+
+}
+
+function php_cli_switch() {
+
+    # arg1 : php version
+    resolve_php_ver $1 &>/dev/null || return 1
+    local php_ver=$(resolve_php_ver $1) || return 1
+    local PHP_BIN_PATH="$(get_php_path $php_ver)/bin" || return 3
+
+    if [ ! -z "$PHP_BIN_PATH" -a -d "$PHP_BIN_PATH" ]; then
+
+        export_php_env_and_path $php_ver
+        # composer_global_install $php_ver
+
+    else
+        logit "Cannot find PHP_BIN_PATH=$PHP_BIN_PATH"
+        logit "✨ Try running switch_php $php_ver"
+    fi
+
+}
+
+function php_cli_from_valet() {
+    [ -e .valetphprc ] || {
+        [ -e artisan ] && logit "Cannot find .valetphprc, try \necho php@8.1 > ./.valetphprc"
+        return 2
+    }
+    logit "Found '$(pwd)/.valetphprc' - upgrade to valet 3.x and use 'valet isolate php@n.n'"
+    local php_ver=$(grep 'php@' .valetphprc)
+    [ ! -z "$php_ver" ] && php_cli_switch $php_ver || false
+}
+
+function php_show_modules() {
+
+    # show loaded modules
+
+    local modules="$(echo $PHP_EXTENSIONS | sed 's#shivammathur/extensions/##g' | tr ' ' '|')"
+    logit "php-fpm modules : $(php-fpm -m | grep -iE "$modules" | tr A-Z a-z | sort | uniq | xargs)"
+    logit "php modules     : $(php -m | grep -iE "$modules" | tr A-Z a-z | sort | uniq | xargs)"
+}
+
+function composer_global_clean() {
+
+    logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
+
+    if [ $# -eq 1 ]; then
+        export COMPOSER_HOME="$(get_composer_home $1)"
+    else
+        # not intentionally using the standard composer global path as we prefer "per php-version" install dir
+        export COMPOSER_HOME="$HOME/.composer"
+    fi
+
+    if test ! -z "$COMPOSER_HOME" && test -d "$COMPOSER_HOME"; then
+        /bin/rm -f "${COMPOSER_HOME}"/composer.{json,lock} 2>/dev/null || true
+        /bin/rm -rf "${COMPOSER_HOME}"
+    else
+        # logit "Cannot clean COMPOSER_HOME=$COMPOSER_HOME" >&2
+        return 1
+    fi
+
+    composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
+}
+
+function get_latest_php()
+{
+    latest_php_path="$(ls /usr/local/Cellar/php*/*/bin*/php 2>/dev/null| grep '/8' | sort | head -1)"
+    if [ -e $latest_php_path ] && [ -f $latest_php_path ]; then
+        echo $latest_php_path
+    fi
+}
+
+function composer_global_install() {
+
+    logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
+
+    [[ $# -ne 1 ]] && {
+        logit "Usage: ${FUNCNAME} php_version - required use n.n style"
+        return 1
+    }
+    local php_ver=$(resolve_php_ver $1) # n.n format
+    export COMPOSER_HOME="$(get_composer_home $php_ver)"
+    echo "php_ver=$php_ver"
+    echo "COMPOSER_HOME=$COMPOSER_HOME"
+
+    if [ "$php_ver" != "$(resolve_php_ver $(get_php_version))" ]; then
+        echo "php version mistmatch between running version ($(resolve_php_ver $(get_php_version))) and requested version ($php_ver)"
+        read -p "This is likely not expected .... CTRL + C to stop and review"
+    fi
+    composer_global_clean $php_ver || true
+
+    # get the php_compatable_with_latest_composer_greater_than_2.2
+    newest_php="$(get_latest_php)"
+    if [ ! -z "$newest_php" ] && [ -e "$newest_php" ]; then
+        PATH=$(dirname $newest_php):$PATH composer self-update --2 | tee -a $DBGLOG # get latest composer
+        PATH=$(dirname $newest_php):$PATH composer self-update --2.2 | tee -a $DBGLOG # then switch to 2.2 as required for version of php < 7.2.5
+    fi
+    composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
+
+    # other packages to consider
+    local consider_package="slince/composer-registry-manager "
+
+    logit "⚡️ composer global require for $php_ver"
+    case "$php_ver" in
+    5.6)
+        logit "not supported" && return 1
+        ;;
+    8.0)
+        composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --quiet --with-all-dependencies --no-interaction \
+            "friendsofphp/php-cs-fixer" \
+            "jorijn/laravel-security-checker" \
+            "laravel/installer" \
+            "laravel/valet:^3.0" \
+            "laravel/envoy" \
+            "tightenco/takeout" \
+            "tightenco/tlint"
+        ;;
+    8.1)
+        composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --quiet --with-all-dependencies --no-interaction \
+            "friendsofphp/php-cs-fixer" \
+            "jorijn/laravel-security-checker" \
+            "laravel/installer" \
+            "laravel/valet:^3.0" \
+            "laravel/envoy" \
+            "tightenco/takeout" \
+            "tightenco/tlint"
+        ;;
+    8.2)
+        composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --quiet --with-all-dependencies --no-interaction \
+            "friendsofphp/php-cs-fixer" \
+            "jorijn/laravel-security-checker" \
+            "laravel/installer" \
+            "laravel/valet:^3.0" \
+            "laravel/envoy" \
+            "tightenco/takeout" \
+            "tightenco/tlint"
+        ;;
+    *)
+        composer global config --no-interaction minimum-stability alpha
+        composer global config --no-interaction --no-plugins allow-plugins.kylekatarnls/update-helper true
+        composer global require --with-all-dependencies --no-interaction \
+            "friendsofphp/php-cs-fixer" \
+            "jorijn/laravel-security-checker" \
+            "laravel/installer" \
+            "laravel/valet:^3.0" \
+            "laravel/envoy"
+        ;;
+    esac
+    #composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
+    export_php_env_and_path $php_ver
+}
+
+function valet_uninstall() {
+
+    logit "${FUNCNAME[0]}"
+
+    #
+    # Help brew after valet's touched things.
+    #
+    # sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+
+    logit "🤞 Uninstall valet"
+    type -p valet >>$DBGLOG 2>&1 && yes | valet uninstall --force --no-interaction >>$DBGLOG 2>&1 || true
+
+    if composer global --no-interaction remove laravel/valet >>$DBGLOG 2>&1; then
+        echo '   Valet removed via composer global $COMPOSER_HOME'
+    else
+        echo '   Valet not installed via composer global $COMPOSER_HOME'
+    fi
+
+    logit "🤞 Uninstall brew services"
+    for formula in dnsmasq nginx; do
+        sudo brew services stop $formula >>$DBGLOG 2>&1 || true
+        sudo brew uninstall --force --ignore-dependencies "$formula" >>$DBGLOG 2>&1 || sudo rm -rf /usr/local/Cellar/$formula || true
+        brew uninstall --force --ignore-dependencies "$formula" >>$DBGLOG 2>&1 || sudo rm -rf /usr/local/Cellar/$formula || true
+    done
+
+    logit "🤞 Force tidyup of empty brew formula directories"
+    find /usr/local/Cellar -type d -empty -maxdepth 1 -exec rm -rf {} \; || true
+
+    [ -d ~/.valet ] && sudo rm -r ~/.valet >>$DBGLOG 2>&1 || true
+    [ -d ~/.config/valet ] && sudo rm -r ~/.config/valet >>$DBGLOG 2>&1 || true
+
+    logit "🤞 Force tidyup of php / pecl / pear directories"
+    sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* >>$DBGLOG 2>&1 || true
+    sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* >>$DBGLOG 2>&1 || true
+    sudo rm -rf /private/tmp/pear/ >>$DBGLOG 2>&1 || true
+    sudo rm -rf /usr/local/bin/valet
+
+    brew cleanup -q >>$DBGLOG 2>&1 || true
+}
+
+
+function valet_install() {
+    logit "${FUNCNAME[0]} $*"
+
+    logit "⚡️ Prepare existing php/valet"
+    php_ver=$1
+
+    export_php_env_and_path $php_ver
+
+    default_valet=$(brew --prefix)/bin/valet
+    valet=$(which valet)
+
+    if test -z $valet || ! test -e $valet; then
+
+        logit "🤔 Missing php/valet - restoring via composer"
+        composer_global_install ${php_ver}
+
+        if ! test -e $valet; then
+            logit "🤔 Looks like we've broken it - still can't find valet at ${valet}!"
+            logit "🧐 Try\nphp_uninstall, then php_install $php_ver\n"
+            return 1
+        fi
+        logit "⚡️ Valet restored at $valet"
+    fi
+
+    export_php_env_and_path $php_ver
+    valet="$(which valet)"
+
+    if ! $valet trust &>/dev/null; then
+        logit "⚡️ Valet ($valet) exists but we need to run '$valet install'." | tee -a $DBGLOG
+        $valet install
+    fi
+
+    # permissions for interrupt free php switching with valet
+    logit "⚡️ Trust in Valet !"
+    sudo -v && $valet trust
+
+    # sometimes brew services php-fpm fails - this is a permissions issue that creeps in somewhere.
+    (pushd /usr/local/etc/ && sudo chown -R $(whoami) php* && popd) >>$DBGLOG 2>&1 || {
+        echo -n "🤔 Looks like permissions reset failed"
+        logit " try\n  brew postinstall $PHP_VER_TARGET --verbose --debug"
+    }
+}
+
+function php_install_via_valet() {
+
+    logit "${FUNCNAME[0]} $*"
+    sudo -v
+
+    if test -r $HOME/.dotfile_lastrun; then
+        # likely php/valet need resetting - force this by removing valet
+        valet=$(brew --prefix)/bin/valet || {
+            echo 'brew has issues'
+            return 1
+        }
+        /bin/rm -f $valet $HOME/.dotfile_lastrun
+    fi
+
+    #
+    # https://laracasts.com/discuss/channels/general-discussion/issues-with-laravel-valet-when-installing-old-php-version
+    # https://freek.dev/1185-easily-switch-php-versions-in-laravel-valet
+    #
+
+    [[ $# -ne 1 ]] && {
+        logit "function ${FUNCNAME} php_version - required use n.n style"
+        return 1
+    }
+
+    if ! type -p composer >>$DBGLOG 2>&1; then
+        logit "🤔 Cannot find composer - cannot progress!"
+        return 1 # composer is not installed
+    fi
+    local php_version_available=$(brew list -1 --formula | grep php@ | head -1)
+
+    local PHP_VER_TARGET
+    local PHP_VER_CURRENT
+    PHP_VER_TARGET="$(resolve_php_ver $1)"
+    PHP_VER_CURRENT="$(resolve_php_ver $(get_php_version))"
+
+    # fix permissions
+    logit "⚡️ fix php permissions"
+    #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+    sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+
+    # =========================================================================
+    #
+    #   CURRENT PHP VERSION: Ensure existing installation is ready
+    #
+    valet_install $PHP_VER_CURRENT || return 1
+    logit "⚡️ Switching from ${PHP_VER_CURRENT}"
+
+    logit "⚡️ fix php permissions"
+    #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+    sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+
+    # =========================================================================
+    #
+    #   TARGET PHP VERSION
+    #
+    # we need to do this for php versions < 7.4
+
+    logit "⚡️ Installing shivammathur/php/$PHP_VER_TARGET to ensure 'valet use' works for all version of php"
+    HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$PHP_VER_TARGET >>$DBGLOG 2>&1
+
+    #read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
+    valet use $PHP_VER_TARGET # install php
+
+    # this might be needed to resolve conflicts between redis@7.0 and php-redis@7.0
+    # brew reinstall redis@6.2 && brew link redis@6.2 && brew pin redis@6.2
+
+    logit "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
+    php_ver=$(echo $PHP_VER_TARGET | cut -d@ -f2)
+    for ext in $PHP_EXTENSIONS; do
+        forumla="${ext}@${php_ver}"
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
+    done
+
+    valet_install $PHP_VER_TARGET || return 2 # install valet via composer for this php
+
+    # This might be required as brew services sometimes fail
+    logit "⚡️ brew postinstall $PHP_VER_TARGET (forced to run)"
+    brew postinstall $PHP_VER_TARGET | grep -E 'Postinstalling|update-channels'
+
+    logit "⚡️ Switched to $PHP_VER_TARGET"
+    logit "⚡️ Valet restarting $PHP_VER_TARGET"
+    # valet install
+    valet restart
+
+    sudo brew services list
+    logit "🪲 debug logs at $DBGLOG"
+
+}
+
+function php_install() {
+    #
+    # php_install - run this once on new machine
+    #
+    logit "✨ ${FUNCNAME[0]} $*"
+
+    sudo -v
+    #
+    # Ensure the latest PHP is installed
+    #
+    # Assumption is via brew bundle .Brewfile and we have tapped 'shivammathur/php' and 'shivammathur/extensions'
+    #
+    if ! type -p php >>$DBGLOG 2>&1; then
+        logit "✨ Install Brew's shivammathur/php/php"
+        # HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
+    else
+        logit "✨ PHP currently installed ($(php -v | head -1))"
+    fi
+
+    #
+    # Ensure composer at 2.2 is installed
+    #
+    if ! type -p composer >>$DBGLOG 2>&1; then
+        logit "✨ Install missing composer"
+        brew install composer | tee -a $DBGLOG && \
+        composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
+        # set custom COMPOSER_HOME per Php Version
+        composer_global_install
+    else
+        logit "✨ Composer is installed ($(composer --version), $(which composer))" || true
+    fi
+
+    brew cleanup -q >>$DBGLOG 2>&1 || true
+
+    local target_php_version="${1:-$PHP_DEFAULT_VERSION}"
+    local current_php_version="$(get_php_version)"
+
+    local PHP_VER_TARGET="$(resolve_php_ver $target_php_version)"
+    local PHP_VER_CURRENT="$(resolve_php_ver $current_php_version)"
+
+    logit "✨ Install PHP & Composer Global packages specific to PHP Version ($PHP_VER_TARGET)"
+
+    if [ -n "$current_php_version" ]; then
+        #
+        # PHP is installed - as we use Valet to install PHP
+        # Ensure the current PHP and composer global has Valet installed.
+        #
+
+        #
+        # Is valet installed for this version
+        #
+        export_php_env_and_path $current_php_version
+        if ! composer global --no-interaction show -i -D -n laravel/valet &>/dev/null; then
+
+            logit "⚡️ Valet not installed for current php version via composer at $COMPOSER_HOME"
+
+            composer_global_install $current_php_version || {
+                logit "🧐 something is not correct with the composer global setup, try php_uninstall !"
+                return 3
+            }
+            export_php_env_and_path $current_php_version
+            logit "install valet now"
+            valet_install $current_php_version
+        fi
+    fi
+
+    #
+    # install PHP
+    #
+    if [ -n "$PHP_VER_TARGET" -a -n "$PHP_VER_CURRENT" -a "$PHP_VER_TARGET" = "$PHP_VER_CURRENT" ]; then
+        # current and target php version are the same
+        logit "🤞 Skipping install for $PHP_VER_TARGET as current version is the same $PHP_VER_CURRENT" | tee -a $DBGLOG
+
+    elif [ -n "$PHP_VER_TARGET" ]; then
+        # current and target php version are different - continue with install
+        php_install_via_valet $target_php_version
+
+    else
+        logit "🧐 Skipping install, unknown request" | tee -a $DBGLOG
+    fi
+
+    #
+    # now we can install composer dependencies for the new php version.
+    #
+    export_php_env_and_path $target_php_version
+    composer_global_install $target_php_version
+    logit "returning....." && return
+
+    logit "✨ Composer Global root packages "
+    composer global --no-interaction show -D 2>>$DBGLOG | awk '{print $1":"$2}'
+
+}
+
+function php_uninstall() {
+    #
+    # php_uninstall
+    #
+    logit "${FUNCNAME[0]}"
+    sudo -v
+    #
+    # all php versions will be uninstalled when running valet uninstall --force
+    # excessive indeed - but appears to be the only way.
+    #
+    valet_uninstall
+
+    logit "🤞 Uninstall brew Formula + Php"
+
+    phps="shivammathur/php/php $(for ver in $PHP_VERSIONS; do echo shivammathur/php/php@$ver; done)"
+    formulas="$(for ext in $PHP_EXTENSIONS; do for ver in $PHP_VERSIONS; do echo $ext@$ver; done; done | xargs)"
+
+    HOMEBREW_NO_INSTALL_CLEANUP=true brew uninstall --force composer php $phps $formulas composer
+
+    logit "🤞 Uninstall brew services"
+    for formula in $(brew services list | grep '^php' | cut -d' ' -f1); do
+        sudo brew services stop $formula >>$DBGLOG 2>&1
+        #sudo brew services remove $formula >>$DBGLOG 2>&1
+        brew services stop $formula >>$DBGLOG 2>&1
+        #brew services remove $formula >>$DBGLOG 2>&1
+    done
+
+    logit "🤞 Tidy brew folders"
+    find /usr/local/Cellar -type d -empty -maxdepth 1 -exec rm -rf {} \; || true
+    sudo /bin/rm -rf /usr/local/Cellar/php@* /usr/local/Cellar/php || true
+    sudo /bin/rm -f $(brew --prefix)/bin/valet >>$DBGLOG 2>&1 || true
+    brew cleanup -q >>$DBGLOG 2>&1 || true
+
+
+    composer_global_clean # remove default if it exists
+    for ver in $PHP_VERSIONS; do
+        composer_global_clean $(resolve_php_ver $ver) # remove php-version specific globals
+    done
+
+
+}
+
+function switch_php() {
+
+    composer self-update --2.2 | tee -a $DBGLOG # required for version of php < 7.2.5
+
+    php_ver=$1
+    switch_prompt="${2:-skip}" # prompt makes interactive
+
+    if ! is_php_installed "$1" &>/dev/null; then
+        logit "✨ php switch: php $1 needs to be installed"
+        php_install "$1"
+        return $?
+    fi
+
+    local switch_temporarily
+    switch_temporarily="Y"
+
+    if test "$switch_prompt" == "prompt"; then
+        read -p "Switch PHP temporarily (otherwise permanent switch persists) Yn?" switch_temporarily
+    fi
+
+    if test "${switch_temporarily:-Y}" == "Y"; then
+        export_php_env_and_path "$1"
+    else
+        php_install "$1"
+    fi
+}
+
+# Set PHP and Composer Global PATH and ENV
+export_php_env_and_path $PHP_DEFAULT_VERSION
