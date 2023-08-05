@@ -69,15 +69,21 @@ function __composer_home_path() {
 function __php_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
      # strip any existing composer homes
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g') || true
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g') || true
+     echo -e "⚡️ PRE "
+    env|egrep '^PATH=|COMPOSER_HOME'
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
+    echo -e "⚡️ POST "
     env|egrep '^PATH=|COMPOSER_HOME'
 }
 
 function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
-    export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || true
+    echo -e "⚡️ PRE "
+    env|egrep '^PATH=|COMPOSER_HOME'
+    export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
+    echo -e "⚡️ POST "
     env|egrep '^PATH=|COMPOSER_HOME'
 }
 
@@ -192,7 +198,17 @@ function __php_export_env_path() {
     # Set PHP and Composer Global PATH and ENV
     # ensure php and composer/vendor/bin comes early in the search path
 
-    export COMPOSER_HOME="$(__composer_home_path $php_ver)"
+    if [ $# -eq 0 ]; then
+        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __debug "⇒ ${FUNCNAME[0]} $*"
+    fi
+
+    local php_version="${1}"
+
+    COMPOSER_HOME="$(__composer_home_path $php_version)"
+    export COMPOSER_HOME
 
     local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
     export PATH="$COMPOSER_BIN_PATH:$PATH"
@@ -246,12 +262,16 @@ function __composer_packages_install() {
         #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
     fi
 
-    env|egrep 'PATH|COMPO|PHP'
 
     local php_ver
     php_ver=$1
 
+    echo "⚡️ ${FUNCNAME[0]} ENV CHECK"
+    env|egrep '^PATH=|COMPOSER_HOME'
     export COMPOSER_HOME="$(__composer_home_path $php_ver)"
+    env|egrep '^PATH=|COMPOSER_HOME'
+    #__php_strip_path
+    #__composer_strip_path
 
     __debug "⚡️ composer global require for $php_ver"
     case "$php_ver" in
