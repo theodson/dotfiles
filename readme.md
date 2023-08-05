@@ -151,7 +151,6 @@ source dotfiles/install
 
 php_install 8.1
 php_install_via_valet 8.1
-php_show_modules
 ```
 
 ```
