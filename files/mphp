@@ -18,7 +18,10 @@ export COMPOSER_MAX_VERSION=2.2
 
 function __debug() {
     echo -e "$*" >> "$DBGLOG"
-    #echo -e "$*" | tee -a "$DBGLOG"
+}
+
+function __show() {
+    echo -e "$*"; __debug "$*"
 }
 
 function __php_version_inpath() {
@@ -185,13 +188,13 @@ function __php_install_via_valet() {
 }
 
 function __composer_install() {
-    __debug "⇒ ${FUNCNAME[0]}"
+    __show "⇒ ${FUNCNAME[0]}"
     if ! type -p composer >>$DBGLOG 2>&1; then
-        __debug "✨ Install missing composer"
-        brew install composer | tee -a $DBGLOG && \
+        __show "✨ Install missing composer"
+        brew install composer --ignore-dependencies --force | tee -a $DBGLOG && \
         composer self-update --$COMPOSER_MAX_VERSION | tee -a $DBGLOG # required for version of php < 7.2.5
     else
-        __debug "✨ Composer is installed ($(composer --version), $(which composer))" || true
+        __show "✨ Composer is installed ($(composer --version), $(which composer))" || true
     fi
 }
 
