@@ -203,15 +203,15 @@ function __composer_install() {
         # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
 
         # using direct phar copy https://getcomposer.org/download/
-        sudo curl -s -L  https://getcomposer.org/download/2.2.21/composer.phar --output /usr/local/bin/composer &&
-        sudo chmod +x /usr/local/bin/composer
+        curl -s -L  https://getcomposer.org/download/2.2.21/composer.phar --output /usr/local/bin/composer &&
+        chmod +x /usr/local/bin/composer
         return $?
 
         # using php and composer installer at a specific installer version (compatible with php 7.0)
         composer2_2ltsthash=e5deaee38e51e2725c5f237635e2e3e907241e60
         composer_installer_path="https://raw.githubusercontent.com/composer/getcomposer.org/$composer2_2ltsthash/web/installer"
-        sudo wget $composer_installer_path -O - -q | php -- --quiet --2.2 && sudo mv ./composer.phar /usr/local/bin/composer &&
-        sudo chmod +x /usr/local/bin/composer
+        wget $composer_installer_path -O - -q | php -- --quiet --2.2 && sudo mv ./composer.phar /usr/local/bin/composer &&
+        chmod +x /usr/local/bin/composer
         return $?
 
         # we can use this once we've moved all project to php7.4+
@@ -370,11 +370,24 @@ function __composer_packages_install() {
 }
 
 function __valet_install() {
-    __show "⇒ ${FUNCNAME[0]}"
+
+    if [ $# -eq 0 ]; then
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __show "⇒ ${FUNCNAME[0]} $*"
+        #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
+    fi
+
+    local php_ver
+    php_ver=$1
 
     if ! valet trust &>/dev/null; then
         __show "⚡️ Valet '$(type -p valet)' exists but we need to run 'valet install'."
-        valet install
+        valet install || {
+            valet use $php_ver &&
+            valet install
+        }
     fi
 
     # permissions for interrupt free php switching with valet
@@ -412,7 +425,7 @@ function __php_install() {
         read -p "📗 Waiting.. __composer_packages_install" &&
         __composer_packages_install $phpversion &&
         read -p "📗 Waiting.. __valet_install" &&
-        __valet_install || {
+        __valet_install $phpversion || {
             __show "💥 Failed to install default php.. suggest reviewing/tailing $DBGLOG and trying again."
         }
     elif [ $# -ne 0 ]; then
