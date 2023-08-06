@@ -205,7 +205,7 @@ function __composer_install() {
             __show "✨ Install missing composer to latest version"
             # we can use this once we've moved all project to php7.4+ or install the 1st version at 8.0+
             #HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG
-            HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall composer | tee -a $DBGLOG
+            brew reinstall composer | tee -a $DBGLOG
         else
             __show "✨ Install missing composer at php7.2 compatablity --2.2.( without dependencies - they are installed later)"
             # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
@@ -1051,6 +1051,11 @@ function switch_php() {
     else
         _logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
     fi
+
+    __php_install "$1"
+    return $?
+
+    # original php switch
     _logit "switch_php: composer self-update --2.2"
     composer self-update --2.2  &>$DBGLOG || _logit "✨ composer missing !!!" # required for version of php < 7.2.5
 
