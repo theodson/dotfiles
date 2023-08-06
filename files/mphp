@@ -199,8 +199,23 @@ function __php_install_via_valet() {
 function __composer_install() {
     __show "⇒ ${FUNCNAME[0]}"
     if ! type -p composer >>$DBGLOG 2>&1; then
-        __show "✨ Install missing composer"
-        brew install composer --ignore-dependencies --force | tee -a $DBGLOG && \
+        __show "✨ Install missing composer ( without dependencies - they are installed later)"
+        # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+
+        # using direct phar copy https://getcomposer.org/download/
+        sudo curl -s -L  https://getcomposer.org/download/2.2.21/composer.phar --output /usr/local/bin/composer &&
+        sudo chmod +x /usr/local/bin/composer
+        return $?
+
+        # using php and composer installer at a specific installer version (compatible with php 7.0)
+        composer2_2ltsthash=e5deaee38e51e2725c5f237635e2e3e907241e60
+        composer_installer_path="https://raw.githubusercontent.com/composer/getcomposer.org/$composer2_2ltsthash/web/installer"
+        sudo wget $composer_installer_path -O - -q | php -- --quiet --2.2 && sudo mv ./composer.phar /usr/local/bin/composer &&
+        sudo chmod +x /usr/local/bin/composer
+        return $?
+
+        # we can use this once we've moved all project to php7.4+
+        HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG && \
         composer self-update --$COMPOSER_MAX_VERSION | tee -a $DBGLOG # required for version of php < 7.2.5
     else
         __show "✨ Composer is installed ($(composer --version), $(which composer))" || true
