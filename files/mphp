@@ -6,14 +6,16 @@
 #
 
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary shivammathur/extensions/mongodb}" # from shivammathur/extensions/imagick
-export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
+#export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
+export PHP_VERSIONS="${PHP_VERSIONS:-8.0 8.1 8.2}" # abandon php-7.x in brew and valet... too hard to maintain
+export COMPOSER_MAX_VERSION=2.5
 export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.2}"
 
 export DBGLOG=/tmp/switch_php.debug.log
 
 export COMPOSER_PROCESS_TIMEOUT="${COMPOSER_PROCESS_TIMEOUT:-900}" # default is COMPOSER_PROCESS_TIMEOUT=300
 export COMPOSER_MEMORY_LIMIT="${COMPOSER_MEMORY_LIMIT:-2G}"
-export COMPOSER_MAX_VERSION=2.2
+
 
 
 function __debug() {
@@ -200,11 +202,12 @@ function __composer_install() {
     __show "⇒ ${FUNCNAME[0]}"
     if ! type -p composer >>$DBGLOG 2>&1; then
         if [ 1 -eq $(bc --expression="7.4<$PHP_DEFAULT_VERSION") ]; then
+            __show "✨ Install missing composer to latest version"
             # we can use this once we've moved all project to php7.4+ or install the 1st version at 8.0+
-            HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG && \
-            composer self-update --$COMPOSER_MAX_VERSION | tee -a $DBGLOG # required for version of php < 7.2.5
+            #HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG
+            HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall composer | tee -a $DBGLOG
         else
-            __show "✨ Install missing composer ( without dependencies - they are installed later)"
+            __show "✨ Install missing composer at php7.2 compatablity --2.2.( without dependencies - they are installed later)"
             # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
 
             # using direct phar copy https://getcomposer.org/download/
@@ -316,7 +319,10 @@ function __composer_packages_install() {
     #__php_strip_path
     #__composer_strip_path
 
-    __debug "⚡️ composer global require for $php_ver"
+    valetversion=3.0 # for php 7.x+
+    valetversion=4.0 # for php 8.0+
+
+    __debug "⚡️ composer global require for $php_ver and Valet $valetversion"
     case "$php_ver" in
     5.6)
         __debug "not supported" && return 1
@@ -328,7 +334,7 @@ function __composer_packages_install() {
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
             "laravel/installer" \
-            "laravel/valet:^3.0" \
+            "laravel/valet:^$valetversion" \
             "laravel/envoy" \
             "tightenco/takeout" \
             "tightenco/tlint"
@@ -340,7 +346,7 @@ function __composer_packages_install() {
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
             "laravel/installer" \
-            "laravel/valet:^3.0" \
+            "laravel/valet:^$valetversion" \
             "laravel/envoy" \
             "tightenco/takeout" \
             "tightenco/tlint"
@@ -352,7 +358,7 @@ function __composer_packages_install() {
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
             "laravel/installer" \
-            "laravel/valet:^3.0" \
+            "laravel/valet:^$valetversion" \
             "laravel/envoy" \
             "tightenco/takeout" \
             "tightenco/tlint"
@@ -364,7 +370,7 @@ function __composer_packages_install() {
             "friendsofphp/php-cs-fixer" \
             "jorijn/laravel-security-checker" \
             "laravel/installer" \
-            "laravel/valet:^3.0" \
+            "laravel/valet:^$valetversion" \
             "laravel/envoy"
         ;;
     esac
@@ -1045,7 +1051,7 @@ function switch_php() {
     else
         _logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
     fi
-
+    _logit "switch_php: composer self-update --2.2"
     composer self-update --2.2  &>$DBGLOG || _logit "✨ composer missing !!!" # required for version of php < 7.2.5
 
     php_ver=$1
