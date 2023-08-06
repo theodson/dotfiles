@@ -32,14 +32,16 @@ function __php_version_inpath() {
 }
 
 function __php_@version() {
+    # handle 72, 7.2, php@7.2, php@72, php72, php7.2,
+    # returns php@7.2 ( as used by brew or valet )
+    # So dont use __show as it output to stdout
+
     if [ $# -eq 0 ]; then
         __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
         __debug "⇒ ${FUNCNAME[0]} $*"
     fi
-    # handle 72, 7.2, php@7.2, php@72, php72, php7.2,
-    # return php@7.2 ( as used by brew or valet )
 
     local cleaned_php_ver
     cleaned_php_ver=$(echo "$1" | tr -d . | sed 's,php,,' | tr -d '@')
@@ -55,7 +57,7 @@ function __php_@version() {
 function __composer_home_path() {
     # output "composer home path" for specific php version
     # the path does not have to exist
-
+    # So dont use __show as it output to stdout
     if [ $# -eq 0 ]; then
         __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
@@ -72,46 +74,53 @@ function __composer_home_path() {
 function __php_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
      # strip any existing composer homes
-     echo -e "⚡️ PRE "
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "⚡️ PRE "
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
-    echo -e "⚡️ POST "
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "⚡️ POST "
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
-    echo -e "⚡️ PRE "
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "⚡️ PRE "
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
-    echo -e "⚡️ POST "
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "⚡️ POST "
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __php_install_latest() {
     __debug "⇒ ${FUNCNAME[0]}"
 
     sudo -v
-    __debug "✨ Install Brew's most recent php version"
-    HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
+    if [ $# -eq 0 ]; then
+         __show "✨ Install Brew's most recent php version"
+        HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
+    else
+        local php_version="${1:-PHP_DEFAULT}"
+        local php_valet_version="$(__php_@version $php_version)"
+        __show "✨ Install Brew's $php_valet_version version"
+        HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$php_valet_version >>$DBGLOG 2>&1
+    fi
 }
 
 function __php_install_extensions() {
     if [ $# -eq 0 ]; then
-        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __debug "⇒ ${FUNCNAME[0]} $*"
+        __show "⇒ ${FUNCNAME[0]} $*"
     fi
     # this might be needed to resolve conflicts between redis@7.0 and php-redis@7.0
     # brew reinstall redis@6.2 && brew link redis@6.2 && brew pin redis@6.2
 
     local php_version="${1}"
 
-    __debug "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
+    __show "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
     for ext in $PHP_EXTENSIONS; do
         forumla="${ext}@${php_version}"
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
@@ -125,16 +134,16 @@ function __php_install_via_valet() {
     #
 
     if [ $# -eq 0 ]; then
-        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __debug "⇒ ${FUNCNAME[0]} $*"
+        __show "⇒ ${FUNCNAME[0]} $*"
     fi
 
     sudo -v
 
     # fix permissions
-    __debug "⚡️ fix php permissions"
+    __show "⚡️ fix php permissions"
     #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
     sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
     sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
@@ -149,8 +158,8 @@ function __php_install_via_valet() {
     local php_valet_version="$(__php_@version $php_version)"
 
 #    __valet_install $php_valet_version || return 1
-    __debug "⚡️ Switching from $(__php_version_inpath)"
-    __debug "⚡️ fix php permissions"
+    __show "⚡️ Switching from $(__php_version_inpath)"
+    __show "⚡️ fix php permissions"
     #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
     sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
     sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
@@ -164,7 +173,7 @@ function __php_install_via_valet() {
     #__debug "⚡️ Installing shivammathur/php/$php_valet_version to ensure 'valet use' works for all version of php"
     #HOMEBREW_NO_INSTALL_CLEANUP=false brew reinstall --force -q shivammathur/php/$php_valet_version >>$DBGLOG 2>&1
 
-    __debug "✨ Install PHP via Valet 'use' command"
+    __show "✨ Install PHP via Valet 'use' command"
     #read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
     valet use $php_valet_version # install php
 
@@ -174,16 +183,16 @@ function __php_install_via_valet() {
     # valet_install $php_valet_version || return 2 # install valet via composer for this php
 
     # This might be required as brew services sometimes fail
-    __debug "⚡️ brew postinstall $php_valet_version (forced to run)"
+    __show "⚡️ brew postinstall $php_valet_version (forced to run)"
     brew postinstall $php_valet_version | grep -E 'Postinstalling|update-channels'
 
-    __debug "⚡️ Switched to $php_valet_version"
-    __debug "⚡️ Valet restarting $php_valet_version"
+    __show "⚡️ Switched to $php_valet_version"
+    __show "⚡️ Valet restarting $php_valet_version"
     # valet install
     valet restart
 
     sudo brew services list
-    __debug "🪲 debug logs at $DBGLOG"
+    __show "🪲 debug logs at $DBGLOG"
 
 }
 
@@ -203,10 +212,10 @@ function __php_export_env_path() {
     # ensure php and composer/vendor/bin comes early in the search path
 
     if [ $# -eq 0 ]; then
-        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __debug "⇒ ${FUNCNAME[0]} $*"
+        __show "⇒ ${FUNCNAME[0]} $*"
     fi
 
     local php_version="${1}"
@@ -217,30 +226,43 @@ function __php_export_env_path() {
     local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
     export PATH="$COMPOSER_BIN_PATH:$PATH"
 
-    __debug "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
+    __show "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
 
-    local PHP_BIN_PATH
-    if type -p php &>/dev/null; then
-        # resolve any symlink to canonical base path e.g. /usr/local/Cellar/php/8.2.8/bin
-        PHP_BIN_PATH="$(dirname $(readlink -f $(type -p php)))"
+    # try likely paths - first specific PHP version
+    phppath=$(dirname $(brew list -1 --formula php@$php_version 2>/dev/null | grep 'bin/php$') 2>/dev/null);
+    if [ -z "$phppath" ]; then
+        # and if not found then try the default brew php version (this is the default/latest version )
+        phppath=$(dirname $(brew list -1 --formula php 2>/dev/null | grep 'bin/php$') 2>/dev/null)
+    fi
+    # resolve any symlink to canonical base path e.g. /usr/local/Cellar/php/8.2.8/bin
+    # phppath="$(dirname $(readlink -f $phppath))"
 
-        if [ -n "$PHP_BIN_PATH" ] && [ -d "$PHP_BIN_PATH" ]; then
-            export PATH="$PHP_BIN_PATH:$PATH"
-            __debug "⚡️ PATH updated for PHP ${PHP_BIN_PATH}"
-        fi
-    else
-        __debug "Cannot find PHP in PATH"
+    php_version_found=$(echo $($phppath/php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2))
+    versions="php_version_found=$php_version_found = php_version_requested=$php_version"
+    __show $versions
+
+    if [ ! "$php_version_found" = "$php_version" ]; then
+        __show "💥 PHP binary found differs from requested.\n$versions"
         return 3
     fi
+
+    if [ -n "$phppath" -a -e "$phppath" ]; then
+        export PATH="$phppath:$PATH"
+        __show "⚡️ PATH updated for PHP ${phppath}"
+    else
+        __show "💥 Cannot find PHP in PATHs"
+         return 3
+    fi
+
 }
 
 function __composer_clean() {
 
     if [ $# -eq 0 ]; then
-        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __debug "⇒ ${FUNCNAME[0]} $*"
+        __show "⇒ ${FUNCNAME[0]} $*"
     fi
 
     local php_ver
@@ -259,10 +281,10 @@ function __composer_clean() {
 function __composer_packages_install() {
 
     if [ $# -eq 0 ]; then
-        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __debug "⇒ ${FUNCNAME[0]} $*"
+        __show "⇒ ${FUNCNAME[0]} $*"
         #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
     fi
 
@@ -271,9 +293,9 @@ function __composer_packages_install() {
     php_ver=$1
 
     echo "⚡️ ${FUNCNAME[0]} ENV CHECK"
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export COMPOSER_HOME="$(__composer_home_path $php_ver)"
-    env|egrep '^PATH=|COMPOSER_HOME'
+    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
     #__php_strip_path
     #__composer_strip_path
 
@@ -333,42 +355,50 @@ function __composer_packages_install() {
 }
 
 function __valet_install() {
-    __debug "⇒ ${FUNCNAME[0]}"
+    __show "⇒ ${FUNCNAME[0]}"
 
     if ! valet trust &>/dev/null; then
-        __debug "⚡️ Valet '$(type -p valet)' exists but we need to run 'valet install'."
+        __show "⚡️ Valet '$(type -p valet)' exists but we need to run 'valet install'."
         valet install
     fi
 
     # permissions for interrupt free php switching with valet
-    __debug "⚡️ Trust in Valet !"
-    echo -e "⚡️ Trust in Valet !"
+    __show "⚡️ Trust in Valet !"
     sudo -v && valet trust
 
     # sometimes brew services php-fpm fails - this is a permissions issue that creeps in somewhere.
     (pushd /usr/local/etc/ && sudo chown -R $(whoami) php* && popd) >>$DBGLOG 2>&1 || {
-        echo -n "🤔 Looks like permissions reset failed"
-        __debug " try\n  brew postinstall PHP_VERSION ($(__php_version_inpath) --verbose --debug"
+        __show "🤔 Looks like permissions reset failed"
+        __show " try\n  brew postinstall PHP_VERSION ($(__php_version_inpath) --verbose --debug"
     }
 }
 
 function __php_install() {
-    __debug "⇒ ${FUNCNAME[0]} $*"
+    __show "⇒ ${FUNCNAME[0]} $*"
 
     sudo -v
     if ! type -p php >>$DBGLOG 2>&1; then
+        phpversion=''
+        phpversion='7.0'
         # no php version detected in the path - this is for NEW installs and is required before other versions.
         __php_strip_path &&
         __composer_strip_path &&
-        __php_install_latest &&
-        phpversion=$(__php_version_inpath) &&
-        __php_install_extensions $phpversion &&
-        __composer_install &&
+        __php_install_latest $phpversion &&
+        phpversion="${phpversion:-$(__php_version_inpath)}" &&
         __php_export_env_path $phpversion &&
+        read -p "📗 Waiting.. __php_install_extensions" &&
+        __php_install_extensions $phpversion &&
+        read -p "📗 Waiting.. __composer_install" &&
+        __composer_install &&
+        read -p "📗 Waiting.. __php_export_env_path" &&
+        __php_export_env_path $phpversion &&
+        read -p "📗 Waiting.. __composer_clean" &&
         __composer_clean $phpversion &&
+        read -p "📗 Waiting.. __composer_packages_install" &&
         __composer_packages_install $phpversion &&
+        read -p "📗 Waiting.. __valet_install" &&
         __valet_install || {
-            echo "🧐 Failed to install default php.. suggest reviewing/tailing $DBGLOG and trying again."
+            __show "💥 Failed to install default php.. suggest reviewing/tailing $DBGLOG and trying again."
         }
     elif [ $# -ne 0 ]; then
         echo "Lets try installing $1"
@@ -379,16 +409,14 @@ function __php_install() {
         __php_export_env_path $phpversion &&
         __composer_clean $phpversion &&
         __composer_packages_install $phpversion || {
-            echo "🧐 Failed to install default php $phpversion.. suggest reviewing/tailing $DBGLOG and trying again."
-            env|egrep 'PATH|COMPO|PHP'
+            __show "💥 Failed to install default php $phpversion.. suggest reviewing/tailing $DBGLOG and trying again."
+            __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
             return 1
         }
-        msg="✨ PHP finished installation ($(php -v | head -1))."
-        echo $msg && __debug "$msg"
+        __show "✨ PHP finished installation ($(php -v | head -1))."
 
     else
-        msg="✨ PHP currently installed ($(php -v | head -1)). Nothing to do."
-        echo $msg && __debug "$msg"
+        __show "✨ PHP currently installed ($(php -v | head -1)). Nothing to do."
     fi
 
 }
@@ -860,7 +888,7 @@ function php_install() {
     # Assumption is via brew bundle .Brewfile and we have tapped 'shivammathur/php' and 'shivammathur/extensions'
     #
     if ! type -p php >>$DBGLOG 2>&1; then
-        _logit "✨ Install Brew's shivammathur/php/php"
+        _logit "✨ Install  Brew's shivammathur/php/php"
         # HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q shivammathur/php/php | tee -a $DBGLOG &>/dev/null
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
     else
