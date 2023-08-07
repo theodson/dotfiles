@@ -34,9 +34,21 @@ function __show() {
     echo -e "$*"; __debug "$*"
 }
 
-function __php_brew_default() {
-    # find the version of the default php (most recent) installed via 'brew install php' !
-    brew info php --json | jq -r '.[].versions.stable' | cut -d. -f-2
+function __php_brew_latest_stable_version() {
+    local base_file_name="/tmp/__php_brew_latest_stable.ver"
+    local tmp_php_ver_file="${base_file_name}.$(date +%Y%m%d)" # cached daily file
+
+    if [ -e $tmp_php_ver_file ]; then
+        # use cached results
+        cat $tmp_php_ver_file
+        return
+    fi
+    # remember the version installed when using 'brew install php' as it changes with each new release of php.
+    if [ ! -e $tmp_php_ver_file ]; then
+        /bin/rm -f ${base_file_name}.* &>/dev/null # clean previous cache
+        # find the version of the default php (most recent) installed via 'brew install php' !
+        brew info php --json | jq -r '.[].versions.stable' | cut -d. -f-2 > $tmp_php_ver_file
+    fi
 }
 
 function __php_version_inpath() {
