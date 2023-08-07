@@ -1172,6 +1172,16 @@ function switch_php() {
     fi
 }
 
+function vlsi() {
+    valet link $* && valet secure $* && valet isolate --site=$*
+    valet links
+}
+
+function uvlsi() {
+    valet unsecure $* && valet unisolate --site=$* && valet unlink $*
+    valet links
+}
+
 # Set PHP and Composer Global PATH and ENV
 __php_export_env_path $PHP_DEFAULT_VERSION
 
