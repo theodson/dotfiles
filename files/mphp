@@ -6,10 +6,18 @@
 #
 
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary shivammathur/extensions/mongodb}" # from shivammathur/extensions/imagick
-#export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
-export PHP_VERSIONS="${PHP_VERSIONS:-8.0 8.1 8.2}" # abandon php-7.x in brew and valet... too hard to maintain
-export COMPOSER_MAX_VERSION=2.5
-export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.2}"
+
+# --- project on php-7.0 and above use these settings
+export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
+export COMPOSER_MAX_VERSION=2.2
+export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-7.0}"
+export VALET_VERSION=3.0 # for php 7.x+
+
+# --- project on php-8.0 and above use these settings
+#export PHP_VERSIONS="${PHP_VERSIONS:-8.0 8.1 8.2}" # abandon php-7.x in brew and valet... too hard to maintain
+#export COMPOSER_MAX_VERSION=2.5
+#export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.0}"
+#export VALET_VERSION=4.0 # for php 8.0x+
 
 export DBGLOG=/tmp/switch_php.debug.log
 
@@ -76,23 +84,23 @@ function __composer_home_path() {
 function __php_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
      # strip any existing composer homes
-    __show "⚡️ PRE "
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    __debug "⚡️ PRE "
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
-    __show "⚡️ POST "
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    __debug "⚡️ POST "
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
-    __show "⚡️ PRE "
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    __debug "⚡️ PRE "
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
-    __show "⚡️ POST "
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    __debug "⚡️ POST "
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __php_install_latest() {
@@ -112,10 +120,10 @@ function __php_install_latest() {
 
 function __php_install_extensions() {
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
     fi
     # this might be needed to resolve conflicts between redis@7.0 and php-redis@7.0
     # brew reinstall redis@6.2 && brew link redis@6.2 && brew pin redis@6.2
@@ -136,17 +144,15 @@ function __php_install_via_valet() {
     #
 
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
     fi
 
     sudo -v
 
-    # fix permissions
-    __show "⚡️ fix php permissions"
-    #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
+    __show "⚡️ Fix php permissions"
     sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
     sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
 
@@ -161,10 +167,10 @@ function __php_install_via_valet() {
 
 #    __valet_install $php_valet_version || return 1
     __show "⚡️ Switching from $(__php_version_inpath)"
-    __show "⚡️ fix php permissions"
+    __show "⚡️ Fix php permissions"
     #sudo chown -R $(id -un) /usr/local/Cellar/{php*,dnsmasq*,nginx*} >>$DBGLOG 2>&1 || true
-    sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
-    sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    #sudo chown -R $(id -un) /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
+    #sudo chmod -R 755 /usr/local/Cellar/php* >>$DBGLOG 2>&1 || true
 
     # =========================================================================
     #
@@ -191,15 +197,15 @@ function __php_install_via_valet() {
     __show "⚡️ Switched to $php_valet_version"
     __show "⚡️ Valet restarting $php_valet_version"
     # valet install
-    valet restart
+    # valet restart
 
-    sudo brew services list
+    #sudo brew services list
     __show "🪲 debug logs at $DBGLOG"
 
 }
 
 function __composer_install() {
-    __show "⇒ ${FUNCNAME[0]}"
+    __show "📗️ ${FUNCNAME[0]}"
     if ! type -p composer >>$DBGLOG 2>&1; then
         if [ 1 -eq $(bc --expression="7.4<$PHP_DEFAULT_VERSION") ]; then
             __show "✨ Install missing composer to latest version"
@@ -232,10 +238,10 @@ function __php_export_env_path() {
     # ensure php and composer/vendor/bin comes early in the search path
 
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
     fi
 
     local php_version="${1}"
@@ -244,6 +250,7 @@ function __php_export_env_path() {
     export COMPOSER_HOME
 
     local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
+    __composer_strip_path
     export PATH="$COMPOSER_BIN_PATH:$PATH"
 
     __show "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
@@ -279,10 +286,10 @@ function __php_export_env_path() {
 function __composer_clean() {
 
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
     fi
 
     local php_ver
@@ -311,9 +318,8 @@ function __valet_502_fix() {
             # if the php-fpm launch template does not contain the temporary workaround (see valet issue 1433), lets fix it.
             nl=$'\n'
             fixcode="\t<key>RunAtLoad</key>\n\t<true/>\n\t<key>EnvironmentVariables</key>\n\t<dict>\n\t\t<key>OBJC_DISABLE_INITIALIZE_FORK_SAFETY</key>\n\t\t<string>YES</string>\n\t</dict>"
-
             # ensure no markers exist
-            sed '/_MARKER_/d' $template
+            sed -i '' '/_MARKER_/d' $template
 
             # insert marker for - match RunAtLoad, Substitute it, move to next line, delete line
             sed -i -e '/RunAtLoad/{s/^.*RunAtLoad.*$/_MARKER_/;n;d;}' $template
@@ -330,10 +336,10 @@ function __valet_502_fix() {
 function __composer_packages_install() {
 
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
         #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
     fi
 
@@ -341,15 +347,12 @@ function __composer_packages_install() {
     local php_ver
     php_ver=$1
 
-    echo "⚡️ ${FUNCNAME[0]} ENV CHECK"
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    __debug "⚡️ ${FUNCNAME[0]} ENV CHECK"
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
     export COMPOSER_HOME="$(__composer_home_path $php_ver)"
-    __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
-    #__php_strip_path
-    #__composer_strip_path
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
 
-    valetversion=3.0 # for php 7.x+
-    # valetversion=4.0 # for php 8.0+
+    valetversion=$VALET_VERSION
 
     __debug "⚡️ composer global require for $php_ver and Valet $valetversion"
     case "$php_ver" in
@@ -403,16 +406,17 @@ function __composer_packages_install() {
             "laravel/envoy"
         ;;
     esac
+    composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
     __valet_502_fix
 }
 
 function __valet_install() {
 
     if [ $# -eq 0 ]; then
-        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "⇒ ${FUNCNAME[0]} $*"
+        __show "📗️ ${FUNCNAME[0]} $*"
         #__debug "${FUNCNAME[0]}" >>$DBGLOG 2>&1
     fi
 
@@ -420,8 +424,9 @@ function __valet_install() {
     php_ver=$1
 
     if ! valet trust &>/dev/null; then
+        # valet install has never been run... lets fix that.
         __show "⚡️ Valet '$(type -p valet)' exists but we need to run 'valet install'."
-        valet install || {
+        valet install 2>/dev/null || {
             valet use $php_ver &&
             valet install
         }
@@ -439,7 +444,7 @@ function __valet_install() {
 }
 
 function __php_install() {
-    __show "⇒ ${FUNCNAME[0]} $*"
+    __show "📗️ ${FUNCNAME[0]} $*"
 
     sudo -v
     if ! type -p php >>$DBGLOG 2>&1; then
@@ -459,7 +464,9 @@ function __php_install() {
         __valet_install $phpversion || {
             __show "💥 Failed to install default php.. suggest reviewing/tailing $DBGLOG and trying again."
         }
+        return
     fi
+
     if [ $# -ne 0 ]; then
         echo "🚀 Lets try installing $1"
         phpversion=$1
@@ -468,9 +475,10 @@ function __php_install() {
         __composer_strip_path &&
         __php_export_env_path $phpversion &&
         __composer_clean $phpversion &&
-        __composer_packages_install $phpversion || {
+        __composer_packages_install $phpversion &&
+        valet restart || {
             __show "💥 Failed to install default php $phpversion.. suggest reviewing/tailing $DBGLOG and trying again."
-            __show "$(env|egrep '^PATH=|COMPOSER_HOME')"
+            __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
             return 1
         }
         __show "✨ PHP finished installation ($(php -v | head -1))."
