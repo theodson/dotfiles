@@ -185,6 +185,35 @@ function get_latest_php()
     fi
 }
 
+function valet_502_fix() {
+
+    # Valet issue 2023 July - https://github.com/laravel/valet/issues/1433
+    launchfile_templates=$(find $(brew --prefix)/Cellar/php* -type f -maxdepth 2 -mindepth 2 -path '*homebrew*.plist')
+
+    for template in $launchfile_templates; do
+        echo "⚡️ Checking $template"
+
+        if ! grep -q 'OBJC_DISABLE_INITIALIZE_FORK_SAFETY' $template; then
+            echo "⚡️ Applying Fix for $template"
+            # if the php-fpm launch template does not contain the temporary workaround (see valet issue 1433), lets fix it.
+            nl=$'\n'
+            fixcode="\t<key>RunAtLoad</key>\n\t<true/>\n\t<key>EnvironmentVariables</key>\n\t<dict>\n\t\t<key>OBJC_DISABLE_INITIALIZE_FORK_SAFETY</key>\n\t\t<string>YES</string>\n\t</dict>"
+
+            # ensure no markers exist
+            sed '/_MARKER_/d' $template
+
+            # insert marker for - match RunAtLoad, Substitute it, move to next line, delete line
+            sed -i -e '/RunAtLoad/{s/^.*RunAtLoad.*$/_MARKER_/;n;d;}' $template
+
+            # easier replacement using marker
+            sed -i '' "s#_MARKER_#$fixcode#" $template
+        else
+            echo "⚡️ Skipping Fix for $template - already applied."
+        fi
+    done
+
+}
+
 function composer_global_install() {
 
     logit "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
@@ -269,6 +298,7 @@ function composer_global_install() {
     esac
     #composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
     export_php_env_and_path $php_ver
+    valet_502_fix
 }
 
 function valet_uninstall() {
@@ -307,6 +337,11 @@ function valet_uninstall() {
     sudo rm -rf /usr/local/etc/php/* /private/tmp/pear/* /usr/local/lib/php/* /usr/local/share/php* /usr/local/share/pear* >>$DBGLOG 2>&1 || true
     sudo rm -rf /private/tmp/pear/ >>$DBGLOG 2>&1 || true
     sudo rm -rf /usr/local/bin/valet
+
+    # ls -l ~/Library/LaunchAgents /Library/Launch*
+    find ~/Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
+    sudo find /Library/LaunchDaemons -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
+    sudo find /Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
 
     brew cleanup -q >>$DBGLOG 2>&1 || true
 }

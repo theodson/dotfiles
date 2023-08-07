@@ -298,6 +298,35 @@ function __composer_clean() {
     composer global --no-interaction dump >>$DBGLOG 2>&1 || true # dump autoloader to generate 'platform_check.php'
 }
 
+function __valet_502_fix() {
+
+    # Valet issue 2023 July - https://github.com/laravel/valet/issues/1433
+    launchfile_templates=$(find $(brew --prefix)/Cellar/php* -type f -maxdepth 2 -mindepth 2 -path '*homebrew*.plist')
+
+    for template in $launchfile_templates; do
+        echo "⚡️ Checking $template"
+
+        if ! grep -q 'OBJC_DISABLE_INITIALIZE_FORK_SAFETY' $template; then
+            echo "⚡️ Applying Fix for $template"
+            # if the php-fpm launch template does not contain the temporary workaround (see valet issue 1433), lets fix it.
+            nl=$'\n'
+            fixcode="\t<key>RunAtLoad</key>\n\t<true/>\n\t<key>EnvironmentVariables</key>\n\t<dict>\n\t\t<key>OBJC_DISABLE_INITIALIZE_FORK_SAFETY</key>\n\t\t<string>YES</string>\n\t</dict>"
+
+            # ensure no markers exist
+            sed '/_MARKER_/d' $template
+
+            # insert marker for - match RunAtLoad, Substitute it, move to next line, delete line
+            sed -i -e '/RunAtLoad/{s/^.*RunAtLoad.*$/_MARKER_/;n;d;}' $template
+
+            # easier replacement using marker
+            sed -i '' "s#_MARKER_#$fixcode#" $template
+        else
+            echo "⚡️ Skipping Fix for $template - already applied."
+        fi
+    done
+
+}
+
 function __composer_packages_install() {
 
     if [ $# -eq 0 ]; then
@@ -320,7 +349,7 @@ function __composer_packages_install() {
     #__composer_strip_path
 
     valetversion=3.0 # for php 7.x+
-    valetversion=4.0 # for php 8.0+
+    # valetversion=4.0 # for php 8.0+
 
     __debug "⚡️ composer global require for $php_ver and Valet $valetversion"
     case "$php_ver" in
@@ -374,7 +403,7 @@ function __composer_packages_install() {
             "laravel/envoy"
         ;;
     esac
-
+    __valet_502_fix
 }
 
 function __valet_install() {
@@ -763,6 +792,11 @@ function valet_uninstall() {
     sudo rm -rf /private/tmp/pear/ >>$DBGLOG 2>&1 || true
     sudo rm -rf /usr/local/bin/valet
 
+    # ls -l ~/Library/LaunchAgents /Library/Launch*
+    find ~/Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
+    sudo find /Library/LaunchDaemons -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
+    sudo find /Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
+    
     brew cleanup -q >>$DBGLOG 2>&1 || true
 }
 
