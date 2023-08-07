@@ -796,7 +796,11 @@ function valet_uninstall() {
     find ~/Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
     sudo find /Library/LaunchDaemons -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
     sudo find /Library/LaunchAgents -type f -path '*homebrew*php*.plist' -exec /bin/rm -f {} \;
-    
+
+    # some processes are left hanging around!
+    sudo killall -KILL php-fpm
+    killall -KILL php-fpm
+
     brew cleanup -q >>$DBGLOG 2>&1 || true
 }
 
