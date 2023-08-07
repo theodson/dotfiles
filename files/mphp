@@ -101,23 +101,19 @@ function __composer_home_path() {
 function __php_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
      # strip any existing composer homes
-    __debug "⚡️ PRE "
-    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    #__debug "⚡️ PRE  \n$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
     export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
-    __debug "⚡️ POST "
-    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    #__debug "⚡️ POST \n$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
-    __debug "⚡️ PRE "
-    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    #__debug "⚡️ PRE  \n$(env|egrep '^PATH=|COMPOSER_HOME')"
     export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
-    __debug "⚡️ POST "
-    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    #__debug "⚡️ POST \n$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function __php_install_latest() {
@@ -255,10 +251,10 @@ function __php_export_env_path() {
     # ensure php and composer/vendor/bin comes early in the search path
 
     if [ $# -eq 0 ]; then
-        __show "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        __debug "📗️ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
         return 1
     else
-        __show "📗️ ${FUNCNAME[0]} $*"
+        __debug "📗️ ${FUNCNAME[0]} $*"
     fi
 
     local php_version="${1}"
@@ -272,22 +268,31 @@ function __php_export_env_path() {
 
     __show "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
 
-    # try likely paths - first specific PHP version
-    phppath=$(dirname $(brew list -1 --formula php@$php_version 2>/dev/null | grep 'bin/php$') 2>/dev/null);
-    if [ -z "$phppath" ]; then
-        # and if not found then try the default brew php version (this is the default/latest version )
-        phppath=$(dirname $(brew list -1 --formula php 2>/dev/null | grep 'bin/php$') 2>/dev/null)
+    if false; then # this works but is a slowish phppath (ignore for now - use faster mechanism)
+        # try likely paths - first specific PHP version
+        phppath=$(dirname $(brew list -1 --formula php@$php_version 2>/dev/null | grep 'bin/php$') 2>/dev/null);
+        if [ -z "$phppath" ]; then
+            # and if not found then try the default brew php version (this is the default/latest version )
+            phppath=$(dirname $(brew list -1 --formula php 2>/dev/null | grep 'bin/php$') 2>/dev/null)
+        fi
     fi
+
+    # this is faster phppath check
+    phppath=$(dirname $(find $(brew --prefix)/Cellar/php* -type f -maxdepth 3 -mindepth 3 -regex ".*/php[@0-9\._]*/[0-9\._]*/bin/php$" | grep "$php_version") 2>/dev/null)
+
     # resolve any symlink to canonical base path e.g. /usr/local/Cellar/php/8.2.8/bin
     # phppath="$(dirname $(readlink -f $phppath))"
-
-    php_version_found=$(echo $($phppath/php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2))
-    versions="php_version_found=$php_version_found = php_version_requested=$php_version"
-    __show $versions
-
-    if [ ! "$php_version_found" = "$php_version" ]; then
-        __show "💥 PHP binary found differs from requested.\n$versions"
-        return 3
+    if [ -e $phppath/php ]; then
+        php_version_found=$(echo $($phppath/php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2))
+        versions="php_version_found=$php_version_found = php_version_requested=$php_version"
+        __debug $versions
+        if [ ! "$php_version_found" = "$php_version" ]; then
+            __show "💥 PHP version in PATH differs from requested php@${php_version}\n$versions"
+            return 3
+        fi
+    else
+        __show "💥 php@${php_version} missing\n"
+        return 2
     fi
 
     if [ -n "$phppath" -a -e "$phppath" ]; then
@@ -329,14 +334,14 @@ function __valet_502_fix() {
     launchfile_templates=$(find $(brew --prefix)/Cellar/php* -type f -maxdepth 2 -mindepth 2 -path '*homebrew*.plist')
 
     for template in $launchfile_templates; do
-        echo "⚡️ Checking $template"
+        __debug "⚡️ Checking $template"
 
         if ! grep -q 'OBJC_DISABLE_INITIALIZE_FORK_SAFETY' $template; then
-            echo "⚡️ Applying Fix for $template"
+            __debug "⚡️ Applying Fix for $template"
             # if the php-fpm launch template does not contain the temporary workaround (see valet issue 1433), lets fix it.
             nl=$'\n'
             fixcode="\t<key>RunAtLoad</key>\n\t<true/>\n\t<key>EnvironmentVariables</key>\n\t<dict>\n\t\t<key>OBJC_DISABLE_INITIALIZE_FORK_SAFETY</key>\n\t\t<string>YES</string>\n\t</dict>"
-            # ensure no markers exist
+            # ensure any previous markers are removed
             sed -i '' '/_MARKER_/d' $template
 
             # insert marker for - match RunAtLoad, Substitute it, move to next line, delete line
@@ -345,7 +350,7 @@ function __valet_502_fix() {
             # easier replacement using marker
             sed -i '' "s#_MARKER_#$fixcode#" $template
         else
-            echo "⚡️ Skipping Fix for $template - already applied."
+            __debug "⚡️ Skipping Fix for $template - already applied."
         fi
     done
 
@@ -1116,7 +1121,10 @@ function __switch_php() {
         __debug "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
     fi
 
-    __php_export_env_path "$1"
+    __php_export_env_path "$1" &&
+    current=__php_version_inpath ||
+    __php_install $1
+
 }
 
 function switch_php() {
@@ -1165,4 +1173,7 @@ function switch_php() {
 }
 
 # Set PHP and Composer Global PATH and ENV
-_php_export_envpath $PHP_DEFAULT_VERSION
+__php_export_env_path $PHP_DEFAULT_VERSION
+
+# pre-cache latest php available via brew - ( 1st time each day this takes a few seconds )
+__php_brew_latest_stable_version &>/dev/null
