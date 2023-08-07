@@ -34,6 +34,11 @@ function __show() {
     echo -e "$*"; __debug "$*"
 }
 
+function __php_brew_default() {
+    # find the version of the default php (most recent) installed via 'brew install php' !
+    brew info php --json | jq -r '.[].versions.stable' | cut -d. -f-2
+}
+
 function __php_version_inpath() {
     # when php found in the PATH return its version
     # OR 'empty value' when php is not installed
@@ -274,6 +279,7 @@ function __php_export_env_path() {
     fi
 
     if [ -n "$phppath" -a -e "$phppath" ]; then
+        __php_strip_path
         export PATH="$phppath:$PATH"
         __show "⚡️ PATH updated for PHP ${phppath}"
     else
@@ -1089,7 +1095,21 @@ function php_uninstall() {
 
 }
 
+function __switch_php() {
+
+    if [ $# -eq 0 ]; then
+        __debug "Usage: ${FUNCNAME} 'php version' - required use n.n style"
+        return 1
+    else
+        __debug "${FUNCNAME[0]} $*" >>$DBGLOG 2>&1
+    fi
+
+    __php_export_env_path "$1"
+}
+
 function switch_php() {
+    __switch_php $*
+    return
 
     if [ $# -eq 0 ]; then
         _logit "Usage: ${FUNCNAME} 'php version' - required use n.n style"
