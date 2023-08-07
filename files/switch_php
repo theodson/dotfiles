@@ -197,6 +197,9 @@ function __php_export_env_path() {
 
 function export_php_env_and_path() {
     # Set PHP and Composer Global PATH and ENV
+    # __php_export_env_path $* # new approach
+    # return # original code below.
+
 
     if get_composer_home $1 &>/dev/null; then
 
