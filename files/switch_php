@@ -13,6 +13,15 @@ export DBGLOG=/tmp/switch_php.debug.log
 export COMPOSER_PROCESS_TIMEOUT="${COMPOSER_PROCESS_TIMEOUT:-900}" # default is COMPOSER_PROCESS_TIMEOUT=300
 export COMPOSER_MEMORY_LIMIT="${COMPOSER_MEMORY_LIMIT:-2G}"
 
+
+function __debug() {
+    echo -e "$*" >> "$DBGLOG"
+}
+
+function __show() {
+    echo -e "$*"; __debug "$*"
+}
+
 function logit() {
     echo -e "$*" | tee -a "$DBGLOG"
 }
@@ -21,6 +30,65 @@ type -p composer &>/dev/null || {
     # composer_version=$(composer --version | cut -d ' ' -f3 | cut -d. -f-2 | tr -d '.')
     # required for version of php < 7.2.5
     composer self-update --2.2 >>$DBGLOG 2>&1 || true
+}
+
+
+function __php_@version() {
+    # handle 72, 7.2, php@7.2, php@72, php72, php7.2,
+    # returns php@7.2 ( as used by brew or valet )
+    # So dont use __show as it output to stdout
+
+    if [ $# -eq 0 ]; then
+        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __debug "⇒ ${FUNCNAME[0]} $*"
+    fi
+
+    local cleaned_php_ver
+    cleaned_php_ver=$(echo "$1" | tr -d . | sed 's,php,,' | tr -d '@')
+
+    # check for format n.n
+    if echo "$cleaned_php_ver" | grep -E '^[[:digit:]][[:digit:]]$' &>/dev/null; then
+        echo "php@$(echo $cleaned_php_ver | cut -c1).$(echo $cleaned_php_ver | cut -c2)"
+    else
+        return 2
+    fi
+}
+
+function __composer_home_path() {
+    # output "composer home path" for specific php version
+    # the path does not have to exist
+    # So dont use __show as it output to stdout
+    if [ $# -eq 0 ]; then
+        __debug "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __debug "⇒ ${FUNCNAME[0]} $*"
+    fi
+
+    local php_ver
+    php_ver=$(__php_@version $1) &>/dev/null || return 2
+
+    echo "$HOME/.composer_$php_ver"
+}
+
+function __php_strip_path() {
+    __debug "⇒ ${FUNCNAME[0]}"
+     # strip any existing composer homes
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+}
+
+function __composer_strip_path() {
+    __debug "⇒ ${FUNCNAME[0]}"
+    # strip any existing composer homes
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
+    export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
+    __debug "$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
 function get_php_version() {
@@ -74,6 +142,57 @@ function is_php_installed() {
         return 1
     fi
     echo $(${PHP_BIN_PATH}/php -r 'logit "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2)
+}
+
+function __php_export_env_path() {
+    # Set PHP and Composer Global PATH and ENV
+    # ensure php and composer/vendor/bin comes early in the search path
+
+    if [ $# -eq 0 ]; then
+        __show "⇒ Usage: ${FUNCNAME[0]} 'php-version' - required use n.n style"
+        return 1
+    else
+        __show "⇒ ${FUNCNAME[0]} $*"
+    fi
+
+    local php_version="${1}"
+
+    COMPOSER_HOME="$(__composer_home_path $php_version)"
+    export COMPOSER_HOME
+
+    local COMPOSER_BIN_PATH="${COMPOSER_HOME}/vendor/bin"
+    __composer_strip_path
+    export PATH="$COMPOSER_BIN_PATH:$PATH"
+
+    __show "⚡️ PATH updated for composer global ${COMPOSER_BIN_PATH}"
+
+    # try likely paths - first specific PHP version
+    phppath=$(dirname $(brew list -1 --formula php@$php_version 2>/dev/null | grep 'bin/php$') 2>/dev/null);
+    if [ -z "$phppath" ]; then
+        # and if not found then try the default brew php version (this is the default/latest version )
+        phppath=$(dirname $(brew list -1 --formula php 2>/dev/null | grep 'bin/php$') 2>/dev/null)
+    fi
+    # resolve any symlink to canonical base path e.g. /usr/local/Cellar/php/8.2.8/bin
+    # phppath="$(dirname $(readlink -f $phppath))"
+
+    php_version_found=$(echo $($phppath/php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2))
+    versions="php_version_found=$php_version_found : php_version_requested=$php_version"
+    __debug $versions
+
+    if [ ! "$php_version_found" = "$php_version" ]; then
+        __show "💥 PHP binary found differs from requested.\n$versions"
+        return 3
+    fi
+
+    if [ -n "$phppath" -a -e "$phppath" ]; then
+        __php_strip_path
+        export PATH="$phppath:$PATH"
+        __show "⚡️ PATH updated for PHP ${phppath}"
+    else
+        __show "💥 Cannot find PHP in PATHs"
+         return 3
+    fi
+
 }
 
 function export_php_env_and_path() {
