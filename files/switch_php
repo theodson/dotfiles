@@ -523,17 +523,16 @@ function php_cli_from_valet() {
         return 2
     }
     __show "Found '$(pwd)/.valetphprc' - upgrade to valet 3.x and use 'valet isolate php@n.n'"
-    local php_ver=$(grep 'php@' .valetphprc)
+    local php_ver=$(grep 'php@' .valetphprc | cut -d'@' -f2)
     if [ ! -z "$php_ver" ]; then
 
         __php_@version "$php_ver" &>/dev/null || return 1
-        local php_ver=$(__php_@version "$php_ver") || return 1
-        local PHP_BIN_PATH="$(_php_base_path $php_ver)/bin" || return 3
+        local php_at_ver=$(__php_@version "$php_ver") || return 1
+        local PHP_BIN_PATH=$(echo "$(brew --prefix)/opt/${php_at_ver}")
 
         if [ ! -z "$PHP_BIN_PATH" -a -d "$PHP_BIN_PATH" ]; then
 
-            _php_export_envpath $php_ver
-            # composer_global_install $php_ver
+            __php_export_env_path $php_ver
 
         else
             __show "Cannot find PHP_BIN_PATH=$PHP_BIN_PATH"
