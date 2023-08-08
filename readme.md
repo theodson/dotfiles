@@ -145,13 +145,13 @@ If our custom **`switch_php`** fails to work, try this sequence of tasks.
 
 ```
 php_uninstall
+php_uninstall # yes twice
+
 brew doctor
 
 source dotfiles/install
 
 php_install 8.1
-php_install_via_valet 8.1
-php_show_modules
 ```
 
 ```

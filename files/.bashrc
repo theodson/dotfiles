@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# ! Important behaviour when entering folders - see function 'enter_directory' in .functions
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 
