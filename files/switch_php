@@ -217,35 +217,46 @@ function __php_install_via_valet() {
 
 function __composer_install() {
     __show "📗️ ${FUNCNAME[0]}"
-    if ! type -p composer >>$DBGLOG 2>&1; then
 
-        if false; then # not in use ATM
-            if [ 1 -eq $(bc --expression="7.4<$PHP_DEFAULT_VERSION") ]; then
-                __show "✨ Install missing composer to latest version"
-                # we can use this once we've moved all project to php7.4+ or install the 1st version at 8.0+
-                #HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG
-                brew reinstall composer | tee -a $DBGLOG
-                return
-            fi
-        fi
-
-        __show "✨ Install missing composer at php7.2 compatablity --2.2.( without dependencies - they are installed later)"
-        # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
-
-        # using direct phar copy https://getcomposer.org/download/
-        curl -s -L  https://getcomposer.org/download/2.2.21/composer.phar --output /usr/local/bin/composer &&
-        chmod +x /usr/local/bin/composer
-        return $?
-
-        # using php and composer installer at a specific installer version (compatible with php 7.0)
-        composer2_2ltsthash=e5deaee38e51e2725c5f237635e2e3e907241e60
-        composer_installer_path="https://raw.githubusercontent.com/composer/getcomposer.org/$composer2_2ltsthash/web/installer"
-        wget $composer_installer_path -O - -q | php -- --quiet --2.2 && sudo mv ./composer.phar /usr/local/bin/composer &&
-        chmod +x /usr/local/bin/composer
-        return $?
-    else
-        __show "✨ Composer is installed ($(composer --version), $(which composer))" || true
+    MIN_SUPPORTED_PHP=$(echo "$PHP_VERSIONS" | tr ' ' "\n" | sort -n | head -1)
+    if [ 1 -eq $(bc --expression="8.1<=$MIN_SUPPORTED_PHP") ]; then
+        # Use latest composer (via brew) once we've moved all project to php8.1+
+        /bin/rm -f /usr/local/bin/composer &>/dev/null || true
+        __show "✨ Install/Upgrade composer to latest version version (as we are only supporting PHP versions $PHP_VERSIONS)"
+        brew uninstall composer &>/dev/null || true
+        /bin/rm -f /usr/local/bin/composer &>/dev/null || true
+        HOMEBREW_NO_INSTALL_CLEANUP=false brew install composer --ignore-dependencies --force | tee -a $DBGLOG
+        return
     fi
+
+    if type -p composer >>$DBGLOG 2>&1; then
+        composer_version="$(composer about | grep 'version '| rev | awk '{print $1}'|rev |cut -d. -f-2)" #n.n format
+        __show "✨ Composer install exists version:$composer_version $(which composer)" || true
+        if [ 1 -eq $(bc --expression="$composer_version>2.2") ]; then
+            __debug "✨ brew uninstall composer and remove /usr/local/bin/composer"
+            brew uninstall composer &>/dev/null || true
+            /bin/rm -f /usr/local/bin/composer &>/dev/null || true
+        else
+            __show "✨ composer is at the correct version:$composer_version... no action"
+            return
+        fi
+    fi
+
+    curl -s -L  https://getcomposer.org/download/2.2.21/composer.phar --output /usr/local/bin/composer &&
+    chmod +x /usr/local/bin/composer
+    __show "✨ composer 2.2 installed as a direct phar copy https://getcomposer.org/download/ for legacy php versions." || true
+    return
+
+    # alternate installs
+    __show "✨ Install missing composer at php7.2 compatablity --2.2.( without dependencies - they are installed later)"
+    # manual install https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+    # using php and composer installer at a specific installer version (compatible with php 7.0)
+    composer2_2ltsthash=e5deaee38e51e2725c5f237635e2e3e907241e60
+    composer_installer_path="https://raw.githubusercontent.com/composer/getcomposer.org/$composer2_2ltsthash/web/installer"
+    wget $composer_installer_path -O - -q | php -- --quiet --2.2 && sudo mv ./composer.phar /usr/local/bin/composer &&
+    chmod +x /usr/local/bin/composer
+    return $?
+
 }
 
 function __php_export_env_path() {
