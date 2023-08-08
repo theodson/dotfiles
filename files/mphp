@@ -10,7 +10,7 @@ export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammat
 # --- project on php-7.0 and above use these settings
 export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
 export COMPOSER_MAX_VERSION=2.2
-export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-7.0}"
+export PHP_DEFAULT_VERSION="${PHP_DEFAULT_VERSION:-8.1}"
 export VALET_VERSION=3.0 # for php 7.x+
 
 # --- project on php-8.0 and above use these settings
