@@ -102,9 +102,9 @@ function __php_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
      # strip any existing composer homes
     #__debug "⚡️ PRE  \n$(env|egrep '^PATH=|COMPOSER_HOME')"
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { echo "Stripping problem"; }
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { __debug "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php/[[:digit:]\.]+/bin:,,g')  || { __debug "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/Cellar/php@[[:digit:]\.]+/[[:digit:]\._]+/bin:,,g')  || { __debug "Stripping problem"; }
     #__debug "⚡️ POST \n$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
@@ -112,7 +112,7 @@ function __composer_strip_path() {
     __debug "⇒ ${FUNCNAME[0]}"
     # strip any existing composer homes
     #__debug "⚡️ PRE  \n$(env|egrep '^PATH=|COMPOSER_HOME')"
-    export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { echo "Stripping problem"; }
+    export PATH=$(echo $PATH | sed -E "s,$HOME/\.composer_php@[[:digit:]\.]+/vendor/bin:,,g") || { __debug "Stripping problem"; }
     #__debug "⚡️ POST \n$(env|egrep '^PATH=|COMPOSER_HOME')"
 }
 
@@ -120,7 +120,7 @@ function __php_install_version() {
     __debug "⇒ ${FUNCNAME[0]}"
 
     sudo -v
-    if [ $# -eq 0 ] || [ "$1" -eq "$(__php_brew_latest_stable_version)" ]; then
+    if [ $# -eq 0 ] || [ "$1" = "$(__php_brew_latest_stable_version)" ]; then
          __show "✨ Install Brew's most recent default php $(__php_brew_latest_stable_version)"
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall --force -q php | tee -a $DBGLOG &>/dev/null
     else
@@ -317,13 +317,13 @@ function __composer_clean() {
         /bin/rm -rf "${HOME}"/.composer/ 2>/dev/null || true
         return 1
     else
-        __show "📗️ ${FUNCNAME[0]} $*"
+        __debug "📗️ ${FUNCNAME[0]} $*"
     fi
 
     local php_ver
     php_ver=$1
 
-    export COMPOSER_HOME="$(__composer_home_path $php_ver)"
+    export COMPOSER_HOME="$(__composer_home_path $php_ver 2>/dev/null)"
 
     if test ! -z "$COMPOSER_HOME" && test -d "$COMPOSER_HOME"; then
         /bin/rm -f "${COMPOSER_HOME}"/composer.{json,lock} 2>/dev/null || true
@@ -478,7 +478,7 @@ function php_install() {
     sudo -v
     if ! type -p php >>$DBGLOG 2>&1; then
         phpversion="${1:-$PHP_DEFAULT_VERSION}"
-        echo "🚀 No PHP found.. Lets try installing $phpversion"
+        __show "🚀 No PHP found.. Lets try installing $phpversion"
         # no php version detected in the path - this is for NEW installs and is required before other versions.
         __php_strip_path &&
         __composer_strip_path &&
@@ -497,7 +497,7 @@ function php_install() {
     fi
 
     if [ $# -ne 0 ]; then
-        echo "🚀 Lets try installing $1"
+        __show "🚀 Lets try installing $1"
         phpversion=$1
         __php_install_via_valet $phpversion &&
         __php_strip_path &&
@@ -526,8 +526,8 @@ function php_cli_from_valet() {
     local php_ver=$(grep 'php@' .valetphprc)
     if [ ! -z "$php_ver" ]; then
 
-        _php_version_formatted "$php_ver" &>/dev/null || return 1
-        local php_ver=$(_php_version_formatted "$php_ver") || return 1
+        __php_@version "$php_ver" &>/dev/null || return 1
+        local php_ver=$(__php_@version "$php_ver") || return 1
         local PHP_BIN_PATH="$(_php_base_path $php_ver)/bin" || return 3
 
         if [ ! -z "$PHP_BIN_PATH" -a -d "$PHP_BIN_PATH" ]; then
@@ -547,7 +547,7 @@ function php_cli_from_valet() {
 
 function valet_uninstall() {
 
-    __show "${FUNCNAME[0]}"
+    __show "📗️ ${FUNCNAME[0]}"
 
     #
     # Help brew after valet's touched things.
@@ -558,9 +558,9 @@ function valet_uninstall() {
     type -p valet >>$DBGLOG 2>&1 && yes | valet uninstall --force --no-interaction >>$DBGLOG 2>&1 || true
 
     if composer global --no-interaction remove laravel/valet >>$DBGLOG 2>&1; then
-        echo '   Valet removed via composer global $COMPOSER_HOME'
+        __show '   Valet removed via composer global $COMPOSER_HOME'
     else
-        echo '   Valet not installed via composer global $COMPOSER_HOME'
+        __show '   Valet not installed via composer global $COMPOSER_HOME'
     fi
 
     __show "🤞 Uninstall brew services"
@@ -598,7 +598,7 @@ function php_uninstall() {
     #
     # php_uninstall
     #
-    __show "${FUNCNAME[0]}"
+    __show "📗️ ${FUNCNAME[0]} $*"
     sudo -v
     #
     # all php versions will be uninstalled when running valet uninstall --force
@@ -628,11 +628,11 @@ function php_uninstall() {
     brew cleanup -q >>$DBGLOG 2>&1 || true
 
 
+    __show "🤞 Composer clean"
     __composer_clean &>/dev/null # remove default if it exists
-
     for ver in $PHP_VERSIONS; do
-        __show "composer clean for php $ver"
-        __composer_clean $(_php_version_formatted $ver) # remove php-version specific globals
+
+        __composer_clean $(__php_@version $ver) # remove php-version specific globals
     done
 
 }
