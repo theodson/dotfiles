@@ -682,12 +682,22 @@ function __phpunit() {
         echo "No vendor/bin/phpunit"
         return 1
     }
-    tmpfile=$(mktemp "/tmp/phpunit.$(basename $(pwd)).XXXXXXX")
-    vendor/bin/phpunit $* --stderr 2> $tmpfile --testdox-text /dev/stdout | sed 's/[x]/✓/';
-    egrep '\([ 0-9]{1,3}%\)' $tmpfile > /dev/stderr
-    echo -e "" > /dev/stderr
-    egrep 'Time:|Tests: ' $tmpfile > /dev/stderr
-    echo -e "Logging to $tmpfile" > /dev/stderr
+    tmpfileRaw=$(mktemp "/tmp/phpunit.$(basename $(pwd)).XXXXXXX")
+    tmpfileRaw="${tmpfileRaw}.log"
+    tmpfileTests="${tmpfileRaw}.Tests.log"
+    tmpfileSummary="${tmpfileRaw}.Summary.log"
+    #__phpunit > >(tee -a $tmpfileTests) 2> >(tee -a $tmpfileSummary >&2)
+    # swap x for tick in output (required for streaming pipe order) and then replace in the output file also.
+    vendor/bin/phpunit $* --stderr 2> $tmpfileRaw --testdox-text /dev/stdout | tee -a $tmpfileTests| sed 's/[x]/✓/';
+    sed -i '' 's/\[x\]/[✓]/' $tmpfileTests
+
+    # Summarise
+    egrep '\([ 0-9]{1,3}%\)' $tmpfileRaw > $tmpfileSummary
+    echo -e "" > $tmpfileSummary
+    egrep 'Time:|Tests: ' $tmpfileRaw > $tmpfileSummary
+    #
+    cat $tmpfileSummary
+    echo -e "\nSummary: ${tmpfileSummary}\nResults: ${tmpfileTests}" > /dev/stderr
 }
 
 # Set PHP and Composer Global PATH and ENV
