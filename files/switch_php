@@ -678,9 +678,16 @@ function uvlsi() {
 }
 
 function __phpunit() {
-    vendor/bin/phpunit $* --stderr 2> /tmp/phpunit.log --testdox-text /dev/stdout | sed 's/[x]/✓/';
-    egrep '\([0-9]{1,3}%\)' /tmp/phpunit.log
-    egrep 'Time:|Tests: ' /tmp/phpunit.log
+    [ ! -e vendor/bin/phpunit ] && {
+        echo "No vendor/bin/phpunit"
+        return 1
+    }
+
+    vendor/bin/phpunit $* --stderr 2> $tmpfile --testdox-text /dev/stdout | sed 's/[x]/✓/';
+    egrep '\([ 0-9]{1,3}%\)' $tmpfile > /dev/stderr
+    echo -e "" > /dev/stderr
+    egrep 'Time:|Tests: ' $tmpfile > /dev/stderr
+    echo "Logging to $tmpfile"
 }
 
 # Set PHP and Composer Global PATH and ENV
