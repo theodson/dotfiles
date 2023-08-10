@@ -678,26 +678,74 @@ function uvlsi() {
 }
 
 function __phpunit() {
+    #
+    # run vendor/bin/phpunit and manipulate output for clearer results and diff/comparisons.
+    #
+    # Default output is to the /tmp folder, filename generated based on timestamp and working folder name.
+    #
+    # To change the default output files name and directory use ENV vars as follows
+    #   __PHPUNIT_BASE_DIR      - folder to output files (must exist)
+    #   __PHPUNIT_BASE_NAME     - filename base used for all output files.
+    #   JUNIT_LOG               - specific override for the JUnit output file/path
+    # e.g. __PHPUNIT_BASE_DIR=scratch __PHPUNIT_BASE_NAME=ccs_release2_10 JUNIT_LOG=scratch/phpunit-junit.xml __php_unit
     [ ! -e vendor/bin/phpunit ] && {
         echo "No vendor/bin/phpunit"
         return 1
     }
-    tmpfileRaw=$(mktemp "/tmp/phpunit.$(basename $(pwd)).XXXXXXX")
-    tmpfileRaw="${tmpfileRaw}.log"
-    tmpfileTests="${tmpfileRaw}.Tests.log"
-    tmpfileSummary="${tmpfileRaw}.Summary.log"
-    #__phpunit > >(tee -a $tmpfileTests) 2> >(tee -a $tmpfileSummary >&2)
-    # swap x for tick in output (required for streaming pipe order) and then replace in the output file also.
-    vendor/bin/phpunit $* --stderr 2> $tmpfileRaw --testdox-text /dev/stdout | tee -a $tmpfileTests| sed 's/[x]/✓/';
-    sed -i '' 's/\[x\]/[✓]/' $tmpfileTests
 
-    # Summarise
+    if [ -n "$__PHPUNIT_BASE_DIR" ]; then
+        if [ ! -d "$__PHPUNIT_BASE_DIR" ]; then
+            echo "Directory not found for $__PHPUNIT_BASE_DIR, stopping!";
+            return 1
+        fi
+    fi
+
+    testing_binary="vendor/bin/phpunit"
+    if [ -n "$USE_PEST" ]; then
+        testing_binary="vendor/bin/pest"
+        if [ ! -e "${testing_binary}" ]; then
+            testing_binary="vendor/bin/phpunit"
+            echo "⚡️ PEST does not appear to be installed, reverting to PHPUNIT for now."
+        fi
+    fi
+
+    # Setup Temp files
+    tmpBaseDir="${__PHPUNIT_BASE_DIR:-/tmp}"
+    tmpBaseName="${__PHPUNIT_BASE_NAME:-phpunit.$(basename $(pwd))_$(date +%Y%m%d)}"
+    #tmpBaseName=$(mktemp "$tmpBaseDir/phpunit.$(basename $(pwd))_$(date +%Y%m%d)_XXXXXXX")
+
+    tmpfileRaw="${tmpBaseDir}/${tmpBaseName}.log"
+    tmpfileTests="${tmpBaseDir}/${tmpBaseName}_tests.log"
+    tmpfileSummary="${tmpBaseDir}/${tmpBaseName}_summary.log"
+    # allow the junit file to be overridden via ENV var
+    tmpfileJunit="${JUNIT_LOG:-${tmpBaseDir}/${tmpBaseName}_junit.xml}"
+
+    #__php_unit > >(tee -a $tmpfileTests) 2> >(tee -a $tmpfileSummary >&2)
+    local _PASS='Passing'
+    local _FAIL='Failure'
+    local _PASS='✓'
+    local _FAIL='x' #'⊗'
+
+    # Run the tests
+    #   1. redirect standard progress to stderr (we will filter out noise and only show summary)
+    #   2. display progress to stdout using testdox format (and tee into a file, used for diffing versions if required)
+    #   3. tidy output with sed, show clearly passing and failing tests.
+
+    $testing_binary "$@" --stderr --testdox-text /dev/stdout --log-junit $tmpfileJunit 2>$tmpfileRaw | tee -a $tmpfileTests | sed "s/\[x\]/[${GREEN}${_PASS}${NC}]/"
+
+    # All tests have completed and we've got multiple log files.
+    sed -i '' "s/\[x\]/[${_PASS}]/" $tmpfileTests
+    sed -i '' "s/\[ \]/[${_FAIL}]/" $tmpfileTests
+    egrep 'Tests: ' $tmpfileRaw >> $tmpfileTests
+
+    # summarise - show only progress lines and statistics to complete (details are not displayed).
     egrep '\([ 0-9]{1,3}%\)' $tmpfileRaw > $tmpfileSummary
-    echo -e "" > $tmpfileSummary
-    egrep 'Time:|Tests: ' $tmpfileRaw > $tmpfileSummary
-    #
+    echo -e "" >> $tmpfileSummary
+    egrep 'Time:|Tests: ' $tmpfileRaw >> $tmpfileSummary
+
+    # show summary
     cat $tmpfileSummary
-    echo -e "\nSummary: ${tmpfileSummary}\nResults: ${tmpfileTests}" > /dev/stderr
+    echo -e "\nraw:     ${tmpfileRaw}\nsummary: ${tmpfileSummary}\njunit:   ${tmpfileJunit}\ntests:   ${tmpfileTests}" > /dev/stderr
 }
 
 # Set PHP and Composer Global PATH and ENV
