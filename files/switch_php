@@ -679,7 +679,7 @@ function uvlsi() {
 
 function __phpunit() {
     #
-    # run vendor/bin/phpunit and manipulate output for clearer results and diff/comparisons.
+    # run vendor/bin/phpunit and mani[ulate output for clearer results and diff/comparisons.
     #
     # Default output is to the /tmp folder, filename generated based on timestamp and working folder name.
     #
@@ -687,7 +687,8 @@ function __phpunit() {
     #   __PHPUNIT_BASE_DIR      - folder to output files (must exist)
     #   __PHPUNIT_BASE_NAME     - filename base used for all output files.
     #   JUNIT_LOG               - specific override for the JUnit output file/path
-    # e.g. __PHPUNIT_BASE_DIR=scratch __PHPUNIT_BASE_NAME=ccs_release2_10 JUNIT_LOG=scratch/phpunit-junit.xml __php_unit
+    #   TESTDOX_LOG             - specific override for the --testdox results (this is used in diffing)
+    # e.g. __PHPUNIT_BASE_DIR=scratch __PHPUNIT_BASE_NAME=ccs_release2_10 JUNIT_LOG=scratch/phpunit-junit.xml TESTDOX_LOG=build/testdox.log __php_unit
     [ ! -e vendor/bin/phpunit ] && {
         echo "No vendor/bin/phpunit"
         return 1
@@ -714,11 +715,14 @@ function __phpunit() {
     tmpBaseName="${__PHPUNIT_BASE_NAME:-phpunit.$(basename $(pwd))_$(date +%Y%m%d)}"
     #tmpBaseName=$(mktemp "$tmpBaseDir/phpunit.$(basename $(pwd))_$(date +%Y%m%d)_XXXXXXX")
 
+
     tmpfileRaw="${tmpBaseDir}/${tmpBaseName}.log"
-    tmpfileTests="${tmpBaseDir}/${tmpBaseName}_tests.log"
+    tmpfileTests="${TESTDOX_LOG:-${tmpBaseDir}/${tmpBaseName}_tests.log}"
     tmpfileSummary="${tmpBaseDir}/${tmpBaseName}_summary.log"
     # allow the junit file to be overridden via ENV var
     tmpfileJunit="${JUNIT_LOG:-${tmpBaseDir}/${tmpBaseName}_junit.xml}"
+
+    echo > $tmpfileRaw; echo > $tmpfileTests; echo > $tmpfileSummary; echo > $tmpfileJunit
 
     #__php_unit > >(tee -a $tmpfileTests) 2> >(tee -a $tmpfileSummary >&2)
     local _PASS='Passing'
