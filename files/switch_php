@@ -148,6 +148,10 @@ function __php_install_extensions() {
         forumla="${ext}@${php_version}"
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
     done
+    if [ $php_version = "7.0" ]; then
+        # as of 2023-08-01 xdebug fails to install (sha issue) so use --build-from-source
+        brew install shivammathur/extensions/xdebug@7.0 --build-from-source
+    fi
 }
 
 function __php_install_via_valet() {
@@ -684,11 +688,13 @@ function __phpunit() {
     # Default output is to the /tmp folder, filename generated based on timestamp and working folder name.
     #
     # To change the default output files name and directory use ENV vars as follows
-    #   __PHPUNIT_BASE_DIR      - folder to output files (must exist)
-    #   __PHPUNIT_BASE_NAME     - filename base used for all output files.
-    #   JUNIT_LOG               - specific override for the JUnit output file/path
-    #   TESTDOX_LOG             - specific override for the --testdox results (this is used in diffing)
+    #   __PHPUNIT_BASE_DIR  - folder to output files (must exist)
+    #   __PHPUNIT_BASE_NAME - filename base used for all output files.
+    #   JUNIT_LOG           - specific override for the JUnit output file/path
+    #   TESTDOX_LOG         - specific override for the --testdox results (this is used in diffing)
+    #
     # e.g. __PHPUNIT_BASE_DIR=scratch __PHPUNIT_BASE_NAME=ccs_release2_10 JUNIT_LOG=scratch/phpunit-junit.xml TESTDOX_LOG=build/testdox.log __php_unit
+    #
     [ ! -e vendor/bin/phpunit ] && {
         echo "No vendor/bin/phpunit"
         return 1
@@ -706,7 +712,7 @@ function __phpunit() {
         testing_binary="vendor/bin/pest"
         if [ ! -e "${testing_binary}" ]; then
             testing_binary="vendor/bin/phpunit"
-            echo "⚡️ PEST does not appear to be installed, reverting to PHPUNIT for now."
+            echo "⚡️ ${GREEN}PEST does not appear to be installed, reverting to PHPUNIT for now.${NC}"
         fi
     fi
 
@@ -738,8 +744,16 @@ function __phpunit() {
     $testing_binary "$@" --stderr --testdox-text /dev/stdout --log-junit $tmpfileJunit 2>$tmpfileRaw | tee -a $tmpfileTests | sed "s/\[x\]/[${GREEN}${_PASS}${NC}]/"
 
     # All tests have completed and we've got multiple log files.
-    sed -i '' "s/\[x\]/[${_PASS}]/" $tmpfileTests
-    sed -i '' "s/\[ \]/[${_FAIL}]/" $tmpfileTests
+    # $SEDARGS_INLINE_REPLACE doesn't seem to work - its appending '' to the end of the output file!
+    # sed $SEDARGS_INLINE_REPLACE "s/\[ \]/[${_FAIL}]/" $tmpfileTests
+    if [ "$MACHINE" == "mac" ]; then
+        sed -i '' "s/\[x\]/[${_PASS}]/" $tmpfileTests
+        sed -i '' "s/\[ \]/[${_FAIL}]/" $tmpfileTests
+    else
+        sed -i "s/\[x\]/[${_PASS}]/" $tmpfileTests
+        sed -i "s/\[ \]/[${_FAIL}]/" $tmpfileTests
+    fi
+
     egrep 'Tests: ' $tmpfileRaw >> $tmpfileTests
 
     # summarise - show only progress lines and statistics to complete (details are not displayed).
