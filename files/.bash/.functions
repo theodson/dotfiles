@@ -693,6 +693,38 @@ function fix_postgres() {
     psql -l
 }
 
+function switch_postgres() {
+    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
+
+    # stop all postgresql services
+    versions=$(find /usr/local/opt -path '*/postgresql@*' | sed 's#/usr/local/opt/##g')
+    if ! echo "$versions" | grep $PG_VERSION; then
+        echo "Postgres $PG_VERSION is not installed."
+        return 1
+    fi
+
+    for version in $versions; do
+        brew services stop $version &>/dev/null
+    done
+
+
+    PGVERSION=$PG_VERSION
+    export PGVERSION=9.5
+
+    # clean and update PATH
+    PG_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
+    export PATH="$PG_PATH:$PATH"
+
+    # set environment as per brew info for the service
+    if test -e /usr/local/opt/postgresql@${PG_VERSION}; then
+        export PATH="/usr/local/opt/postgresql@${PG_VERSION}/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/postgresql@${PG_VERSION}/lib"
+        export CPPFLAGS="-I/usr/local/opt/postgresql@${PG_VERSION}/include"
+    fi
+
+    brew services start postgresql@${PG_VERSION}
+}
+
 function rebuildOpenWith() {
     /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
     killall Finder
