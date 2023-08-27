@@ -661,7 +661,7 @@ function pghashlib_install() {
     echo "unzip" && unzip pghashlib.zip &>/dev/null && \
     pushd pghashlib-master && \
     echo "hashlib install" && \
-    echo "make" make &>/dev/null && \
+    echo "make" && make &>/dev/null && \
     echo "make install" && make install &>/dev/null && \
     echo "hashlib done"
 
