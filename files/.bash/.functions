@@ -666,13 +666,16 @@ function pghashlib_install() {
     echo "hashlib done"
 
     popd && \
+    echo "Tidyup hashlib" && \
     [ -e pghashlib-master ] && rm -rf pghashlib-master && \
     rm -f pghashlib.zip &>/dev/null || true
 
     popd
 
-    psql -d postgres -c "drop extension hashlib" &>/dev/null && \
-    psql -d postgres -c "create extension hashlib" && \
+    psql -U $(whoami) -c "create role postgres superuser login password '';" &>/dev/null || true
+    psql -U postgres -c "drop extension hashlib" &>/dev/null || true
+
+    psql -U postgres  -c "create extension hashlib" && \
     [ $(psql -U postgres -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}') == '069b3c88000000000000000000000000' ] \
         && echo 'pghashlib installed correctly' \
         || 'pghashlib not installed correctly'
