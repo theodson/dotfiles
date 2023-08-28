@@ -11,6 +11,7 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 # Standardising on $HOME.bashrc over $HOME/.profile as $HOME/.bash_profile makes $HOME/.profile obsolete and ignores it
 #
 
+[ -r $BASEDIR/.versions ] && source $BASEDIR/.versions || true
 [ -r $BASEDIR/.credentials ] && source $BASEDIR/.credentials || true
 [ -r $BASEDIR/.profile ] && source $BASEDIR/.profile || true
 [ -r $BASEDIR/.functions ] && source $BASEDIR/.functions || true

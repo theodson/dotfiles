@@ -52,7 +52,7 @@ export VAGRANT_DEFAULT_PROVIDER="${VAGRANT_DEFAULT_PROVIDER:-vmware_fusion}"
 export PGHOST="${PGHOST:-localhost}"
 export PGUSER="${PGUSER:-postgres}"
 export PGDATABASE="${PGDATABASE:-postgres}"
-export PGVERSION="${PGVERSION:-9.5}" # this is not a standard PG ENV VAR
+export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
 
 # Themes
 

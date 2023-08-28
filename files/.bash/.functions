@@ -703,23 +703,28 @@ function switch_postgres() {
         return 1
     fi
 
+    # remove requested version for all versions - lets not stop it if its already running.
+    versions=$(echo $versions | sed "s#postgresql@$PG_VERSION##g")
     for version in $versions; do
         brew services stop $version &>/dev/null
     done
 
+    sed -i '' "/SWITCHED_PGVERSION/d" $HOME/.versions
+    echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $HOME/.versions
 
     PGVERSION=$PG_VERSION
-    export PGVERSION=9.5
+    export PGVERSION
+
 
     # clean and update PATH
     CLEANED_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
     export PATH="$CLEANED_PATH"
 
     # set environment as per brew info for the service
-    if test -e /usr/local/opt/postgresql@${PG_VERSION}; then
-        export PATH="/usr/local/opt/postgresql@${PG_VERSION}/bin:$PATH"
-        export LDFLAGS="-L/usr/local/opt/postgresql@${PG_VERSION}/lib"
-        export CPPFLAGS="-I/usr/local/opt/postgresql@${PG_VERSION}/include"
+    if test -e /usr/local/opt/postgresql@${PGVERSION}; then
+        export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"
+        export CPPFLAGS="-I/usr/local/opt/postgresql@${PGVERSION}/include"
     fi
 
     brew services start postgresql@${PG_VERSION}
