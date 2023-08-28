@@ -712,8 +712,8 @@ function switch_postgres() {
     export PGVERSION=9.5
 
     # clean and update PATH
-    PG_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
-    export PATH="$PG_PATH:$PATH"
+    CLEANED_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
+    export PATH="$CLEANED_PATH"
 
     # set environment as per brew info for the service
     if test -e /usr/local/opt/postgresql@${PG_VERSION}; then
