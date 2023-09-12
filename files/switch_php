@@ -58,6 +58,12 @@ function __php_version_inpath() {
     echo $(php -r 'echo "\n".PHP_VERSION;' | tail -1 | cut -d. -f-2)
 }
 
+function get_php_version() {
+    # deprecated use __php_version_inpath
+    # get the php version in the path
+    __php_version_inpath
+}
+
 function __php_@version() {
     # handle 72, 7.2, php@7.2, php@72, php72, php7.2,
     # returns php@7.2 ( as used by brew or valet )
