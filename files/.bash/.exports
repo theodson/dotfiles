@@ -106,6 +106,3 @@ if test -d "$HOME/.jenv/versions"; then
     export PATH="$HOME/.jenv/bin:$PATH"
 fi
 
-# redis-cli ( as using redis 6.2 need to force it's preference in the path)
-# see install file where we 'brew pin redis@6.2'
-export PATH="/usr/local/opt/redis@6.2/bin:$PATH"

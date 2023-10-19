@@ -87,9 +87,6 @@ if test -n "$BREW_BUNDLE_FILES"; then # USE ENV if set ( space delimited list of
     done
 fi
 
-# sometimes we need to ensure versions dont get upgraded, use brew pin as brew bundle doesn't support this. redis@6.2
-brew pin redis@6.2
-
 #brew bundle cleanup --force --global
 # brew services cleanup
 # sudo brew services cleanup
