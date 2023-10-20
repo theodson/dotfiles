@@ -304,27 +304,31 @@ function clearall() {
         echo "Stopping - cannot find dotenv file '$dotenv'"
         return 1
     }
-    grep -E 'APP_ENV|_CONNECTION|_DRIVER|PROCORE|DB_DATABASE' $dotenv
+    grep -E 'APP_ENV|_CONNECTION|_DRIVER|PROCORE|DB_DATABASE' $dotenv | grep -v '^#'
+    echo -e "\n"
 
     php_ver="$(get_php_version)"
 
+    cleanfiles=$(ls -1 bootstrap/cache/*.php 2>&1) && {
+        for f in $cleanfiles; do echo "removing $f"; done
+        /bin/rm -f bootstrap/cache/*.php &>/dev/null || true;
+    } || true
+
+    ac=$($artisan clear 2>&1) && echo $ac || true
     case "$php_ver" in
     5.6)
         logit "not supported" && return 1
         ;;
-    7.0)
+    7.0|7.1|7.2|7.3|7.4)
         artisan="php artisan "
+        $artisan | grep -q opcache && $artisan opcache:clear 2>&1 || true
+        ac=$($artisan queue:flush 2>&1) && echo $ac || true
         # there isn't optimize:clear for php7.0 compatible laravel versions
         # $artisan event:clear
         $artisan view:clear
         $artisan cache:clear
-        $artisan route:clear
         $artisan config:clear
-        # the above called in newer laravel versions via optimize:clear
-        $artisan clear-compiled
-        # /bin/rm -f bootstrap/cache/*.php || true
-        $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
-        $artisan queue:flush
+        $artisan route:clear
 
         if [ $# -gt 1 ]; then
             # optimize things again.
@@ -334,8 +338,7 @@ function clearall() {
      *)
         # this clears all
         $artisan optimize:clear
-        # /bin/rm -f bootstrap/cache/*.php || true
-        $artisan opcache:clear &>/dev/null || echo -e "Skipping: artisan opcache:clear ( use argument 'oc' ) "
+        $artisan | grep -q opcache && $artisan opcache:clear &>/dev/null || true
         $artisan queue:clear
         $artisan queue:flush
         $artisan schedule:clear-cache
@@ -345,7 +348,7 @@ function clearall() {
             $artisan optimize
         fi
     esac
-
+    echo "done"
     return
 
 }
