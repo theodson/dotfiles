@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+if test -t 1; then
+    # Determine if colors are supported...
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test "$ncolors" -ge 8; then
+        BOLD="$(tput bold)"
+        YELLOW="$(tput setaf 3)"
+        GREEN="$(tput setaf 2)"
+        RED="$(tput setaf 1)"
+        NC="$(tput sgr0)"
+    fi
+fi
+
 # macOS sed fix - https://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux
 sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
 # usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
