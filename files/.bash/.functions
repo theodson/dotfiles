@@ -122,6 +122,20 @@ function what_port() {
 	# ps -Ao user,pid,command | grep -v grep | grep $(netstat -anv | grep "$searchport " | awk '{print $9}')
 }
 
+function d() {
+
+    if [[ $# -eq 1 ]]; then
+        selected=$1
+    else
+        rootfolder="${WORKSPACE:-$HOME/Documents}"
+        items="$(find $rootfolder -maxdepth 1 -mindepth 1 \( -type l -o -type d \))"
+        selected="$(echo "$items" | fzf)"
+    fi
+
+    dirname="$(basename "$selected" | sed 's/\./_/g')"
+
+    cd "$selected"
+}
 
 function op() {
 	#
