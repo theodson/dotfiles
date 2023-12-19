@@ -138,11 +138,14 @@ alias pint='[ -f vendor/bin/pint ] && vendor/bin/pint'
 alias duster='[ -f vendor/bin/duster ] && vendor/bin/duster'
 
 # enough is enough
-alias boom='fixcomposer; clearall; fixjs'
+alias boom='fixcomposer; clearall'
+alias boomjs='fixcomposer; clearall; fixjs'
 alias kaboom='nah; boom'
 # enough is enough - level it all and test
-alias bosh='rm -f .env.testing .env.dusk; boom;composer test;composer test-dusk'
-alias kabosh='rm -f .env.testing .env.dusk; kaboom;composer test;composer test-dusk'
+alias bosh='rm -f .env.testing .env.dusk;boom;composer test;composer test-dusk'
+alias boshjs='rm -f .env.testing .env.dusk;boom;fixjs;composer test;composer test-dusk'
+alias kabosh='rm -f .env.testing .env.dusk;kaboom;composer test;composer test-dusk'
+alias kaboshjs='rm -f .env.testing .env.dusk;kaboom;fixjs;composer test;composer test-dusk'
 
 # composer
 alias c='composer'
