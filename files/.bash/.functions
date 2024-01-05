@@ -380,6 +380,15 @@ function clearall() {
 
 }
 
+function macos_sed_fix() {
+    if uname | grep -iq darwin; then
+      if [ ! -e "$HOMEBREW_PREFIX/opt/gnu-sed/libexec/gnubin" ]; then
+        brew install gnu-sed
+      fi
+      PATH="$HOMEBREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
+    fi
+}
+
 # TODO - move to autocomplete section
 # autocomplete - PHP - Deployer - add auto-complete for 'prov' alias, an alias to 'dep' (see deployer/deployer )
 type -t _deployer ^ >/dev/null && complete -o default -F _deployer prov
