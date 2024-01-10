@@ -694,12 +694,32 @@ function enter_directory() {
 
 function pghashlib_install() {
 
+    # alternative
+    #   - https://github.com/Cyan4973/xxHash
+    #   - https://github.com/hatarist/pg_xxhash
+    #   - https://github.com/fboulnois/pg_uuidv7
+    #   - https://github.com/petere/pgvihash
+
+    # extensions
+    # https://gist.github.com/joelonsql/e5aa27f8cc9bd22b8999b7de8aee9d47
+    # https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/
+    #
+
+
+
     brew install docutils # provides rst2html command
     pushd /tmp && \
     wget --quiet https://github.com/markokr/pghashlib/archive/master.zip -O pghashlib.zip && \
-    echo "unzip" && unzip pghashlib.zip &>/dev/null && \
+    echo "unzip" && unzip -o pghashlib.zip &>/dev/null && \
     pushd pghashlib-master && \
     echo "hashlib install" && \
+    if [ -e "$(find $(pg_config --includedir) -name 'varatt.h')" ]; then
+        # postgres 16+ fails for phhashlib
+        # build failure on postgres16 - https://stackoverflow.com/questions/77617997/how-to-set-varsize-and-set-varsize-in-postgresql-16
+        # append after match #include <fmgr.h> - src/pghashlib.h
+        line=$(grep -n '#include <fmgr.h>' src/pghashlib.h | cut -d: -f1)
+        sed -i '' "${line}s/^/#include <varatt.h>\n/" src/pghashlib.h
+    fi &&
     echo "make" && make &>/dev/null && \
     echo "make install" && make install &>/dev/null && \
     echo "hashlib done"
