@@ -1,6 +1,8 @@
 # https://linuxize.com/post/using-the-ssh-config-file/
 # https://unix.stackexchange.com/questions/340844/how-to-enable-diffie-hellman-group1-sha1-key-exchange-on-debian-8-0
 
+Include config_local
+
 Host 10.20.1.*, 10.23.1.*
   User admin
   LogLevel INFO
@@ -19,5 +21,3 @@ Host *
   UseKeychain no
   KexAlgorithms +diffie-hellman-group1-sha1
   HostKeyAlgorithms=+ssh-dss
-
-
