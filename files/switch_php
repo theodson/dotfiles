@@ -207,8 +207,12 @@ function __php_install_via_valet() {
     fi
     __show "✨ Install PHP via Valet 'use' command"
     #read -p "About to switch via 'valet use' $PHP_VER_TARGET - press enter to continue."
-    valet use $php_valet_version # install php
-
+    if ! valet use $php_valet_version; then # install php
+        # https://github.com/shivammathur/homebrew-php
+        # https://dev.to/ibrarturi/installing-php-80-on-macos-overcoming-disabled-versions-1hio
+        echo "Failed to install '$php_valet_version' - trying force install of Disabled Version"
+        brew install shivammathur/php/$php_valet_version && valet link $php_valet_version
+    fi
     __php_install_extensions $php_version
 
     # This might be required as brew services sometimes fail
