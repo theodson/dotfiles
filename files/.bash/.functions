@@ -58,6 +58,12 @@ function nah() {
     git reset --hard && git clean -df
 }
 
+function netlist() {
+    for dvc in $(ipconfig getiflist | tr ' ' "\n" | sort); do echo "   $dvc : $(ipconfig getifaddr $dvc)"; done
+    #for dvc in $(ipconfig getiflist | tr ' ' "\n" | grep -v bridge | sort); do echo "   $dvc : $(ipconfig getifaddr $dvc)"; done
+    # defipaddr=$(ipconfig getifaddr $(ipconfig getiflist | tr ' ' "\n" | grep -v bridge | sort | tail -1))
+}
+
 function plist_pluck() {
     # e.g. show the path for php 7.0 brew service
     # plist_pluck $(brew_service_pluck php@7.0 file) ProgramArguments | jq .[0]
