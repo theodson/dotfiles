@@ -44,11 +44,6 @@ alias nope='git reset --hard'
 alias git_debug="GIT_TRACE=true GIT_CURL_VERBOSE=true GIT_SSH_COMMAND=\"ssh -vvv\" GIT_TRACE_PACK_ACCESS=true GIT_TRACE_PACKET=true GIT_TRACE_PACKFILE=true GIT_TRACE_PERFORMANCE=true GIT_TRACE_SETUP=true GIT_TRACE_SHALLOW=true git $@"
 
 
-# Auto Complete
-[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion || echo -e "missing bash-completion, try\n\tbrew install bash-completion"
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh"
-
-
 # Brew
 alias bsl='sudo brew services list && brew services list'
 
