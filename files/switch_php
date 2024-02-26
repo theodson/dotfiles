@@ -8,9 +8,9 @@
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary shivammathur/extensions/mongodb}" # from shivammathur/extensions/imagick
 
 # --- project on php-7.0 and above use these settings
-export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2}"
+export PHP_VERSIONS="${PHP_VERSIONS:-7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4}"
 export COMPOSER_MAX_VERSION=2.2
-export PHP_DEFAULT_VERSION="${SWITCHED_PHP_DEFAULT_VERSION:-${PHP_DEFAULT_VERSION:-8.1}}"
+export PHP_DEFAULT_VERSION="${SWITCHED_PHP_DEFAULT_VERSION:-${PHP_DEFAULT_VERSION:-8.3}}"
 export VALET_VERSION=3.0 # for php 7.x+
 
 # --- project on php-8.0 and above use these settings
@@ -149,8 +149,14 @@ function __php_install_extensions() {
 
     local php_version="${1}"
 
-    __show "⚡️ Add php extensions\n$(echo $PHP_EXTENSIONS | xargs -n 1)\n"
-    for ext in $PHP_EXTENSIONS; do
+    EXTS="$PHP_EXTENSIONS"
+    if [ $php_version = "8.3" ] || [ $php_version = "8.4" ]; then
+        # remove imap - its compiled into 8.3
+        EXTS=$(echo EXTS|sed 's#shivammathur/extensions/imap##')
+    fi
+    __show "⚡️ Add php extensions\n$(echo $EXTS | xargs -n 1)\n"
+
+    for ext in $EXTS; do
         forumla="${ext}@${php_version}"
         HOMEBREW_NO_INSTALL_CLEANUP=true brew reinstall -q ${forumla} | tee -a $DBGLOG | grep -E '^=.*nstalling'
     done
