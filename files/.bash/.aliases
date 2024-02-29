@@ -123,6 +123,9 @@ alias sphp84='switch_php 8.4 prompt'
 
 alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
 
+# FrankenPHP
+alias fphp='frankenphp-mac-x86_64'
+alias frankenphp='frankenphp-mac-x86_64'
 
 # Laravel
 alias art='php artisan'
@@ -169,7 +172,8 @@ alias dep='vendor/bin/dep'                    # no global install - (composer 2 
 
 # https://github.com/ibraheemdev/modern-unix
 
-alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg - aka ripgrep'
+alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg'
+alias modern-unixv="for p in \$(modern-unix | cut -d'-' -f1); do printf \"%-10s \$(brew info \$p | sed -n '2p')\n\" \$p ; done"
 
 # postgres
 alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
