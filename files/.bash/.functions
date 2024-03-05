@@ -119,13 +119,32 @@ function what_port() {
 
 	# macOs - what app is running on a port
 
-	if [ $# -ne 1 ]; then
-		echo "need to know the port";
+	if [ $# -lt 1 ]; then
+		echo "usage: PORT";
 		return 1;
 	fi
-	echo "looking for '$1'"
-	lsof -nP -iTCP -sTCP:LISTEN | grep ":${1}"
-	# ps -Ao user,pid,command | grep -v grep | grep $(netstat -anv | grep "$searchport " | awk '{print $9}')
+    local port=$1
+
+    type -p nc &>/dev/null || {
+        echo "cannot find util nc... please install nc"
+        return 3
+    }
+    if nc -z localhost $port &>/dev/null; then
+	    echo "PORT '$port' on localhost has a process listening"
+        #
+        ps -o pid,user,command -p$(ps -o ppid= $(lsof -t -nP -i4TCP:$port -sTCP:LISTEN)|grep -v ' 1'| head -1 && lsof -t -nP -i4TCP:$port -sTCP:LISTEN | sort)
+        #        if lsof -t -nP -i4TCP:$port -sTCP:LISTEN; then
+        #            echo -e "PROCESS Listening on PORT"
+        #            ps $(lsof -t -nP -i4TCP:$port -sTCP:LISTEN | xargs | sed -e 's/ /,/g')
+        #        else
+        #            netstat -anv | grep LISTEN | grep "\.$port " | awk '{print $9}' |uniq | sort
+        #            # ! need sudo for some ports !
+        #            ps $(sudo lsof -t -nP -i4TCP:$port -sTCP:LISTEN | xargs | sed -e 's/ /,/g')
+        #        fi
+    else
+        echo "PORT '$port' on localhost does not have a process listening"
+    fi
+
 }
 
 function d() {
