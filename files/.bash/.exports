@@ -113,3 +113,5 @@ if test -d "$HOME/.jenv/versions"; then
     export PATH="$HOME/.jenv/bin:$PATH"
 fi
 
+# MacPorts Installer : adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
