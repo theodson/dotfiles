@@ -126,24 +126,27 @@ function what_port() {
     local port=$1
 
     type -p nc &>/dev/null || {
-        echo "cannot find util nc... please install nc"
+        echo "cannot find util nc... please install nc, brew install nc"
         return 3
     }
+    type -p pstree &>/dev/null || {
+        echo "cannot find util nc... please install nc, brew install pstree"
+        return 3
+    }
+
     if nc -z localhost $port &>/dev/null; then
 	    echo "PORT '$port' on localhost has a process listening"
-        #
-        ps -o pid,user,command -p$(ps -o ppid= $(lsof -t -nP -i4TCP:$port -sTCP:LISTEN)|grep -v ' 1'| head -1 && lsof -t -nP -i4TCP:$port -sTCP:LISTEN | sort)
-        #        if lsof -t -nP -i4TCP:$port -sTCP:LISTEN; then
-        #            echo -e "PROCESS Listening on PORT"
-        #            ps $(lsof -t -nP -i4TCP:$port -sTCP:LISTEN | xargs | sed -e 's/ /,/g')
-        #        else
-        #            netstat -anv | grep LISTEN | grep "\.$port " | awk '{print $9}' |uniq | sort
-        #            # ! need sudo for some ports !
-        #            ps $(sudo lsof -t -nP -i4TCP:$port -sTCP:LISTEN | xargs | sed -e 's/ /,/g')
-        #        fi
+
+        # find ps for port
+	    pids=$(netstat -anv | awk '{print $4","$9}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
+        # find parent id (exclude 0 or 1 for launchd)
+	    ppids=$(ps -o ppid -p $pids | tail -n +2 | grep -v 1 | xargs || true)
+	    #
+	    [ -z $ppids ] && pstree $pids || pstree $ppids
+	    return
     else
         echo "PORT '$port' on localhost does not have a process listening">&2
-        retrun 1
+        return 1
     fi
 
 }

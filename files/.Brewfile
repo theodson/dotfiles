@@ -56,6 +56,7 @@ brew 'postgresql@9.5'
 brew 'redis@6.2', restart_service: true, link: true, conflicts_with: ["redis"]
 brew 'rbenv'
 brew 'ruby'
+brew 'pstree'
 brew 'ripgrep'
 brew 'shellcheck'
 brew 'shivammathur/php/php@7.0'
