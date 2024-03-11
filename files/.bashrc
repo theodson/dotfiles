@@ -74,3 +74,5 @@ fi
 
 # Mcfly - https://github.com/cantino/mcfly
 type mcfly &>/dev/null && eval "$(mcfly init bash)"
+
+eval "$(starship init bash)"

@@ -1,0 +1,9 @@
+# ~/.config/starship.toml
+
+[package]
+format = "is [$symbol$version]($style) "
+symbol = "📦 "
+style = "208 bold"
+display_private = true
+disabled = false
+version_format = "v${major}{minor}"
