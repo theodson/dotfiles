@@ -48,18 +48,22 @@ fi
 
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
-## For compilers to find ruby you may need to set:
-#export LDFLAGS="-L/usr/local/opt/ruby/lib"
-#export CPPFLAGS="-I/usr/local/opt/ruby/include"
-## For pkg-config to find ruby you may need to set:
-#export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+if eval false; then
+    ## For compilers to find ruby you may need to set:
+    export LDFLAGS="-L/usr/local/opt/ruby/lib"
+    export CPPFLAGS="-I/usr/local/opt/ruby/include"
+    ## For pkg-config to find ruby you may need to set:
+    export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+fi
 
 
 # ===========================================================================
 #		Auto Complete
 
 # Twilio Auto Complete
-[ -f $HOME/.twilio-cli/autocomplete/bash_setup ] && source $HOME/.twilio-cli/autocomplete/bash_setup || true;
+if eval false; then
+    [ -f $HOME/.twilio-cli/autocomplete/bash_setup ] && source $HOME/.twilio-cli/autocomplete/bash_setup || true;
+fi
 
 # Bash Auto Complete
 # bash v3 on mac doesnt support nosort option - lets ignore it https://rakhesh.com/mac/bash-complete-nosort-invalid-option-name/
@@ -76,3 +80,17 @@ fi
 type mcfly &>/dev/null && eval "$(mcfly init bash)"
 
 eval "$(starship init bash)"
+
+# Herd injected NVM configuration
+export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# Herd injected PHP 8.3 configuration.
+export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+
+# Herd injected PHP binary.
+export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
+
+# Herd injected PHP 7.4 configuration.
+export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
+
