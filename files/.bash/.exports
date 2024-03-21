@@ -71,14 +71,16 @@ export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
 export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}"
 # from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
 
-# Check for custom built frankenphp
-FRANKENPATH="${FRANKENPATH:-/Users/theodickinson/Workspace/frankenphp/frankenphp}"
-if [ -e "${FRANKENPATH}/dist" ]; then
-    export PATH="${FRANKENPATH}/dist:$PATH"
+if eval false; then
+    # Check for custom built frankenphp
+    FRANKENPATH="${FRANKENPATH:-/Users/theodickinson/Workspace/frankenphp/frankenphp}"
+    if [ -e "${FRANKENPATH}/dist" ]; then
+        export PATH="${FRANKENPATH}/dist:$PATH"
+    fi
 fi
 
 # Postgres - align to linux and connect as postgres by default
-if [ false ]; then
+if eval false; then
     if test -e /usr/local/opt/postgresql@${PGVERSION}; then
         export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
         export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"

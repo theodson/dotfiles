@@ -67,6 +67,10 @@
         path: files/starship.toml
         create: true
         relink: true
+    ~/.adhoc:
+        path: adhoc-scripts/.adhoc
+        create: true
+        relink: true
 - create:
     - ~/.fzf_history
     - ~/.vim/undo_history
