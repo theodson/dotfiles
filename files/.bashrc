@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 # ! Important behaviour when entering folders - see function 'enter_directory' in .functions
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
@@ -81,16 +82,19 @@ type mcfly &>/dev/null && eval "$(mcfly init bash)"
 
 eval "$(starship init bash)"
 
-# Herd injected NVM configuration
-export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+if eval false; then
+    # disable herd env for the moment.
 
-# Herd injected PHP 8.3 configuration.
-export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+    # Herd injected NVM configuration
+    export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
-# Herd injected PHP binary.
-export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
+    # Herd injected PHP 8.3 configuration.
+    export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
 
-# Herd injected PHP 7.4 configuration.
-export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
+    # Herd injected PHP binary.
+    export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
 
+    # Herd injected PHP 7.4 configuration.
+    export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
+fi
