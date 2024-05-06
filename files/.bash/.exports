@@ -115,5 +115,9 @@ if test -d "$HOME/.jenv/versions"; then
     export PATH="$HOME/.jenv/bin:$PATH"
 fi
 
+# Python Version Manager
+if test -d "$HOME/.pyenv"; then
+    export PYENV_ROOT="$HOME/.pyenv"
+fi
 # MacPorts Installer : adding an appropriate PATH variable for use with MacPorts.
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"

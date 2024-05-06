@@ -47,6 +47,12 @@ if test -r "$HOME/.jenv"; then
 	eval "$(jenv init -)" || echo "jenv failed to initialise"
 fi
 
+# Python Versions - https://github.com/pyenv/pyenv
+if test -r "$PYENV_ROOT"; then
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"|| echo "pyenv failed to initialise"
+fi
+
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 if eval false; then
@@ -98,3 +104,4 @@ if eval false; then
     # Herd injected PHP 7.4 configuration.
     export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
 fi
+
