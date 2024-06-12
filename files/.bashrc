@@ -88,20 +88,23 @@ type mcfly &>/dev/null && eval "$(mcfly init bash)"
 
 eval "$(starship init bash)"
 
-if eval false; then
-    # disable herd env for the moment.
+function useHerd() {
+    # these line items get installed by Herd into .bash_profile and interfere with our attempts to support
+    # older versions of PHP (7.0) and Laravel Valet (3.x - not 4.x).
 
     # Herd injected NVM configuration
     export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
-    # Herd injected PHP 8.3 configuration.
-    export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
 
     # Herd injected PHP binary.
     export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
 
+
+    # Herd injected PHP 8.3 configuration.
+    export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+
+
     # Herd injected PHP 7.4 configuration.
     export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
-fi
-
+}
