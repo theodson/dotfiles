@@ -83,9 +83,9 @@ alias pstorm='phpstorm'
 alias diff_with_phpstorm='phpstorm diff'
 alias smartgit="launchSmartGit $1"
 
-
 # Docker
 alias dock_prune='docker container prune'
+
 
 
 # Vagrant
@@ -109,15 +109,15 @@ alias pn='pnpm'
 
 
 # PHP Laravel Valet
-alias sphp70='switch_php 7.0 prompt'
-alias sphp72='switch_php 7.2 prompt'
-alias sphp73='switch_php 7.3 prompt'
-alias sphp74='switch_php 7.4 prompt'
-alias sphp80='switch_php 8.0 prompt'
-alias sphp81='switch_php 8.1 prompt'
-alias sphp82='switch_php 8.2 prompt'
-alias sphp83='switch_php 8.3 prompt'
-alias sphp84='switch_php 8.4 prompt'
+# alias sphp70='switch_php 7.0 prompt'
+# alias sphp72='switch_php 7.2 prompt'
+# alias sphp73='switch_php 7.3 prompt'
+# alias sphp74='switch_php 7.4 prompt'
+# alias sphp80='switch_php 8.0 prompt'
+# alias sphp81='switch_php 8.1 prompt'
+# alias sphp82='switch_php 8.2 prompt'
+# alias sphp83='switch_php 8.3 prompt'
+# alias sphp84='switch_php 8.4 prompt'
 
 # alias vlsi='valet link && valet secure && valet isolate'
 

@@ -68,8 +68,7 @@ export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
 
 # PHP Laravel Valet
 # PHP_EXTENSIONS Used in custom bash function 'switch_php'
-export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}"
-# from shivammathur/extensions/imagickexport PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}" # from shivammathur/extensions/imagick
+# export PHP_EXTENSIONS="${PHP_EXTENSIONS:-shivammathur/extensions/redis shivammathur/extensions/apcu shivammathur/extensions/memcached shivammathur/extensions/mongodb shivammathur/extensions/imagick shivammathur/extensions/xdebug shivammathur/extensions/imap shivammathur/extensions/msgpack shivammathur/extensions/igbinary}"
 
 if eval false; then
     # Check for custom built frankenphp

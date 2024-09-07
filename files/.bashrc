@@ -19,7 +19,8 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 [ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
 [ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
 [ -r $BASEDIR/.ps1 ] && source $BASEDIR/.ps1 || true # start aware prompt
-[ -r $BASEDIR/dotfiles/files/switch_php ] && source $BASEDIR/dotfiles/files/switch_php || true
+# Using Herd and OrbStack for PHP projects, don't include switch_php.
+# [ -r $BASEDIR/dotfiles/files/switch_php ] && source $BASEDIR/dotfiles/files/switch_php || true
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
 
@@ -103,15 +104,11 @@ function herdLoadEnv() {
     export NVM_DIR="$HERD_NVM"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
-
     # Herd injected PHP binary.
-    # export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
     export PATH="$HERD_BIN":$PATH
-
 
     # Herd injected PHP 8.3 configuration.
     export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
-
 
     # Herd injected PHP 7.4 configuration.
     export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
