@@ -783,7 +783,8 @@ function enter_directory() {
 	[[ -f ".nvmrc" ]] && nvm use || true
     # Use correct node version AND use latest compatible NPM
 
-    php_cli_from_valet || true
+    echo "ignoring php and valetphprc"
+    # php_cli_from_valet || true
     # set local PATH to use PHP as defined in .valetphprc
 
     [ -f "package.json" -o -f ".nvmrc" ] && {
