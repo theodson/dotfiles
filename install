@@ -53,7 +53,7 @@ fi
 
 echo '================================================================================'
 echo 'Linking dotfiles...'
-/bin/bash "$DOTFILES/link"
+/bin/bash "$DOTFILES/link" || true
 echo 'Done linking dotfiles.'
 # echo '================================================================================'
 
