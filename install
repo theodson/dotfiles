@@ -17,7 +17,6 @@ if test ! $(which brew); then
     echo 'Installing homebrew...'
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     echo 'Done installing homebrew.'
-#    echo '================================================================================'
 fi
 
 if test -f $HOME/.dotfile_lastrun; then
@@ -26,7 +25,6 @@ if test -f $HOME/.dotfile_lastrun; then
         echo 'Running PreInstall script ...'
         pushd $HOME/dotfiles && bash preinstall && popd || true
         echo 'Done PreInstall.'
-#        echo '================================================================================'
     fi
 fi
 
@@ -54,7 +52,6 @@ echo '==========================================================================
 echo 'Linking dotfiles...'
 /bin/bash $HOME/dotfiles/link
 echo 'Done linking dotfiles.'
-# echo '================================================================================'
 
 
 
@@ -102,7 +99,6 @@ type -p composer &>/dev/null && {
     composer self-update --2.2 || true
 }
 echo 'Done installing and updating composer dependencies.'
-#echo '================================================================================'
 
 
 # /bin/bash $HOME/dotfiles/link
@@ -160,15 +156,20 @@ date > $HOME/.dotfile_lastrun
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
 
-echo '================================================================================'
-echo 'Installing and updating php, composer and valet dependencies...'
-source $HOME/dotfiles/files/switch_php
-echo -e "For each PHP version you wish to use please run 'php_install'. e.g.\nphp_install 7.0\nphp_install 8.1"
-echo '================================================================================'
-set +e
-
 echo 'Done!'
 env | egrep -i 'php|compos|valet' | sort
 brew list --pinned
+
+
+#echo '================================================================================'
+#echo 'Installing and updating php, composer and valet dependencies...'
+#source $HOME/dotfiles/files/switch_php
+#echo -e "For each PHP version you wish to use please run 'php_install'. e.g.\nphp_install 7.0\nphp_install 8.1"
+#echo '================================================================================'
+#set +e
+#
+#echo 'Done!'
+#env | egrep -i 'php|compos|valet' | sort
+#brew list --pinned
 
 

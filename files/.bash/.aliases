@@ -164,7 +164,7 @@ alias phpunit='vendor/bin/phpunit --log-junit $(echo ${phpunitdir:-scratch})/php
 alias phpspec='/usr/local/bin/phpspec'
 
 # xDebug
-alias xdebug_disable="xdbgfile=$(php -m | grep -i 'xdebug' -q && php --ini | grep -i xdebug |tr -d ',') && [ -n \"$xdbgfile\" ] && [ -f \"$xdbgfile\" ] && mv \"$xdbgfile\" \"${xdbgfile}_disabled\" || echo \"xdebug is not enabled\""
+alias xdebug_disable='xdbgfile=$(php -m | grep -i xdebug -q && php --ini | grep -i xdebug |tr -d ',') && [ -n "$xdbgfile" ] && [ -f "$xdbgfile" ] && mv "$xdbgfile" "${xdbgfile}_disabled" || echo "xdebug is not enabled"'
 alias xdebug_restore='incpath=$(php --ini | grep -i "Scan for additional .ini files" | cut -d: -f2 | xargs) && [ -n "$incpath" ] && xdbgfile=$(ls "${incpath}/"*xdebug*disabled) && [ -n "$xdbgfile}" ] && mv $xdbgfile "${incpath}/xdebug.ini" || echo "cannot determine php ini include path"'
 
 # PHPDeployer - https://deployer.org
