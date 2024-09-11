@@ -51,7 +51,6 @@ if test -r "$PYENV_ROOT"; then
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)" || echo "pyenv failed to initialise"
 fi
-
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 if eval false; then
@@ -74,8 +73,9 @@ eval "$(starship init bash)"
 # Bash Auto Complete
 # bash v3 on mac doesnt support nosort option - lets ignore it https://rakhesh.com/mac/bash-complete-nosort-invalid-option-name/
 [ ! -f /usr/local/etc/bash_completion ] && echo -e "missing bash-completion, try\n\tbrew install bash-completion"
-[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion 2>&1 | grep -v 'nosort'
-[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh" 2>&1 | grep -v 'nosort'
+# install brew bash (v5) and nosort is supported.
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion 2>&1  | sed '/^$/d'
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh" | sed '/^$/d'
 
 # Node Version Manager - Auto Complete
 if test ! -z "${NVM_DIR}"; then
