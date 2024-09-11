@@ -66,6 +66,8 @@ type mcfly &>/dev/null && eval "$(mcfly init bash)"
 
 # Starship - easy command prompt
 eval "$(starship init bash)"
+# starship generates a PROMPT_COMMAND, append our enter_directory function to it
+export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
 
 # ===========================================================================
 #		Auto Complete
