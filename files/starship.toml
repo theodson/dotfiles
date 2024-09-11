@@ -1,5 +1,8 @@
 # ~/.config/starship.toml
 
+command_timeout = 6000
+add_newline = false
+
 [package]
 format = "is [$symbol$version]($style) "
 symbol = "📦 "
