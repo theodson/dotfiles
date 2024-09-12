@@ -85,7 +85,7 @@ if test ! -z "${NVM_DIR}"; then
 fi
 
 if [ -n "$USE_SWITCH_PHP_HACKERY" ]; then
-    # when USE_SWITCH_PHP_HACKERY we load the
+    # when USE_SWITCH_PHP_HACKERY we adapt Herd to work with the switch_php commands.
     echo 'USE_SWITCH_PHP_HACKERY'
 
     export PRE_HERD_NVM_DIR="$NVM_DIR"

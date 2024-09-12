@@ -775,16 +775,28 @@ function clear_dns_cache() {
 
 
 function enter_directory() {
+    # use this function in the PROMPT_COMMAND to auto execute when changing into a directory.
+    # e.g. export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
 
 	if [[ $PWD == $PREV_PWD ]]; then
 		return
 	fi
-	PREV_PWD=$PWD
-	[[ -f ".nvmrc" ]] && nvm use || true
-    # Use correct node version AND use latest compatible NPM
 
-    type php_cli_from_valet &>/dev/null && php_cli_from_valet || true
+	PREV_PWD=$PWD
+
+	if [ -f .enter ]; then
+	    # look in current directory for a .enter script to run and return
+	    source .enter
+	    return
+    fi
+
+    # default behaviour when
+
+    # Use correct node version AND use latest compatible NPM
+	[[ -f ".nvmrc" ]] && nvm use || true
+
     # set local PATH to use PHP as defined in .valetphprc
+    type php_cli_from_valet &>/dev/null && php_cli_from_valet || true
 
     [ -f "package.json" -o -f ".nvmrc" ] && {
         [ "$(npm -v | cut -d. -f1)" -lt 8 ] && echo "Suggest: upgrade npm with 'npm install -g npm@latest'"
