@@ -46,6 +46,12 @@ if test -r "$HOME/.jenv"; then
 	eval "$(jenv init -)" || echo "jenv failed to initialise"
 fi
 
+# Python Versions - https://github.com/pyenv/pyenv
+if test -r "$PYENV_ROOT"; then
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"|| echo "pyenv failed to initialise"
+fi
+
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 ## For compilers to find ruby you may need to set:
