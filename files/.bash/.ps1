@@ -723,4 +723,6 @@ function set_ps1() {
 PROMPT_COMMAND=set_ps1
 
 # Used for automatic nvm switching
-export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
+if ! echo "$PROMPT_COMMAND" | grep 'enter_directory'; then # add enter_directory once.
+    export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
+fi
