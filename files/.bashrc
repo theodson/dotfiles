@@ -11,6 +11,17 @@ BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 # Standardising on $HOME.bashrc over $HOME/.profile as $HOME/.bash_profile makes $HOME/.profile obsolete and ignores it
 #
 
+
+# Mcfly - https://github.com/cantino/mcfly
+type mcfly &>/dev/null && eval "$(mcfly init bash)"
+
+# Starship - easy command prompt
+eval "$(starship init bash)"
+# starship generates a PROMPT_COMMAND, append our enter_directory function to it
+if ! echo "$PROMPT_COMMAND" | grep 'enter_directory'; then # add enter_directory once.
+    export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
+fi
+
 USE_SWITCH_PHP_HACKERY='yes use switch_php script (pre OrbStack and Herd adoption 2024-SEPT)'
 unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 
@@ -20,7 +31,7 @@ unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 [ -r $BASEDIR/.functions ] && source $BASEDIR/.functions || true
 [ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
 [ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
-[ -r $BASEDIR/.ps1 ] && source $BASEDIR/.ps1 || true # start aware prompt
+[ -r $BASEDIR/.ps1 ] && [[ ! "$PROMPT_COMMAND" =~ starship ]] && source $BASEDIR/.ps1 || true # start aware prompt
 [ -r $BASEDIR/dotfiles/files/switch_php ] && [ -n "$USE_SWITCH_PHP_HACKERY" ] && source $BASEDIR/dotfiles/files/switch_php || true
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
@@ -51,6 +62,7 @@ if test -r "$PYENV_ROOT"; then
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)" || echo "pyenv failed to initialise"
 fi
+
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 if eval false; then
@@ -60,14 +72,6 @@ if eval false; then
     ## For pkg-config to find ruby you may need to set:
     export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
 fi
-
-# Mcfly - https://github.com/cantino/mcfly
-type mcfly &>/dev/null && eval "$(mcfly init bash)"
-
-# Starship - easy command prompt
-eval "$(starship init bash)"
-# starship generates a PROMPT_COMMAND, append our enter_directory function to it
-export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
 
 # ===========================================================================
 #		Auto Complete

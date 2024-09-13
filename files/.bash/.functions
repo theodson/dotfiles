@@ -22,6 +22,36 @@ sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
 # `less` with options to preserve color and line numbers, unless the output is
 # small enough for one screen.
 
+
+function enter_directory() {
+    # use this function in the PROMPT_COMMAND to auto execute when changing into a directory.
+    # e.g. export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
+
+	if [[ $PWD == $PREV_PWD ]]; then
+		return
+	fi
+
+	PREV_PWD=$PWD
+
+	if [ -f .enter ]; then
+	    # look in current directory for a .enter script to run and return
+	    source .enter
+	    return
+    fi
+
+    # default behaviour when
+
+    # Use correct node version AND use latest compatible NPM
+	[[ -f ".nvmrc" ]] && nvm use || true
+
+    # set local PATH to use PHP as defined in .valetphprc
+    type php_cli_from_valet &>/dev/null && php_cli_from_valet || true
+
+    [ -f "package.json" -o -f ".nvmrc" ] && {
+        [ "$(npm -v | cut -d. -f1)" -lt 8 ] && echo "Suggest: upgrade npm with 'npm install -g npm@latest'"
+    }
+}
+
 function tre() {
 	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }
@@ -172,10 +202,9 @@ function po() {
 	#
 
 	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
-	rootfolder="${WORKSPACE:-$HOME/Documents}"
+	rootfolder="${WORKSPACE:-$HOME/code}"
 
-	echo "ENV(WORKSPACE:${WORKSPACE})"
-
+	# echo "ENV(WORKSPACE:${WORKSPACE})"
 
 	found=0 # 0 = Not Found; 1 = Found
 	project="$1" # Name of project given
@@ -200,15 +229,15 @@ function po() {
 	for dir in ${directories[@]}; do
 		if [[ -d $dir ]]; then
 			found=1
-			pushd $dir
-			echo -e "Changed directory to: $(echo_color green)'$dir'${echo_normal}"
+			pushd $dir &>/dev/null
+			echo -e "Changed directory to: ${GREEN}'$dir'$NC"
 			break
 		fi
 	done
 
 	# Was folder changed?
 	if [[ $found == 0 ]]; then
-		echo -e "$(echo_color red)Project directory not found.${echo_normal}"
+		echo -e "${RED}Project directory not found.$NC"
 	fi
 }
 
@@ -596,7 +625,7 @@ function launchSmartGit() {
 	dir="${1:-$(pwd)}"
 
 	if [ ! -d ${dir} ]; then
-		echo -e "$(echo_color red)'${dir}' is not a valid directory.${echo_normal}"
+		echo -e "$RED'${dir}' is not a valid directory.$NC"
 		return 1
 	fi
 
@@ -606,7 +635,7 @@ function launchSmartGit() {
 		local app="/Applications/SmartGit.app/Contents/MacOS/SmartGit"
 		nohup "${app}" --log "${1}" &>/dev/null &
 	else
-		echo -e "$(echo_color red)'${dir}' is not a GIT directory.${echo_normal}"
+		echo -e "$RED'${dir}' is not a GIT directory.$NC"
 	fi
 
 	popd 1>/dev/null
@@ -772,37 +801,6 @@ function clear_dns_cache() {
         echo "cleared"
     }
 }
-
-
-function enter_directory() {
-    # use this function in the PROMPT_COMMAND to auto execute when changing into a directory.
-    # e.g. export PROMPT_COMMAND="$PROMPT_COMMAND; enter_directory"
-
-	if [[ $PWD == $PREV_PWD ]]; then
-		return
-	fi
-
-	PREV_PWD=$PWD
-
-	if [ -f .enter ]; then
-	    # look in current directory for a .enter script to run and return
-	    source .enter
-	    return
-    fi
-
-    # default behaviour when
-
-    # Use correct node version AND use latest compatible NPM
-	[[ -f ".nvmrc" ]] && nvm use || true
-
-    # set local PATH to use PHP as defined in .valetphprc
-    type php_cli_from_valet &>/dev/null && php_cli_from_valet || true
-
-    [ -f "package.json" -o -f ".nvmrc" ] && {
-        [ "$(npm -v | cut -d. -f1)" -lt 8 ] && echo "Suggest: upgrade npm with 'npm install -g npm@latest'"
-    }
-}
-
 
 function dbngin_json() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
