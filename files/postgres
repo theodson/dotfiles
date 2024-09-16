@@ -227,53 +227,6 @@ function switch_postgres() {
         echo "MacPorts Postgres version not found"
     fi
 
-    ##
-    ## EDB Postgres !!! THIS 9.5 package in 2024 doesnt work
-    ##
-    #if [ -z "$PG_MATCHED" ] && [ -e /Library/PostgreSQL ]; then
-    #    pgedb_versions=$(find /Library/PostgreSQL -mindepth 1 -maxdepth 1 | sed 's#/Library/PostgreSQL/##g'| grep -v 'latest' | sort -n)
-    #    if ! echo "$pgedb_versions" | grep $PG_VERSION; then
-    #        echo "EDB Postgres $PG_VERSION is not installed"
-    #    else
-    #        PG_PGAPP=1
-    #        PG_VERSION=$(for version in $pgedb_versions; do echo "$version" | grep $PG_VERSION; done)
-    #        PG_BINPATH="/Library/PostgreSQL/$PG_VERSION/bin"
-    #        if [ -e "$PG_BINPATH" ]; then
-    #            PG_MATCHED=1
-    #            echo "EDB Postgres $PG_VERSION is installed"
-    #        else
-    #            echo "EDB Postgres $PG_VERSION is not installed"
-    #            PG_BINPATH=''
-    #        fi
-    #    fi
-    #else
-    #    echo "EDB Postgres version not found"
-    #fi
-
-    # #
-    # # Postgres.app
-    # # Can't install extensions with the version that supports Postgres v9.5!
-    # #
-    # if [ -z "$PG_MATCHED" ] && [ -e /Applications/Postgres.app/Contents/Versions ]; then
-    #     pgapp_versions=$(find /Applications/Postgres.app/Contents/Versions -mindepth 1 -maxdepth 1 | sed 's#/Applications/Postgres.app/Contents/Versions/##g'| grep -v 'latest' | sort -n)
-    #     if ! echo "$pgapp_versions" | grep $PG_VERSION; then
-    #         echo "Postgres $PG_VERSION is not installed via Postres.app "
-    #     else
-    #         PG_PGAPP=1
-    #         PG_VERSION=$(for version in $pgapp_versions; do echo "$version" | grep $PG_VERSION; done)
-    #         PG_BINPATH="/Applications/Postgres.app/Contents/Versions/$PG_VERSION/bin"
-    #         if [ -e "$PG_BINPATH" ]; then
-    #             PG_MATCHED=1
-    #             echo "Postgres.app $PG_VERSION is installed"
-    #         else
-    #             echo "Postgres.app $PG_VERSION is not installed"
-    #             PG_BINPATH=''
-    #         fi
-    #     fi
-    # else
-    #     echo "Postgres.app not installed"
-    # fi
-
     #
     # DBNgin
     #
