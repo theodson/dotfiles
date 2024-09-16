@@ -17,8 +17,9 @@
 # Laravel Herd - use for latest 16 version
 # - prefer this for future postgresql database work.
 #
-PG95MODE="macports" # macports, orbstack
-
+export PG95MODE="orbstack" # macports, orbstack
+export PG95MACHINE=ccs
+export PGVER_CONFIG=$HOME/.postgres-setup.conf
 
 if test -t 1; then
     # Determine if colors are supported...
@@ -41,32 +42,56 @@ fi
 # PGPASSWORD behaves the same as the password connection parameter. Use of this environment variable is not recommended for security reasons, as some operating systems allow non-root users to see process environment variables via ps; instead consider using the ~/.pgpass file (see Section 31.15).
 # PGPASSFILE specifies the name of the password file to use for lookups. If not set, it defaults to ~/.pgpass (see Section 31.15).
 # Postgres - align to linux and connect as postgres by default
-export PGHOST="${PGHOST:-localhost}"
-export PGUSER="${PGUSER:-postgres}"
-export PGPORT="${PGPORT:-5432}"
-export PGDATABASE="${PGDATABASE:-postgres}"
-export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
-
 
 # Aliases
-if [[ "$PG95MODE" =~ 'macports' ]]; then
+alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
 
-    alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
-    # mac ports aliases - see sudo port install postgresql95-server
-    alias pg95_start='sudo port load postgresql95-server'
-    alias pg95_stop='sudo port unload postgresql95-server'
-    alias pg95_restart='sudo port reload postgresql95-server'
+function pg95mode() {
 
-    # use lunchy ( the launchctl helper ) to control launchd mac port service
-    alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
-    alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
-    alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-    alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
+    local mode="${1:-$PG95MODE}"
 
-elif [[ "$PG95MODE" =~ 'macports' ]]; then
-    alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
-fi
+    if [[ "$mode" =~ "orb".* ]]; then
 
+        export PG95MODE='orbstack'
+        export PG95MACHINE="${PG95MACHINE:-postgres95}"
+        export PGUSER="${PGUSER_ORB:-$(whoami)}"
+        export PGHOST="${PG95MACHINE}.orb.local"
+        export PGPORT="${PGPORT_ORB:-5432}"
+        export PGDATABASE="${PGDATABASE_ORB:-postgres}"
+
+        alias pg95_start='orbctl -m $PG95MACHINE run systemctl start postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_stop='orbctl -m $PG95MACHINE run systemctl stop postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_restart='orbctl -m $PG95MACHINE run systemctl restart postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_status='orbctl -m $PG95MACHINE run systemctl status postgresql || echo PG95MACHINE=$PG95MACHINE'
+
+    else
+        export PG95MODE='macports'
+        # macport is the default
+        # elif [[ "$mode" =~ 'macports' ]]; then
+
+        export PGHOST="${PGHOST_MACPORTS:-localhost}"
+        export PGUSER="${PGUSER_MACPORTS:-postgres}"
+        export PGUSER="${PGUSER_MACPORTS:-$(whoami)}"
+        export PGPORT="${PGPORT_MACPORTS:-5432}"
+        export PGDATABASE="${PGDATABASE_MACPORTS:-postgres}"
+
+        # mac ports aliases - see sudo port install postgresql95-server
+        alias pg95_start='sudo port load postgresql95-server'
+        alias pg95_stop='sudo port unload postgresql95-server'
+        alias pg95_restart='sudo port reload postgresql95-server'
+
+        # use lunchy ( the launchctl helper ) to control launchd mac port service
+        alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
+        alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
+        alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
+        alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
+
+    fi
+
+    export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
+
+    echo -e "🐘 Postgresql scripts loaded (9.5 env using '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
+}
 
 function postgres_dev_init() {
     # after fresh install of postgres - setup basics
@@ -184,6 +209,11 @@ function pghashlib_install() {
 
 }
 
+function macports_postgresql95_install() {
+    sudo port install postgresql95-server
+}
+
+
 function fix_postgres() {
     echo "not using brew for postgres... exiting"
     return 0
@@ -265,8 +295,8 @@ function switch_postgres() {
 
     unset PG_MATCHED
 
-    sed -i '' "/SWITCHED_PGVERSION/d" $HOME/.versions
-    echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $HOME/.versions
+    sed -i '' "/SWITCHED_PGVERSION/d" $PGVER_CONFIG
+    echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $PGVER_CONFIG
 
     PGVERSION=$PG_VERSION
     export PGVERSION
@@ -292,4 +322,6 @@ function switch_postgres() {
 
 }
 
-echo -e "🐘 Postgresql scripts loaded"
+
+pg95mode $PG95MODE
+
