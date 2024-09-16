@@ -209,6 +209,10 @@ function pghashlib_install() {
 
 }
 
+function herd_postgresql_is_pathdefault() {
+    [[ $(which psql) =~ .*'/Herd/'.* ]]
+}
+
 function macports_postgresql95_install() {
     sudo port install postgresql95-server
 }
