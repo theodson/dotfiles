@@ -213,7 +213,17 @@ function pghashlib_install() {
 }
 
 function herd_postgresql_is_pathdefault() {
-    [[ $(which psql) =~ .*'/Herd/'.* ]]
+    # better check for pg_restore (rather that psql) as Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
+    [[ $(which pg_restore) =~ .*'/Herd/'.* ]]
+}
+
+function herd_postgresql_bin() {
+
+  if find /Users/Shared/Herd/services/postgresql -path '*/bin/psql' &>/dev/null; then
+    find /Users/Shared/Herd/services/postgresql -path '*/bin' | sort | tail -1
+    return
+  fi
+  return 1
 }
 
 function macports_postgresql95_install() {
@@ -223,7 +233,9 @@ function macports_postgresql95_install() {
 }
 
 function macports_postgresql95_is_pathdefault() {
-    [[ $(which psql) =~ '/opt/local/lib/postgresql95/bin/psql' ]]
+    # better check for pg_restore (rather that psql) as
+    # Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
+    [[ $(which pg_restore) =~ '/opt/local/lib/postgresql95/bin/pg_restore' ]]
 }
 
 function macports_postgresql95_is_installed() {
