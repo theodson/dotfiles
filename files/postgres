@@ -84,7 +84,7 @@ function pg95mode() {
         alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
         alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
         alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-        alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
+        alias pg95_status='sudo lunchy status org.macports.postgresql95-server;sudo lunchy show org.macports.postgresql95-server'
 
     fi
 
@@ -213,6 +213,13 @@ function macports_postgresql95_install() {
     sudo port install postgresql95-server
 }
 
+function macports_postgresql95_is_pathdefault() {
+    [[ $(which psql) =~ '/opt/local/lib/postgresql95/bin/psql' ]]
+}
+
+function macports_postgresql95_is_installed() {
+    [ -f /opt/local/lib/postgresql95/bin/psql ]
+}
 
 function fix_postgres() {
     echo "not using brew for postgres... exiting"
