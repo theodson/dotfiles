@@ -91,7 +91,10 @@ function pg95mode() {
     export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
 
     echo -e "🐘 Postgresql scripts loaded (9.5 env using '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
+
 }
+
+
 
 function postgres_dev_init() {
     # after fresh install of postgres - setup basics
@@ -215,6 +218,8 @@ function herd_postgresql_is_pathdefault() {
 
 function macports_postgresql95_install() {
     sudo port install postgresql95-server
+    read -p "Enter postgresql password for $(whoami) " _pgsecret
+    sudo -u postgres psql -c "CREATE ROLE $(whoami) LOGIN PASSWORD '$_pgsecret' SUPERUSER INHERIT;"
 }
 
 function macports_postgresql95_is_pathdefault() {
