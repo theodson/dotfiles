@@ -185,6 +185,9 @@ function pghashlib_install() {
 }
 
 function fix_postgres() {
+    echo "not using brew for postgres... exiting"
+    return 0
+
     local PG_VERSION="${1:-${PGVERSION:-9.5}}"
 
     brew services stop postgresql@${PG_VERSION};
@@ -258,36 +261,6 @@ function switch_postgres() {
         #echo "TODO - Start DBNgin from the commandline"
     else
         echo "DBngin Postgres version not found"
-    fi
-
-    #
-    # Homebrew postgresql
-    #
-    pgbrew_versions=$(find /usr/local/opt -path '*/postgresql@*' | sed 's#/usr/local/opt/##g')
-    if [ -z "$PG_MATCHED" ] && [ -n "${pgbrew_versions}" ]; then
-        if ! echo "$pgbrew_versions" | grep $PG_VERSION; then
-            echo "Postgres $PG_VERSION is not installed via brew."
-        else
-            PG_BREW=1
-            PG_BINPATH="/usr/local/opt/postgresql@${PGVERSION}/bin"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "Postgres $PG_VERSION is installed via Brew "
-            else
-                echo "Postgres $PG_VERSION is not installed via Brew "
-                PG_BINPATH=''
-            fi
-        fi
-        # remove requested version for all versions - lets not stop it if its already running.
-        #if [ false ]; then
-        #    echo "Skipping stopping services for now"
-        #    versions=$(echo $pgbrew_versions | sed "s#postgresql@$PG_VERSION##g")
-        #    for version in $pgbrew_versions; do
-        #        brew services stop $version &>/dev/null
-        #        # start postgres depending on how it was installed.
-        #    done
-        #    brew services start postgresql@${PG_VERSION}
-        #fi
     fi
 
     unset PG_MATCHED
