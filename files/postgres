@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
 
+#
+# Postgresql 9.5 compatability - we need it ( version prior to 12 should be ok to use at a stretch )
+#
+# Installation options for MacOs are (brew, macports, DBNGIN, Herd, OrbStack, Docker, EDB Postgres, Postgres.app) - must allow hashlib extension.
+#   ✋ brew, DBNGIN, Laravel Herd, EDB Postgres, Postgres.app - they either don't support 9.5 or their 9.5.xx versions are incompatible.
+#   👍 macports or OrbStack (containerisation)
+#
+# macports - fully supports 9.5 and pghashlib
+# orbstack - fully supports 9.5 and pghashlib
+#
+# DBNGIN - for partial compatability use v11 or v12
+# - Intel versions start at 10,11,12 on intel (the 9.5 micro version is too old and not compatible with hashlib)
+# - Apple ARM versions start at 13.
+#
+# Laravel Herd - use for latest 16 version
+# - prefer this for future postgresql database work.
+#
+PG95MODE="macports" # macports, orbstack
+
+
 if test -t 1; then
     # Determine if colors are supported...
     ncolors=$(tput colors)
@@ -13,12 +33,48 @@ if test -t 1; then
     fi
 fi
 
+# PGHOST behaves the same as the host connection parameter.
+# PGHOSTADDR behaves the same as the hostaddr connection parameter. This can be set instead of or in addition to PGHOST to avoid DNS lookup overhead.
+# PGPORT behaves the same as the port connection parameter.
+# PGDATABASE behaves the same as the dbname connection parameter.
+# PGUSER behaves the same as the user connection parameter.
+# PGPASSWORD behaves the same as the password connection parameter. Use of this environment variable is not recommended for security reasons, as some operating systems allow non-root users to see process environment variables via ps; instead consider using the ~/.pgpass file (see Section 31.15).
+# PGPASSFILE specifies the name of the password file to use for lookups. If not set, it defaults to ~/.pgpass (see Section 31.15).
+# Postgres - align to linux and connect as postgres by default
+export PGHOST="${PGHOST:-localhost}"
+export PGUSER="${PGUSER:-postgres}"
+export PGPORT="${PGPORT:-5432}"
+export PGDATABASE="${PGDATABASE:-postgres}"
+export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
+
+
+# Aliases
+if [[ "$PG95MODE" =~ 'macports' ]]; then
+
+    alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
+    # mac ports aliases - see sudo port install postgresql95-server
+    alias pg95_start='sudo port load postgresql95-server'
+    alias pg95_stop='sudo port unload postgresql95-server'
+    alias pg95_restart='sudo port reload postgresql95-server'
+
+    # use lunchy ( the launchctl helper ) to control launchd mac port service
+    alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
+    alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
+    alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
+    alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
+
+elif [[ "$PG95MODE" =~ 'macports' ]]; then
+    alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
+fi
+
+
 function postgres_dev_init() {
     # after fresh install of postgres - setup basics
     if test ! -z "$PGUSER"; then
         createuser -s ${$PGUSER}
     fi
 }
+
 
 function dbngin_json() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
@@ -36,7 +92,7 @@ function dbngin_versions() {
 
 function dbngin_path() {
     [ $# -ne 1 ] && {
-        echo "Usage: PG_VERSION"
+        echo "Usage: PG_VERSION M.N"
         return 1
     }
     ver=$1
@@ -48,7 +104,7 @@ function dbngin_path() {
 
 function dbngin_port() {
     [ $# -ne 1 ] && {
-        echo "Usage: PG_VERSION"
+        echo "Usage: PG_VERSION M.N"
         return 1
     }
     ver=$1
