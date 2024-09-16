@@ -175,15 +175,3 @@ alias dep='vendor/bin/dep'                    # no global install - (composer 2 
 alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg'
 alias modern-unixv="for p in \$(modern-unix | cut -d'-' -f1); do printf \"%-10s \$(brew info \$p | sed -n '2p')\n\" \$p ; done"
 
-# postgres
-alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
-# mac ports aliases - see sudo port install postgresql95-server
-alias pg95_start='sudo port load postgresql95-server'
-alias pg95_stop='sudo port unload postgresql95-server'
-alias pg95_restart='sudo port reload postgresql95-server'
-# use lunchy ( the launchctl helper ) to control launchd mac port service
-alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
-alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
-alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
-
