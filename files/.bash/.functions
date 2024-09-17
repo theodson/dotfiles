@@ -160,7 +160,7 @@ function what_port() {
 	    echo "PORT '$port' on localhost has a process listening"
 
         # find ps for port
-	    pids=$(netstat -anv | awk '{print $4","$9}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
+	    pids=$(netstat -anv | awk '{print $4","$11}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
         # find parent id (exclude 0 or 1 for launchd)
 	    ppids=$(ps -o ppid -p $pids | tail -n +2 | grep -v 1 | xargs || true)
 	    #
