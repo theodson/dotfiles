@@ -34,6 +34,40 @@ if test -t 1; then
     fi
 fi
 
+#
+# Standard Postgres environment variables -
+#   these env vars, along with some custom env var, will be used to control the
+#   shell's postgres behaviour, what version, path updates, etc.
+#
+
+
+function spg() {
+    local pgversion
+    local pgname
+    PS3="🐘 Select Postgres: "
+    for pgversion in $(dbngin_versions); do
+        pgVerArr+=("DBNgin-$pgversion")
+    done
+    for pgversion in $(macports_postgresql_versions); do
+        pgVerArr+=("MacPorts-$pgversion")
+    done
+    for pgversion in $(herd_postgresql_versions); do
+        pgVerArr+=("Herd-$pgversion")
+    done
+    select pgname in "${pgVerArr[@]}"; do
+        pgversion="$(echo $pgname|cut -d'-' -f2)"
+        if echo "$pgname" | grep DBNgin &>/dev/null; then
+            dbngin_use $pgversion
+        elif echo "$pgname" | grep MacPorts &>/dev/null; then
+            macports_postgresql_use $pgversion
+        elif echo "$pgname" | grep Herd &>/dev/null; then
+            herd_postgresql_use $pgversion
+        fi
+        break;
+    done
+    unset pgVerArr pgversion pgname
+}
+
 # PGHOST behaves the same as the host connection parameter.
 # PGHOSTADDR behaves the same as the hostaddr connection parameter. This can be set instead of or in addition to PGHOST to avoid DNS lookup overhead.
 # PGPORT behaves the same as the port connection parameter.
@@ -104,18 +138,23 @@ function postgres_dev_init() {
 }
 
 
+function dbngin_bin() {
+    [ $# -ne 1 ] && {
+        echo "Usage: PG_VERSION M.N"
+        return 1
+    }
+    local dbngin_path="$(dbngin_path $1)"
+    if [ -z "$dbngin_path" ]; then
+        return 1
+    fi
+    echo "${dbngin_path}/bin"
+}
+
 function dbngin_json() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
         return 1
     fi
     echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o -) |jq
-}
-
-function dbngin_versions() {
-    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
-        return 1
-    fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq '.[]|select(.Type=="PostgreSQL")|.Version' | xargs)
 }
 
 function dbngin_path() {
@@ -140,6 +179,104 @@ function dbngin_port() {
         return 1
     fi
     echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Port" | xargs)
+}
+
+function dbngin_use() {
+    local pgpath=$(dbngin_bin $1)
+    if [ -z "$pgpath" ] && [ -e "$pgpath" ]; then
+        return 1
+    fi
+    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { __debug "Stripping problem"; }
+    export_postgresql_bin_path $pgpath
+}
+
+
+function dbngin_versions() {
+    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
+        return 1
+    fi
+    local versions
+    for version in $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq '.[]|select(.Type=="PostgreSQL")|.Version' | xargs); do
+        if [ -e "$(dbngin_bin $version)" ]; then
+            versions+=("$version")
+        fi
+    done
+    echo "${versions[@]}"
+}
+
+function export_postgresql_bin_path() {
+    export PATH=$(echo $PATH | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
+    export PATH=$(echo $PATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
+    export PATH=$(echo $PATH | sed -E "s,$(macports_postgresql_bin):,,g")
+    export PATH="$1:$PATH"
+}
+
+function herd_postgresql_bin() {
+    local pgversion="*${1/:-/}"
+
+    if find /Users/Shared/Herd/services/postgresql -path "$pgversion/bin/psql" &>/dev/null; then
+        find /Users/Shared/Herd/services/postgresql -path "$pgversion/bin" | sort | tail -1
+        return
+    fi
+    return 1
+}
+
+function herd_postgresql_is_pathdefault() {
+    # better check for pg_restore (rather that psql) as Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
+    [[ $(which pg_restore) =~ .*'/Herd/'.* ]]
+}
+
+
+function herd_postgresql_versions() {
+    for hpgv in $(dirname $(dirname $(ls /Users/Shared/Herd/services/postgresql/*/bin/psql))); do basename "$hpgv"; done | xargs
+}
+
+function herd_postgresql_use() {
+    local pgpath=$(herd_postgresql_bin $1)
+    if [ -z "$pgpath" ]; then
+        return 1
+    fi
+    # remove existing postgresql from the path
+    export_postgresql_bin_path $pgpath
+}
+
+function macports_postgresql95_install() {
+    if type -t port &>/dev/null && ! port &>/dev/null; then
+        echo "http https://github.com/macports/macports-base/releases/download/v2.10.1/MacPorts-2.10.1-15-Sequoia.pkg; open MacPorts-2.10.1-15-Sequoia.pkg"
+    fi
+    sudo port install postgresql95-server
+    read -p "Enter postgresql password for $(whoami) " _pgsecret
+    sudo -u postgres psql -c "CREATE ROLE $(whoami) LOGIN PASSWORD '$_pgsecret' SUPERUSER INHERIT;"
+}
+
+function macports_postgresql95_is_pathdefault() {
+    # better check for pg_restore (rather that psql) as
+    # Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
+    [[ $(which pg_restore) =~ '/opt/local/lib/postgresql95/bin/pg_restore' ]]
+}
+
+function macports_postgresql95_is_installed() {
+    [ -f /opt/local/lib/postgresql95/bin/psql ]
+}
+
+function macports_postgresql_bin() {
+    dirname $(port -q contents postgresql95 | grep 'pg_restore$')
+}
+
+function macports_postgresql_path() {
+    dirname $(macports_postgresql_bin "$@")
+}
+
+function macports_postgresql_use() {
+    local pgpath=$(macports_postgresql_bin $1)
+    if [ -z "$pgpath" ]; then
+        return 1
+    fi
+    export_postgresql_bin_path $pgpath
+}
+
+function macports_postgresql_versions() {
+    port -q installed postgresql*-server | cut -d'-' -f1
 }
 
 function pghashlib_install() {
@@ -210,36 +347,6 @@ function pghashlib_install() {
         || 'pghashlib not installed correctly'
     psql -U postgres -p $PG_PORT -c '\dx'
 
-}
-
-function herd_postgresql_is_pathdefault() {
-    # better check for pg_restore (rather that psql) as Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
-    [[ $(which pg_restore) =~ .*'/Herd/'.* ]]
-}
-
-function herd_postgresql_bin() {
-
-  if find /Users/Shared/Herd/services/postgresql -path '*/bin/psql' &>/dev/null; then
-    find /Users/Shared/Herd/services/postgresql -path '*/bin' | sort | tail -1
-    return
-  fi
-  return 1
-}
-
-function macports_postgresql95_install() {
-    sudo port install postgresql95-server
-    read -p "Enter postgresql password for $(whoami) " _pgsecret
-    sudo -u postgres psql -c "CREATE ROLE $(whoami) LOGIN PASSWORD '$_pgsecret' SUPERUSER INHERIT;"
-}
-
-function macports_postgresql95_is_pathdefault() {
-    # better check for pg_restore (rather that psql) as
-    # Laravel Herd places psql in the PATH explicitly via symlink (but not other client tools).
-    [[ $(which pg_restore) =~ '/opt/local/lib/postgresql95/bin/pg_restore' ]]
-}
-
-function macports_postgresql95_is_installed() {
-    [ -f /opt/local/lib/postgresql95/bin/psql ]
 }
 
 function fix_postgres() {
