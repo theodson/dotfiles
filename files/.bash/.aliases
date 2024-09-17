@@ -164,7 +164,7 @@ alias phpunit='vendor/bin/phpunit --log-junit $(echo ${phpunitdir:-scratch})/php
 alias phpspec='/usr/local/bin/phpspec'
 
 # xDebug
-alias xdebug_disable="xdbgfile=$(php -m | grep -i 'xdebug' -q && php --ini | grep -i xdebug |tr -d ',') && [ -n \"$xdbgfile\" ] && [ -f \"$xdbgfile\" ] && mv \"$xdbgfile\" \"${xdbgfile}_disabled\" || echo \"xdebug is not enabled\""
+alias xdebug_disable='xdbgfile=$(php -m | grep -i xdebug -q && php --ini | grep -i xdebug |tr -d ',') && [ -n "$xdbgfile" ] && [ -f "$xdbgfile" ] && mv "$xdbgfile" "${xdbgfile}_disabled" || echo "xdebug is not enabled"'
 alias xdebug_restore='incpath=$(php --ini | grep -i "Scan for additional .ini files" | cut -d: -f2 | xargs) && [ -n "$incpath" ] && xdbgfile=$(ls "${incpath}/"*xdebug*disabled) && [ -n "$xdbgfile}" ] && mv $xdbgfile "${incpath}/xdebug.ini" || echo "cannot determine php ini include path"'
 
 # PHPDeployer - https://deployer.org
@@ -174,16 +174,4 @@ alias dep='vendor/bin/dep'                    # no global install - (composer 2 
 
 alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg'
 alias modern-unixv="for p in \$(modern-unix | cut -d'-' -f1); do printf \"%-10s \$(brew info \$p | sed -n '2p')\n\" \$p ; done"
-
-# postgres
-alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
-# mac ports aliases - see sudo port install postgresql95-server
-alias pg95_start='sudo port load postgresql95-server'
-alias pg95_stop='sudo port unload postgresql95-server'
-alias pg95_restart='sudo port reload postgresql95-server'
-# use lunchy ( the launchctl helper ) to control launchd mac port service
-alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
-alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
-alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
 
