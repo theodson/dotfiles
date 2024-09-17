@@ -41,7 +41,11 @@ fi
 #
 
 
-function spg() {
+function switch_postgres() {
+    if [ $# -ne 0 ]; then
+        echo "no support for args in switch_postgres"
+        return 0
+    fi
     local pgversion
     local pgname
     PS3="🐘 Select Postgres: "
@@ -186,7 +190,6 @@ function dbngin_use() {
     if [ -z "$pgpath" ] && [ -e "$pgpath" ]; then
         return 1
     fi
-    export PATH=$(echo $PATH | sed -E 's,/usr/local/opt/php@[[:digit:]\.]+/bin:,,g')  || { __debug "Stripping problem"; }
     export_postgresql_bin_path $pgpath
 }
 
@@ -209,6 +212,20 @@ function export_postgresql_bin_path() {
     export PATH=$(echo $PATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
     export PATH=$(echo $PATH | sed -E "s,$(macports_postgresql_bin):,,g")
     export PATH="$1:$PATH"
+    show_pgenv
+}
+
+
+function show_pgenv() {
+    echo "
+PGHOST      $PGHOST
+PGHOSTADDR  $PGHOSTADDR
+PGPORT      $PGPORT
+PGDATABASE  $PGDATABASE
+PGUSER      $PGUSER
+PGPASSWORD  $PGPASSWORD
+PGPASSFILE  $PGPASSFILE
+        "
 }
 
 function herd_postgresql_bin() {
@@ -366,7 +383,7 @@ function fix_postgres() {
     psql -l
 }
 
-function switch_postgres() {
+function _old_switch_postgres() {
     #
     # This switch postgresql assumes only 1 version of Postgres can be running and its on port 5432.
     #
