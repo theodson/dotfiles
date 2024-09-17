@@ -62,12 +62,14 @@ alias sqlite="sqlite3"
 alias ":q"="exit"
 alias c="composer"
 alias a="php artisan"
+alias art="php artisan"
 alias dcu="docker-compose up -d"
 alias dcd="docker-compose down"
+alias ll="ls -lhrt"
 
 # Open in web browser
 browse() {
-    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
+    domain=$(echo $PWD | sed "s=$HOME/code==I" | sed "s=.*/==")
     if [ ${#domain} -gt 0 ];
     then
         open http://$domain.test
