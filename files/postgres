@@ -1,25 +1,43 @@
 #!/usr/bin/env bash
 
+# ------------------------------------------------------------------
+#      Script contains a collection of functions that
 #
-# Postgresql 9.5 compatability - we need it ( version prior to 12 should be ok to use at a stretch )
+#      1. set postgres ENV vars ( changing default behaviour )
+#      2. client tools ( modify the PATH )
 #
-# Installation options for MacOs are (brew, macports, DBNGIN, Herd, OrbStack, Docker, EDB Postgres, Postgres.app) - must allow hashlib extension.
-#   ✋ brew, DBNGIN, Laravel Herd, EDB Postgres, Postgres.app - they either don't support 9.5 or their 9.5.xx versions are incompatible.
-#   👍 macports or OrbStack (containerisation)
+#          client tools supported ( macports, dbngin, laravel herd )
 #
-# macports - fully supports 9.5 and pghashlib
-# orbstack - fully supports 9.5 and pghashlib
+#       TLDR call switch_postgres
+# ------------------------------------------------------------------
+
+
+# ---------- Postgresql 9.5 compatability  -------------------------
 #
-# DBNGIN - for partial compatability use v11 or v12
-# - Intel versions start at 10,11,12 on intel (the 9.5 micro version is too old and not compatible with hashlib)
-# - Apple ARM versions start at 13.
+#      1. Clients tools prior to v12 should be ok to use (at a stretch)
+#      2. Postgres extension dependency - hashlib extension
 #
-# Laravel Herd - use for latest 16 version
-# - prefer this for future postgresql database work.
+# ----------- 👍 Compatible ----------------------------------------
 #
-export PG95MODE="orbstack" # macports, orbstack
-export PG95MACHINE=ccs
-export PGVER_CONFIG=$HOME/.postgres-setup.conf
+#      1. macports - fully supports 9.5 and pghashlib
+#      2. orbstack - fully supports 9.5 and pghashlib
+#
+# ----------- ✋ Incompatible ( can't run postgres 9.5 ) -----------
+#
+#      brew, DBNGIN, Laravel Herd, EDB Postgres, Postgres.app
+#          don't support 9.5 or their 9.5.xx versions are incompatible.
+#
+# ----------- 👍 client tools + partial compatability ) ------------
+#
+#      1. DBNGIN - v10-16 ( <14 intel only )
+#      2. Laravel Herd - v14-16
+#
+# ------------------------------------------------------------------
+
+# Load PG ENV settings
+export PGENV="$HOME/.pgenv"
+[ -f "$PGENV" ] && source "$PGENV" || :;
+
 
 if test -t 1; then
     # Determine if colors are supported...
@@ -34,21 +52,15 @@ if test -t 1; then
     fi
 fi
 
-#
-# Standard Postgres environment variables -
-#   these env vars, along with some custom env var, will be used to control the
-#   shell's postgres behaviour, what version, path updates, etc.
-#
-
-
-
 function switch_postgres() {
     if [ $# -ne 0 ]; then
         echo "no support for args in switch_postgres"
         return 0
     fi
-    switch_postgres_cli_client
-    switch_postgres_env_vars
+    switch_postgres_cli_client "$@"
+    echo
+    switch_postgres_env_vars "$@"
+    pgenv_store
 }
 
 
@@ -60,7 +72,8 @@ function switch_postgres_cli_client() {
     local pgversion
     local pgname
     echo ""
-    PS3="🐘 Postgres client: "
+    echo -e "🐘 Postgresql client\n--------------------"
+    # PS3="Select client: "
     for pgversion in $(macports_postgresql_versions); do
         pgVerArr+=("MacPorts-$pgversion")
     done
@@ -85,7 +98,8 @@ function switch_postgres_cli_client() {
         fi
         break;
     done
-    unset pgVerArr pgversion pgname
+    pgenv_store
+    unset pgVerArr pgversion pgname PS3
 
 }
 
@@ -97,13 +111,21 @@ function switch_postgres_env_vars() {
     fi
     pgenv_set_host
     echo
-    local_postgres_choices_show
+    pgenv_set_port "$@"
     echo
-    pgenv_set_port
+    pgenv_set_user "$@"
+    echo
 
     pgenv_show
+    pgenv_store
 }
 
+
+# ------------------------------------------------------------------
+# Standard Postgres environment variables -
+#   these env vars, along with some custom env var, will be used to control the
+#   shell's postgres behaviour, what version, path updates, etc.
+#
 # PGHOST behaves the same as the host connection parameter.
 # PGHOSTADDR behaves the same as the hostaddr connection parameter. This can be set instead of or in addition to PGHOST to avoid DNS lookup overhead.
 # PGPORT behaves the same as the port connection parameter.
@@ -111,23 +133,24 @@ function switch_postgres_env_vars() {
 # PGUSER behaves the same as the user connection parameter.
 # PGPASSWORD behaves the same as the password connection parameter. Use of this environment variable is not recommended for security reasons, as some operating systems allow non-root users to see process environment variables via ps; instead consider using the ~/.pgpass file (see Section 31.15).
 # PGPASSFILE specifies the name of the password file to use for lookups. If not set, it defaults to ~/.pgpass (see Section 31.15).
+#
 # Postgres - align to linux and connect as postgres by default
+# ------------------------------------------------------------------
 
 # Aliases
 alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
 
 function pg95mode() {
+    # set pg95 alaises
 
-    local mode="${1:-$PG95MODE}"
+    # PG95MODE - macports, orbstack
+
+    local mode="${1}"
 
     if [[ "$mode" =~ "orb".* ]]; then
 
         export PG95MODE='orbstack'
         export PG95MACHINE="${PG95MACHINE:-postgres95}"
-        export PGUSER="${PGUSER_ORB:-$(whoami)}"
-        export PGHOST="${PG95MACHINE}.orb.local"
-        export PGPORT="${PGPORT_ORB:-5432}"
-        export PGDATABASE="${PGDATABASE_ORB:-postgres}"
 
         alias pg95_start='orbctl -m $PG95MACHINE run systemctl start postgresql || echo PG95MACHINE=$PG95MACHINE'
         alias pg95_stop='orbctl -m $PG95MACHINE run systemctl stop postgresql || echo PG95MACHINE=$PG95MACHINE'
@@ -136,14 +159,6 @@ function pg95mode() {
 
     else
         export PG95MODE='macports'
-        # macport is the default
-        # elif [[ "$mode" =~ 'macports' ]]; then
-
-        export PGHOST="${PGHOST_MACPORTS:-localhost}"
-        export PGUSER="${PGUSER_MACPORTS:-postgres}"
-        export PGUSER="${PGUSER_MACPORTS:-$(whoami)}"
-        export PGPORT="${PGPORT_MACPORTS:-5432}"
-        export PGDATABASE="${PGDATABASE_MACPORTS:-postgres}"
 
         # mac ports aliases - see sudo port install postgresql95-server
         alias pg95_start='sudo port load postgresql95-server'
@@ -163,8 +178,6 @@ function pg95mode() {
     echo -e "🐘 Postgresql scripts loaded (9.5 env using '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
 
 }
-
-
 
 function postgres_dev_init() {
     # after fresh install of postgres - setup basics
@@ -223,9 +236,8 @@ function dbngin_use() {
         return 1
     fi
     export_postgresql_bin_path $pgpath
-    export PGPORT=$(dbngin_port $1)
-    export PGHOST=localhost
-    pgenv_show
+    #export PGPORT=$(dbngin_port $1)
+    #export PGHOST=localhost
 }
 
 
@@ -246,22 +258,10 @@ function export_postgresql_bin_path() {
     export PATH=$(echo $PATH | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
     export PATH=$(echo $PATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
     export PATH=$(echo $PATH | sed -E "s,$(macports_postgresql_bin):,,g")
+    export PG_CLIENT_PATH="$1"
     export PATH="$1:$PATH"
 }
 
-
-function pgenv_show() {
-    echo "
-PGHOST      $PGHOST
-PGHOSTADDR  $PGHOSTADDR
-PGPORT      $PGPORT
-PGDATABASE  $PGDATABASE
-PGUSER      $PGUSER
-PGPASSWORD  $PGPASSWORD
-PGPASSFILE  $PGPASSFILE
-        "
-    # listen_addresses = '*' # todo add this the postgresql.conf files.
-}
 
 function local_postgres_process_ids() {
     ps aux | grep 'bin/[p]ostgres -D ' | grep -i "$1" | awk '{print $2}'
@@ -296,11 +296,7 @@ function local_postgres_pid_name_version_port() {
 }
 
 function local_postgres_choices_show() {
-    # PGPORT
-    local onHost="${1:-${PGHOST:-localhost}}"
-#    if nc -z $onHost 5432 &>/dev/null; then
-#        echo "PORT 5432 : LocalService"
-#    fi
+    # local onHost="${1:-${PGHOST:-localhost}}"
     local_postgres_pid_name_version_port | tr , ' '_ | awk '{print "PORT "$4" : " $2" v"$3}'
 }
 
@@ -328,6 +324,22 @@ function local_postgres_process_ports() {
 
 }
 
+function pgenv_show() {
+    echo "PGHOST          $PGHOST
+PGHOSTADDR      $PGHOSTADDR
+PGPORT          $PGPORT
+PGDATABASE      $PGDATABASE
+PGUSER          $PGUSER
+PGPASSWORD      $PGPASSWORD
+PGPASSFILE      $PGPASSFILE
+PG_CLIENT_PATH  $PG_CLIENT_PATH
+"
+    # listen_addresses = '*' # todo add this the postgresql.conf files.
+}
+
+function pgenv_store() {
+    pgenv_show | sed -E 's/^(PG[[:alpha:]_]+) +(.+)$/\1=\2/' > "$PGENV"
+}
 
 function pgenv_set_port() {
     # PGPORT
@@ -345,8 +357,10 @@ function pgenv_set_port() {
     # scan ports possibly... nah
     # nc -z localhost 5432-5532 2>&1 | awk '{print $5}' | xargs
 
-    PS3="🐘 Set PGPORT:"
-
+    #PS3="🐘 Set PGPORT:"
+    echo -e "🐘 Set PGPORT\n-------------"
+    local_postgres_choices_show "$@"
+    echo -e "-------------"
     local pgoption
     select pgoption in "${pgOptions[@]}"; do
         PGPORT=$pgoption
@@ -371,7 +385,8 @@ function pgenv_set_host() {
         # pgOptions+=(host.orb.internal)
     fi
 
-    PS3="🐘 Set PGHOST: "
+    echo -e "🐘 Set PGHOST\n-------------"
+    #PS3="🐘 Set PGHOST: "
     local pgoption
     select pgoption in "${pgOptions[@]}"; do
         PGHOST=$pgoption
@@ -379,6 +394,19 @@ function pgenv_set_host() {
     done
 
     export PGHOST
+    unset PS3 pgOptions pgoption
+}
+
+function pgenv_set_user() {
+    # PGUSER
+    echo -e "🐘 Set PGUSER\n-------------"
+    #PS3="🐘 Set PGUSER: "
+    local pgoption
+    select pgoption in postgres homestead $(whoami) vagrant; do
+        PGUSER=$pgoption
+        break
+    done
+    export PGUSER
     unset PS3 pgOptions pgoption
 }
 
@@ -402,14 +430,13 @@ function herd_postgresql_port() {
 }
 
 function herd_postgresql_use() {
-    local pgpath=$(herd_postgresql_bin  $1)
+    local pgpath=$(herd_postgresql_bin $1)
     if [ -z "$pgpath" ]; then
         return 1
     fi
     # remove existing postgresql from the path
     export_postgresql_bin_path $pgpath
-    export PGPORT=$(herd_port $1)
-    pgenv_show
+    #export PGPORT=$(herd_port $1)
 }
 
 function herd_postgresql_versions() {
@@ -449,8 +476,7 @@ function macports_postgresql_use() {
         return 1
     fi
     export_postgresql_bin_path $pgpath
-    export PGPORT=$(macports_port $1)
-    pgenv_show
+    #export PGPORT=$(macports_port $1)
 }
 
 function macports_postgresql_versions() {
@@ -608,8 +634,8 @@ function _old_switch_postgres() {
 
     unset PG_MATCHED
 
-    sed -i '' "/SWITCHED_PGVERSION/d" $PGVER_CONFIG
-    echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $PGVER_CONFIG
+    #sed -i '' "/SWITCHED_PGVERSION/d" $PGVER_CONFIG
+    #echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $PGVER_CONFIG
 
     PGVERSION=$PG_VERSION
     export PGVERSION
@@ -636,5 +662,5 @@ function _old_switch_postgres() {
 }
 
 
-pg95mode $PG95MODE
+pg95mode "${PG95MODE:-orbstack}" #orbstack, macports
 

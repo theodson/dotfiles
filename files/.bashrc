@@ -3,7 +3,7 @@
 # ! Important behaviour when entering folders - see function 'enter_directory' in .functions
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
-
+BASEDIR="$(dirname $(realpath "${BASH_SOURCE[0]}/"))" # dotfiles directory
 #
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # https://books.apple.com/book/moving-to-zsh/id1483591353
@@ -28,12 +28,12 @@ unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 [ -r $BASEDIR/.versions ] && source $BASEDIR/.versions || true
 [ -r $BASEDIR/.credentials ] && source $BASEDIR/.credentials || true
 [ -r $BASEDIR/.profile ] && source $BASEDIR/.profile || true
-[ -r $BASEDIR/.functions ] && source $BASEDIR/.functions || true
-[ -r $BASEDIR/dotfiles/files/postgres ] && source $BASEDIR/dotfiles/files/postgres || echo "No postgres" true
-[ -r $BASEDIR/.exports ] && source $BASEDIR/.exports || true
-[ -r $BASEDIR/.aliases ] && source $BASEDIR/.aliases || true
+[ -r $BASEDIR/.bash/.functions ] && source $BASEDIR/.bash/.functions || true
+[ -r $BASEDIR/postgres ] && source $BASEDIR/postgres || echo "No postgres script"
+[ -r $BASEDIR/.bash/.exports ] && source $BASEDIR/.bash/.exports || true
+[ -r $BASEDIR/.bash/.aliases ] && source $BASEDIR/.bash/.aliases || true
 [ -r $BASEDIR/.ps1 ] && [[ ! "$PROMPT_COMMAND" =~ starship ]] && source $BASEDIR/.ps1 || true # start aware prompt
-[ -r $BASEDIR/dotfiles/files/switch_php ] && [ -n "$USE_SWITCH_PHP_HACKERY" ] && source $BASEDIR/dotfiles/files/switch_php || true
+[ -r $BASEDIR/switch_php ] && [ -n "$USE_SWITCH_PHP_HACKERY" ] && source $BASEDIR/switch_php || true
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
 # Add folder to search PATH if it exists
