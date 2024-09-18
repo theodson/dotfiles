@@ -41,25 +41,41 @@ fi
 #
 
 
+
 function switch_postgres() {
+    if [ $# -ne 0 ]; then
+        echo "no support for args in switch_postgres"
+        return 0
+    fi
+    switch_postgres_cli_client
+    switch_postgres_env_vars
+}
+
+
+function switch_postgres_cli_client() {
     if [ $# -ne 0 ]; then
         echo "no support for args in switch_postgres"
         return 0
     fi
     local pgversion
     local pgname
-    PS3="🐘 Select Postgres: "
-    for pgversion in $(dbngin_versions); do
-        pgVerArr+=("DBNgin-$pgversion")
-    done
+    echo ""
+    PS3="🐘 Postgres client: "
     for pgversion in $(macports_postgresql_versions); do
         pgVerArr+=("MacPorts-$pgversion")
     done
     for pgversion in $(herd_postgresql_versions); do
         pgVerArr+=("Herd-$pgversion")
     done
+    for pgversion in $(dbngin_versions); do
+        pgVerArr+=("DBNgin-$pgversion")
+    done
     select pgname in "${pgVerArr[@]}"; do
         pgversion="$(echo $pgname|cut -d'-' -f2)"
+        if [ ! -n "$pgversion" ]; then
+            echo "version unknown"
+            return 1
+        fi
         if echo "$pgname" | grep DBNgin &>/dev/null; then
             dbngin_use $pgversion
         elif echo "$pgname" | grep MacPorts &>/dev/null; then
@@ -70,6 +86,22 @@ function switch_postgres() {
         break;
     done
     unset pgVerArr pgversion pgname
+
+}
+
+function switch_postgres_env_vars() {
+
+    if [ $# -eq 1 ]; then
+        echo "no support for args in switch_postgres"
+        return 0
+    fi
+    pgenv_set_host
+    echo
+    local_postgres_choices_show
+    echo
+    pgenv_set_port
+
+    pgenv_show
 }
 
 # PGHOST behaves the same as the host connection parameter.
@@ -191,6 +223,9 @@ function dbngin_use() {
         return 1
     fi
     export_postgresql_bin_path $pgpath
+    export PGPORT=$(dbngin_port $1)
+    export PGHOST=localhost
+    pgenv_show
 }
 
 
@@ -212,11 +247,10 @@ function export_postgresql_bin_path() {
     export PATH=$(echo $PATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
     export PATH=$(echo $PATH | sed -E "s,$(macports_postgresql_bin):,,g")
     export PATH="$1:$PATH"
-    show_pgenv
 }
 
 
-function show_pgenv() {
+function pgenv_show() {
     echo "
 PGHOST      $PGHOST
 PGHOSTADDR  $PGHOSTADDR
@@ -226,6 +260,126 @@ PGUSER      $PGUSER
 PGPASSWORD  $PGPASSWORD
 PGPASSFILE  $PGPASSFILE
         "
+    # listen_addresses = '*' # todo add this the postgresql.conf files.
+}
+
+function local_postgres_process_ids() {
+    ps aux | grep 'bin/[p]ostgres -D ' | grep -i "$1" | awk '{print $2}'
+}
+
+function local_postgres_pid_name_version_port() {
+    # output csv list of postrgres services detected - pid,appname,version,port
+
+    # look for any 'bin/postgres -D' commands in process list
+    # pattern match AND pull out matching sections (pid, appname, version, port)
+    # final grep , removes any postgres matches that do NOT fit the sed pattern
+
+    local pglist="$(ps -ax -o pid -o command | grep 'bin/[p]ostgres -D ' \
+        | sed -E 's/^[ ]*([0-9]+).*Shared\/([[:alpha:]]+)\/.*\/([0-9\.]+)\/bin\/postgres -D.* -p ([0-9]+).*/\1,\2,\3,\4/' \
+        | grep ,)"
+
+    if nc -z localhost 5432 &>/dev/null; then
+        # find process ID on port 5432
+        local pgpid="$(netstat -alnv |awk '{print $4","$11}'|sort|uniq|grep '\.5432,'| cut -d',' -f2|uniq)"
+        if [ -n "$pgpid" ]; then
+            # assume (look for) macports postgres install.
+            local pgpidver=$(ps -p $pgpid -o command | sed 1d | sed -E 's#/opt/local/lib/postgresql([0-9\.]+)/bin/postgres.*#\1#' | sed -E 's/9([0-9])/9.\1/')
+            if [ -n "$pgpidver" ]; then
+                # append this record to the pglist
+                pglist=$(echo -e "$pgpid,macPorts,$pgpidver,5432\n$pglist")
+            else
+                pglist=$(echo -e "$pgpid,Postgres,unknown,5432\n$pglist")
+            fi
+        fi
+    fi
+    echo "$pglist"
+}
+
+function local_postgres_choices_show() {
+    # PGPORT
+    local onHost="${1:-${PGHOST:-localhost}}"
+#    if nc -z $onHost 5432 &>/dev/null; then
+#        echo "PORT 5432 : LocalService"
+#    fi
+    local_postgres_pid_name_version_port | tr , ' '_ | awk '{print "PORT "$4" : " $2" v"$3}'
+}
+
+function local_postgres_process_ports() {
+    # look for any 'bin/postgres -D' commands in process list
+    local pids=$(ps aux | grep 'bin/[p]ostgres -D ' | awk '{print $2}' | xargs | tr ' ' ,)
+
+    # get command with arguments only ( 1d to remove header)
+    # apply any FILTER argument passed as $1
+    local pgprocs=$(ps -p $pids -o command | sed 1d | grep -i "$1")
+
+    local pgports
+
+    # show non matched ports
+    # echo "review $(echo "$pgprocs" | grep -v '\-p' | awk '{print $3}')/postgresql.conf"
+
+    # for commands without specified port assume default port of 5432
+    if echo "$pgprocs" | grep -v '\-p' &>/dev/null; then
+        pgports=(5432)
+    fi
+
+    # add any specified ports ( that has been specified with -p argument )
+    pgports+=($(echo "$pgprocs" | sed -r 's/.* -p ([0-9]+).*/\1/' | grep -Ew '[[:digit:]]+' | sort | uniq))
+    echo "${pgports[*]}" | xargs
+
+}
+
+
+function pgenv_set_port() {
+    # PGPORT
+    local onHost="${1:-${PGHOST:-localhost}}"
+
+    local pgOptions
+    pgOptions=();
+    for port in $(local_postgres_process_ports); do
+        # validate port - check port is being listened on
+        if nc -z $onHost $port &>/dev/null; then
+            pgOptions+=($port);
+        fi
+    done
+
+    # scan ports possibly... nah
+    # nc -z localhost 5432-5532 2>&1 | awk '{print $5}' | xargs
+
+    PS3="🐘 Set PGPORT:"
+
+    local pgoption
+    select pgoption in "${pgOptions[@]}"; do
+        PGPORT=$pgoption
+        break
+    done
+    if [ -z "$pgoption" ]; then
+        PGPORT=${pgOptions[0]}
+    fi
+
+    export PGPORT
+    unset pgOptions PS3 pgPorts pgoption
+}
+
+function pgenv_set_host() {
+    # PGHOST
+    local pgOptions
+    pgOptions=(localhost)
+
+    if type -t orbctl &>/dev/null; then
+        # collect orb linux machine names
+        pgOptions+=($(orbctl list -f json | jq '.[]|.name' | tr -d '"' | xargs -o printf -- '%s.orb.local ' ))
+        # pgOptions+=(host.orb.internal)
+    fi
+
+    PS3="🐘 Set PGHOST: "
+    local pgoption
+    select pgoption in "${pgOptions[@]}"; do
+        PGHOST=$pgoption
+        break
+    done
+
+    export PGHOST
+    unset PS3 pgOptions pgoption
 }
 
 function herd_postgresql_bin() {
@@ -243,18 +397,23 @@ function herd_postgresql_is_pathdefault() {
     [[ $(which pg_restore) =~ .*'/Herd/'.* ]]
 }
 
-
-function herd_postgresql_versions() {
+function herd_postgresql_port() {
     for hpgv in $(dirname $(dirname $(ls /Users/Shared/Herd/services/postgresql/*/bin/psql))); do basename "$hpgv"; done | xargs
 }
 
 function herd_postgresql_use() {
-    local pgpath=$(herd_postgresql_bin $1)
+    local pgpath=$(herd_postgresql_bin  $1)
     if [ -z "$pgpath" ]; then
         return 1
     fi
     # remove existing postgresql from the path
     export_postgresql_bin_path $pgpath
+    export PGPORT=$(herd_port $1)
+    pgenv_show
+}
+
+function herd_postgresql_versions() {
+    for hpgv in $(dirname $(dirname $(ls /Users/Shared/Herd/services/postgresql/*/bin/psql))); do basename "$hpgv"; done | xargs
 }
 
 function macports_postgresql95_install() {
@@ -290,6 +449,8 @@ function macports_postgresql_use() {
         return 1
     fi
     export_postgresql_bin_path $pgpath
+    export PGPORT=$(macports_port $1)
+    pgenv_show
 }
 
 function macports_postgresql_versions() {
