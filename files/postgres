@@ -34,11 +34,6 @@
 #
 # ------------------------------------------------------------------
 
-# Load PG ENV settings
-export PGENV="$HOME/.pgenv"
-[ -f "$PGENV" ] && source "$PGENV" || :;
-
-
 if test -t 1; then
     # Determine if colors are supported...
     ncolors=$(tput colors)
@@ -556,6 +551,12 @@ function pghashlib_install() {
 
 }
 
+#
+# Load PG ENV settings
+# setup environment and path for any saved postgresql settings
+#
+export PGENV="$HOME/.pgenv"
+[ -f "$PGENV" ] && source "$PGENV" || :;
 
 pg95_mode "${PG95MODE:-orbstack}" #orbstack, macports
 if [ -n "$PG_CLIENT_PATH" ] && [ -f "${PG_CLIENT_PATH}/psql" ]; then
