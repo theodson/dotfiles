@@ -140,53 +140,6 @@ function switch_postgres_env_vars() {
 # Aliases
 alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
 
-function pg95mode() {
-    # set pg95 alaises
-
-    # PG95MODE - macports, orbstack
-
-    local mode="${1}"
-
-    if [[ "$mode" =~ "orb".* ]]; then
-
-        export PG95MODE='orbstack'
-        export PG95MACHINE="${PG95MACHINE:-postgres95}"
-
-        alias pg95_start='orbctl -m $PG95MACHINE run systemctl start postgresql || echo PG95MACHINE=$PG95MACHINE'
-        alias pg95_stop='orbctl -m $PG95MACHINE run systemctl stop postgresql || echo PG95MACHINE=$PG95MACHINE'
-        alias pg95_restart='orbctl -m $PG95MACHINE run systemctl restart postgresql || echo PG95MACHINE=$PG95MACHINE'
-        alias pg95_status='orbctl -m $PG95MACHINE run systemctl status postgresql || echo PG95MACHINE=$PG95MACHINE'
-
-    else
-        export PG95MODE='macports'
-
-        # mac ports aliases - see sudo port install postgresql95-server
-        alias pg95_start='sudo port load postgresql95-server'
-        alias pg95_stop='sudo port unload postgresql95-server'
-        alias pg95_restart='sudo port reload postgresql95-server'
-
-        # use lunchy ( the launchctl helper ) to control launchd mac port service
-        alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
-        alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
-        alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-        alias pg95_status='sudo lunchy status org.macports.postgresql95-server;sudo lunchy show org.macports.postgresql95-server'
-
-    fi
-
-    export PGVERSION="${SWITCHED_PGVERSION:-${PGVERSION:-9.5}}" # this is not a standard PG ENV VAR
-
-    echo -e "🐘 Postgresql scripts loaded (9.5 env using '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
-
-}
-
-function postgres_dev_init() {
-    # after fresh install of postgres - setup basics
-    if test ! -z "$PGUSER"; then
-        createuser -s ${$PGUSER}
-    fi
-}
-
-
 function dbngin_bin() {
     [ $# -ne 1 ] && {
         echo "Usage: PG_VERSION M.N"
@@ -255,13 +208,20 @@ function dbngin_versions() {
 }
 
 function export_postgresql_bin_path() {
-    export PATH=$(echo $PATH | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
-    export PATH=$(echo $PATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
-    export PATH=$(echo $PATH | sed -E "s,$(macports_postgresql_bin):,,g")
+    # remove existing postgres clients from PATH
+    CLEANPATH=$(echo $PATH | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
+    CLEANPATH=$(echo $CLEANPATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
+    #CLEANPATH=$(echo $CLEANPATH | sed -E "s,$(macports_postgresql_bin):,,g")
     export PG_CLIENT_PATH="$1"
-    export PATH="$1:$PATH"
-}
+    export PATH="$PG_CLIENT_PATH:$CLEANPATH"
 
+    # set environment as per brew info for the service
+    if [ -e "${PG_CLIENT_PATH}"/pg_config ]; then
+        export LDFLAGS="$LDFLAGS $($PG_CLIENT_PATH/pg_config --ldflags)"
+        export CPPFLAGS="$CPPFLAGS $($PG_CLIENT_PATH/pg_config --cppflags)"
+    fi
+
+}
 
 function local_postgres_process_ids() {
     ps aux | grep 'bin/[p]ostgres -D ' | grep -i "$1" | awk '{print $2}'
@@ -325,20 +285,24 @@ function local_postgres_process_ports() {
 }
 
 function pgenv_show() {
-    echo "PGHOST          $PGHOST
+    echo "# Standard Postgres Env
+PGHOST          $PGHOST
 PGHOSTADDR      $PGHOSTADDR
 PGPORT          $PGPORT
 PGDATABASE      $PGDATABASE
 PGUSER          $PGUSER
 PGPASSWORD      $PGPASSWORD
 PGPASSFILE      $PGPASSFILE
+# Non Standard Postgres Env
 PG_CLIENT_PATH  $PG_CLIENT_PATH
+PG95MACHINE     $PG95MACHINE
+PG95MODE        $PG95MODE
 "
     # listen_addresses = '*' # todo add this the postgresql.conf files.
 }
 
 function pgenv_store() {
-    pgenv_show | sed -E 's/^(PG[[:alpha:]_]+) +(.+)$/\1=\2/' > "$PGENV"
+    pgenv_show | sed -E 's/^(PG[[:alpha:]0-9_]+) +(.+)$/\1=\2/' > "$PGENV"
 }
 
 function pgenv_set_port() {
@@ -463,7 +427,7 @@ function macports_postgresql95_is_installed() {
 }
 
 function macports_postgresql_bin() {
-    dirname $(port -q contents postgresql95 | grep 'pg_restore$')
+    dirname "$(port -q contents postgresql95 | grep 'pg_restore$')"
 }
 
 function macports_postgresql_path() {
@@ -481,6 +445,45 @@ function macports_postgresql_use() {
 
 function macports_postgresql_versions() {
     port -q installed postgresql*-server | cut -d'-' -f1
+}
+
+
+function pg95_mode() {
+    # set pg95 alaises
+
+    # PG95MODE - macports, orbstack
+
+    local mode="${1}"
+
+    if [[ "$mode" =~ "orb".* ]]; then
+
+        export PG95MODE='orbstack'
+        export PG95MACHINE="${PG95MACHINE:-postgres95}"
+
+        alias pg95_start='orbctl -m $PG95MACHINE run systemctl start postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_stop='orbctl -m $PG95MACHINE run systemctl stop postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_restart='orbctl -m $PG95MACHINE run systemctl restart postgresql || echo PG95MACHINE=$PG95MACHINE'
+        alias pg95_status='orbctl -m $PG95MACHINE run systemctl status postgresql || echo PG95MACHINE=$PG95MACHINE'
+
+    else
+        export PG95MODE='macports'
+
+        # mac ports aliases - see sudo port install postgresql95-server
+        alias pg95_start='sudo port load postgresql95-server'
+        alias pg95_stop='sudo port unload postgresql95-server'
+        alias pg95_restart='sudo port reload postgresql95-server'
+
+        # use lunchy ( the launchctl helper ) to control launchd mac port service
+        alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
+        alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
+        alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
+        alias pg95_status='sudo lunchy status org.macports.postgresql95-server;sudo lunchy show org.macports.postgresql95-server'
+
+    fi
+
+    #echo -e "🐘 Postgresql scripts loaded (9.5 mode '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
+    echo -e "🐘 Postgresql scripts loaded - see switch_postgres and pgenv_show"
+
 }
 
 function pghashlib_install() {
@@ -570,97 +573,8 @@ function fix_postgres() {
     psql -l
 }
 
-function _old_switch_postgres() {
-    #
-    # This switch postgresql assumes only 1 version of Postgres can be running and its on port 5432.
-    #
-    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
-    PG_VERSION_NO_DOT=$(echo "${PG_VERSION}"|tr -d '.')
-    #
-    # MacPorts Postgres
-    #
-    if [ -z "$PG_MATCHED" ] && [ -e "/opt/local/lib/postgresql${PG_VERSION_NO_DOT}" ]; then
-        pgmacport_versions=$(find /opt/local/lib/postgresql* -maxdepth 0 | sed 's#/opt/local/lib/postgresql##g'| sort -n)
-        echo "pgmacport_versions=$pgmacport_versions"
-        if ! echo "$pgmacport_versions" | grep $PG_VERSION_NO_DOT; then
-            echo "MacPorts Postgres $PG_VERSION is not installed"
-        else
-            PG_PGAPP=1
-            PG_BINPATH="/opt/local/lib/postgresql${PG_VERSION_NO_DOT}/bin"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "MacPorts Postgres $PG_VERSION is installed"
-            else
-                echo "MacPorts Postgres $PG_VERSION is not installed"
-                PG_BINPATH=''
-            fi
-        fi
-    else
-        echo "MacPorts Postgres version not found"
-    fi
-
-    #
-    # DBNgin
-    #
-    pgdbng_versions=$(dbngin_versions)
-    if [ -z "$PG_MATCHED" ] && [ -n "${pgdbng_versions}" ]; then
-        # match nearest maj.min.patch for DBngin
-        PG_VERSION=$(for version in $pgdbng_versions; do echo "$version" | grep $PG_VERSION; done)
-
-        if ! echo "$pgdbng_versions" | grep -q $PG_VERSION; then
-            echo "DBngin Postgres $PG_VERSION is not installed"
-        else
-            PG_DBNGIN=1
-            # match to closest maj.min.patch version
-            PGVERSION=$(for v in $(dbngin_versions); do echo $v | grep '^11'; done)
-            PG_BINPATH="$(dbngin_path $PGVERSION)/bin"
-            export PG_PORT="$(dbngin_port $PGVERSION)"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "DBngin Postgres $PG_VERSION is installed, on port $PG_PORT"
-            else
-                echo "DBngin Postgres $PG_VERSION is not installed"
-                PG_BINPATH=''
-            fi
-        fi
-        # can we stop DBNgin from the commandline ??
-        for version in $pgdbng_versions; do
-            echo "TODO - stop DBngin Postgres $version" > /dev/null
-        done
-        #echo "TODO - Start DBNgin from the commandline"
-    else
-        echo "DBngin Postgres version not found"
-    fi
-
-    unset PG_MATCHED
-
-    #sed -i '' "/SWITCHED_PGVERSION/d" $PGVER_CONFIG
-    #echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $PGVER_CONFIG
-
-    PGVERSION=$PG_VERSION
-    export PGVERSION
-
-    # clean and update PATH (check brew installed Postgres)
-    CLEANED_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check DBNgin installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Users/Shared/DBngin/postgresql/[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check Postgres.app installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Applications/Postgres.app/Contents/Versions/[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check EDBPostgres installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Library/PostgreSQL/[0-9.]*/bin[/]*[:]*##g')"
-    export PATH="$CLEANED_PATH"
-
-    # set environment as per brew info for the service
-    if [ -e "${PG_BINPATH}"/pg_config ]; then
-        export PATH="$PG_BINPATH:$PATH"
-        export LDFLAGS="$($PG_BINPATH/pg_config --ldflags)"
-        export CPPFLAGS="$($PG_BINPATH/pg_config --cppflags)"
-    fi
-
-    echo "PATH updated for $PG_VERSION: $PG_BINPATH"
-
-}
-
-
-pg95mode "${PG95MODE:-orbstack}" #orbstack, macports
+pg95_mode "${PG95MODE:-orbstack}" #orbstack, macports
+if [ -n "$PG_CLIENT_PATH" ] && [ -f "${PG_CLIENT_PATH}/psql" ]; then
+    export_postgresql_bin_path "$PG_CLIENT_PATH"
+fi
 
