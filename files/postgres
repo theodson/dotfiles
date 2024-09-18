@@ -556,22 +556,6 @@ function pghashlib_install() {
 
 }
 
-function fix_postgres() {
-    echo "not using brew for postgres... exiting"
-    return 0
-
-    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
-
-    brew services stop postgresql@${PG_VERSION};
-    mkdir -p /usr/local/var/postgresql@${PG_VERSION}/{{pg_commit_ts,pg_dynshmem,pg_replslot,pg_serial,pg_snapshots,pg_stat,pg_stat_tmp,pg_tblspc,pg_twophase},pg_logical/{mappings,snapshots}}
-    rm -f /usr/local/var/postgresql@${PG_VERSION}/postmaster.pid &>/dev/null
-    pgpids="$(ps ax  | grep 'postgre[s]ql\@' | awk '{print $1}')"
-    [ -z "${pgpids}" ] && echo "NO postgres IDS found." || /bin/kill -SIGHUP "$pgpids" &>/dev/null
-    brew services start postgresql@${PG_VERSION}
-    sleep 2
-    pghashlib_install
-    psql -l
-}
 
 pg95_mode "${PG95MODE:-orbstack}" #orbstack, macports
 if [ -n "$PG_CLIENT_PATH" ] && [ -f "${PG_CLIENT_PATH}/psql" ]; then
