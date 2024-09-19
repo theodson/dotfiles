@@ -80,7 +80,7 @@ function switch_postgres_cli_client() {
     for pgversion in $(dbngin_versions); do
         pgVerArr+=("DBngin-$pgversion")
     done
-    select pgname in "${pgVerArr[@]}"; do
+    COLUMNS=1; select pgname in "${pgVerArr[@]}"; do
         pgversion="$(echo "$pgname"|cut -d'-' -f2)"
         if [ -z "$pgversion" ]; then
             echo "version unknown"
@@ -314,52 +314,52 @@ function pgenv_store() {
     pgenv_show | sed -E 's/^(PG[[:alpha:]0-9_]+) +(.+)$/\1=\2/' > "$PGENV"
 }
 
+
 function pgenv_set_port() {
     # PGPORT
     local onHost="${1:-${PGHOST:-localhost}}"
 
     local pgOptions
-    local port
+    local line port app ver
     pgOptions=();
-    for port in $(local_postgres_process_ports); do
+    for line in $(local_postgres_pid_name_version_port); do
         # validate port - check port is being listened on
+        app="$(echo "$line" | cut -d ',' -f2)"
+        ver="$(echo "$line" | cut -d ',' -f3)"
+        port="$(echo "$line" | cut -d ',' -f4)"
         if nc -z "$onHost" "$port" &>/dev/null; then
-            pgOptions+=("$port");
+            pgOptions+=("$port:$app v$ver");
         fi
     done
 
     # scan ports possibly... nah
     # nc -z localhost 5432-5532 2>&1 | awk '{print $5}' | xargs
 
-    #PS3="🐘 Set PGPORT:"
     echo -e "🐘 Set PGPORT\n-------------"
-    local_postgres_choices_show "$@"
-    echo -e "-------------"
     local pgoption
-    select pgoption in "${pgOptions[@]}"; do
-        PGPORT=$pgoption
+    COLUMNS=1; select pgoption in "${pgOptions[@]}"; do
+        echo $pgoption
+        PGPORT=$(echo "$pgoption"|cut -d':' -f1)
         break
     done
-    if [ -z "$pgoption" ]; then
-        PGPORT=${pgOptions[0]}
-    fi
 
     export PGPORT
+    pgenv_store
     unset pgOptions PS3 pgPorts pgoption
 }
 
+# shellcheck disable=SC2048
 function pgenv_set_host() {
     # PGHOST
     local pgOptions
     pgOptions=(localhost)
 
-    if type -t orbctl &>/dev/null; then
+    if type orbctl &>/dev/null; then
         # collect orb linux machine names
-        local machines
-        machines=$(orbctl list -f json | jq '.[]|.name' | tr -d '"' | xargs -o printf -- '%s.orb.local ' )
-        # shellcheck disable=SC2206
-        pgOptions+=($machines)
-        # pgOptions+=(host.orb.internal)
+        local machine
+        for machine in $(orbctl list -f json | jq '.[]|.name' | tr -d '"'| xargs -o printf -- '%s.orb.local '); do
+            pgOptions+=("$machine")
+        done
     else
         echo "${RED}missing orbctl${NC}"
     fi
@@ -367,12 +367,13 @@ function pgenv_set_host() {
     echo -e "🐘 Set PGHOST\n-------------"
     #PS3="🐘 Set PGHOST: "
     local pgoption
-    select pgoption in "${pgOptions[@]}"; do
+    COLUMNS=1; select pgoption in ${pgOptions[*]}; do
         PGHOST=$pgoption
         break
     done
 
     export PGHOST
+    pgenv_store
     unset PS3 pgOptions pgoption
 }
 
@@ -381,11 +382,12 @@ function pgenv_set_user() {
     echo -e "🐘 Set PGUSER\n-------------"
     #PS3="🐘 Set PGUSER: "
     local pgoption
-    select pgoption in postgres homestead $(whoami) vagrant; do
+    COLUMNS=1; select pgoption in postgres homestead $(whoami) vagrant; do
         PGUSER=$pgoption
         break
     done
     export PGUSER
+    pgenv_store
     unset PS3 pgOptions pgoption
 }
 
@@ -428,7 +430,7 @@ function herd_postgresql_versions() {
 }
 
 function macports_postgresql95_install() {
-    if type -t port &>/dev/null && ! port &>/dev/null; then
+    if type port &>/dev/null && ! port &>/dev/null; then
         echo "http https://github.com/macports/macports-base/releases/download/v2.10.1/MacPorts-2.10.1-15-Sequoia.pkg; open MacPorts-2.10.1-15-Sequoia.pkg"
     fi
     sudo port install postgresql95-server

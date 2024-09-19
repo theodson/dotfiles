@@ -463,7 +463,7 @@ _sf_dep() {
     local sf_cmd="${COMP_WORDS[0]}"
 
     # for an alias, get the real script behind it
-    sf_cmd_type=$(type -t $sf_cmd)
+    sf_cmd_type=$(type $sf_cmd)
     if [[ $sf_cmd_type == "alias" ]]; then
         sf_cmd=$(alias $sf_cmd | sed -E "s/alias $sf_cmd='(.*)'/\1/")
     elif [[ $sf_cmd_type == "file" ]]; then
