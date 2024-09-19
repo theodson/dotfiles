@@ -27,7 +27,7 @@
 #      brew, DBNGIN, Laravel Herd, EDB Postgres, Postgres.app
 #          don't support 9.5 or their 9.5.xx versions are incompatible.
 #
-# ----------- 👍 client tools + partial compatability ) ------------
+# ----------- 👍 client tools + partial compatability --------------
 #
 #      1. DBNGIN - v10-16 ( <14 intel only )
 #      2. Laravel Herd - v14-16
@@ -66,9 +66,11 @@ function switch_postgres_cli_client() {
     fi
     local pgversion
     local pgname
+    local pgVerArr
     echo ""
     echo -e "🐘 Postgresql client\n--------------------"
     # PS3="Select client: "
+    pgVerArr=()
     for pgversion in $(macports_postgresql_versions); do
         pgVerArr+=("MacPorts-$pgversion")
     done
@@ -76,20 +78,20 @@ function switch_postgres_cli_client() {
         pgVerArr+=("Herd-$pgversion")
     done
     for pgversion in $(dbngin_versions); do
-        pgVerArr+=("DBNgin-$pgversion")
+        pgVerArr+=("DBngin-$pgversion")
     done
     select pgname in "${pgVerArr[@]}"; do
-        pgversion="$(echo $pgname|cut -d'-' -f2)"
-        if [ ! -n "$pgversion" ]; then
+        pgversion="$(echo "$pgname"|cut -d'-' -f2)"
+        if [ -z "$pgversion" ]; then
             echo "version unknown"
             return 1
         fi
-        if echo "$pgname" | grep DBNgin &>/dev/null; then
-            dbngin_use $pgversion
+        if echo "$pgname" | grep DBngin &>/dev/null; then
+            dbngin_use "$pgversion"
         elif echo "$pgname" | grep MacPorts &>/dev/null; then
-            macports_postgresql_use $pgversion
+            macports_postgresql_use "$pgversion"
         elif echo "$pgname" | grep Herd &>/dev/null; then
-            herd_postgresql_use $pgversion
+            herd_postgresql_use "$pgversion"
         fi
         break;
     done
@@ -106,9 +108,9 @@ function switch_postgres_env_vars() {
     fi
     pgenv_set_host
     echo
-    pgenv_set_port "$@"
+    pgenv_set_port "${1:-localhost}"
     echo
-    pgenv_set_user "$@"
+    pgenv_set_user
     echo
 
     pgenv_show
@@ -140,7 +142,8 @@ function dbngin_bin() {
         echo "Usage: PG_VERSION M.N"
         return 1
     }
-    local dbngin_path="$(dbngin_path $1)"
+    local dbngin_path
+    dbngin_path="$(dbngin_path "$1")"
     if [ -z "$dbngin_path" ]; then
         return 1
     fi
@@ -151,7 +154,7 @@ function dbngin_json() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
         return 1
     fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o -) |jq
+    plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq
 }
 
 function dbngin_path() {
@@ -163,7 +166,7 @@ function dbngin_path() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
         return 1
     fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Binaries" | xargs)
+    plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Binaries" | xargs
 }
 
 function dbngin_port() {
@@ -175,15 +178,16 @@ function dbngin_port() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
         return 1
     fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Port" | xargs)
+    plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Port" | xargs
 }
 
 function dbngin_use() {
-    local pgpath=$(dbngin_bin $1)
+    local pgpath
+    pgpath=$(dbngin_bin "$1")
     if [ -z "$pgpath" ] && [ -e "$pgpath" ]; then
         return 1
     fi
-    export_postgresql_bin_path $pgpath
+    export_postgresql_bin_path "$pgpath"
     #export PGPORT=$(dbngin_port $1)
     #export PGHOST=localhost
 }
@@ -194,8 +198,9 @@ function dbngin_versions() {
         return 1
     fi
     local versions
+    local version
     for version in $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq '.[]|select(.Type=="PostgreSQL")|.Version' | xargs); do
-        if [ -e "$(dbngin_bin $version)" ]; then
+        if [ -e "$(dbngin_bin "$version")" ]; then
             versions+=("$version")
         fi
     done
@@ -204,22 +209,26 @@ function dbngin_versions() {
 
 function export_postgresql_bin_path() {
     # remove existing postgres clients from PATH
-    CLEANPATH=$(echo $PATH | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
-    CLEANPATH=$(echo $CLEANPATH | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
-    #CLEANPATH=$(echo $CLEANPATH | sed -E "s,$(macports_postgresql_bin):,,g")
+    local CLEAN_PATH
+    CLEAN_PATH=$(echo "$PATH" | sed -E 's,/Users/Shared/DBngin/postgresql/[[:digit:]\.]+/bin:,,g')
+    CLEAN_PATH=$(echo "$CLEAN_PATH" | sed -E 's,/Users/Shared/Herd/services/postgresql/[[:digit:]\.]+/bin:,,g')
+    #CLEAN_PATH=$(echo "$CLEANPATH" | sed -E "s#$(macports_postgresql_bin):##g")
     export PG_CLIENT_PATH="$1"
-    export PATH="$PG_CLIENT_PATH:$CLEANPATH"
+    export PATH="$PG_CLIENT_PATH:$CLEAN_PATH"
 
     # set environment as per brew info for the service
     if [ -e "${PG_CLIENT_PATH}"/pg_config ]; then
-        export LDFLAGS="$LDFLAGS $($PG_CLIENT_PATH/pg_config --ldflags)"
-        export CPPFLAGS="$CPPFLAGS $($PG_CLIENT_PATH/pg_config --cppflags)"
+        local LDFLAGS CPPFLAGS
+        LDFLAGS="$LDFLAGS $("$PG_CLIENT_PATH"/pg_config --ldflags)"
+        CPPFLAGS="$CPPFLAGS $("$PG_CLIENT_PATH"/pg_config --cppflags)"
+        export LDFLAGS CPPFLAGS
     fi
 
 }
 
 function local_postgres_process_ids() {
-    ps aux | grep 'bin/[p]ostgres -D ' | grep -i "$1" | awk '{print $2}'
+    # pgrep -ilf 'bin/postgres -D.*-p' # port is specified
+    pgrep -ilf 'bin/postgres -D'
 }
 
 function local_postgres_pid_name_version_port() {
@@ -229,16 +238,19 @@ function local_postgres_pid_name_version_port() {
     # pattern match AND pull out matching sections (pid, appname, version, port)
     # final grep , removes any postgres matches that do NOT fit the sed pattern
 
-    local pglist="$(ps -ax -o pid -o command | grep 'bin/[p]ostgres -D ' \
+    local pglist
+    pglist="$(pgrep -ilf 'postgres -D' \
         | sed -E 's/^[ ]*([0-9]+).*Shared\/([[:alpha:]]+)\/.*\/([0-9\.]+)\/bin\/postgres -D.* -p ([0-9]+).*/\1,\2,\3,\4/' \
-        | grep ,)"
+        | grep -v 'sed -E' | grep ',' )"
 
     if nc -z localhost 5432 &>/dev/null; then
-        # find process ID on port 5432
-        local pgpid="$(netstat -alnv |awk '{print $4","$11}'|sort|uniq|grep '\.5432,'| cut -d',' -f2|uniq)"
+        # find process ID of process Listening on port 5432
+        local pgpid
+        pgpid="$(netstat -alnv |awk '{print $4","$11}'|sort|uniq|grep '\.5432,'| cut -d',' -f2|uniq|head -1)"
         if [ -n "$pgpid" ]; then
             # assume (look for) macports postgres install.
-            local pgpidver=$(ps -p $pgpid -o command | sed 1d | sed -E 's#/opt/local/lib/postgresql([0-9\.]+)/bin/postgres.*#\1#' | sed -E 's/9([0-9])/9.\1/')
+            local pgpidver
+            pgpidver=$(ps -p "$pgpid" -o command | sed 1d | sed -E 's#/opt/local/lib/postgresql([0-9\.]+)/bin/postgres.*#\1#' | sed -E 's/9([0-9])/9.\1/')
             if [ -n "$pgpidver" ]; then
                 # append this record to the pglist
                 pglist=$(echo -e "$pgpid,macPorts,$pgpidver,5432\n$pglist")
@@ -252,21 +264,20 @@ function local_postgres_pid_name_version_port() {
 
 function local_postgres_choices_show() {
     # local onHost="${1:-${PGHOST:-localhost}}"
-    local_postgres_pid_name_version_port | tr , ' '_ | awk '{print "PORT "$4" : " $2" v"$3}'
+    local_postgres_pid_name_version_port | tr , ' ' | awk '{print "PORT "$4" : " $2" v"$3}'
 }
 
 function local_postgres_process_ports() {
     # look for any 'bin/postgres -D' commands in process list
-    local pids=$(ps aux | grep 'bin/[p]ostgres -D ' | awk '{print $2}' | xargs | tr ' ' ,)
+    local pids
+    pids=$(pgrep -d',' -if 'bin/postgres -D')
 
     # get command with arguments only ( 1d to remove header)
     # apply any FILTER argument passed as $1
-    local pgprocs=$(ps -p $pids -o command | sed 1d | grep -i "$1")
+    local pgprocs
+    pgprocs=$(ps -p "$pids" -o command | sed 1d)
 
     local pgports
-
-    # show non matched ports
-    # echo "review $(echo "$pgprocs" | grep -v '\-p' | awk '{print $3}')/postgresql.conf"
 
     # for commands without specified port assume default port of 5432
     if echo "$pgprocs" | grep -v '\-p' &>/dev/null; then
@@ -274,7 +285,10 @@ function local_postgres_process_ports() {
     fi
 
     # add any specified ports ( that has been specified with -p argument )
-    pgports+=($(echo "$pgprocs" | sed -r 's/.* -p ([0-9]+).*/\1/' | grep -Ew '[[:digit:]]+' | sort | uniq))
+    local scanned_ports
+    scanned_ports=$(echo "$pgprocs" | sed -r 's/.* -p ([0-9]+).*/\1/' | grep -Ew '[[:digit:]]+' | sort | uniq)
+    # shellcheck disable=SC2206
+    pgports+=($scanned_ports)
     echo "${pgports[*]}" | xargs
 
 }
@@ -305,11 +319,12 @@ function pgenv_set_port() {
     local onHost="${1:-${PGHOST:-localhost}}"
 
     local pgOptions
+    local port
     pgOptions=();
     for port in $(local_postgres_process_ports); do
         # validate port - check port is being listened on
-        if nc -z $onHost $port &>/dev/null; then
-            pgOptions+=($port);
+        if nc -z "$onHost" "$port" &>/dev/null; then
+            pgOptions+=("$port");
         fi
     done
 
@@ -340,8 +355,13 @@ function pgenv_set_host() {
 
     if type -t orbctl &>/dev/null; then
         # collect orb linux machine names
-        pgOptions+=($(orbctl list -f json | jq '.[]|.name' | tr -d '"' | xargs -o printf -- '%s.orb.local ' ))
+        local machines
+        machines=$(orbctl list -f json | jq '.[]|.name' | tr -d '"' | xargs -o printf -- '%s.orb.local ' )
+        # shellcheck disable=SC2206
+        pgOptions+=($machines)
         # pgOptions+=(host.orb.internal)
+    else
+        echo "${RED}missing orbctl${NC}"
     fi
 
     echo -e "🐘 Set PGHOST\n-------------"
@@ -385,21 +405,26 @@ function herd_postgresql_is_pathdefault() {
 }
 
 function herd_postgresql_port() {
-    for hpgv in $(dirname $(dirname $(ls /Users/Shared/Herd/services/postgresql/*/bin/psql))); do basename "$hpgv"; done | xargs
+    local check_file
+    check_file=$(ls /Users/Shared/Herd/services/postgresql/*/bin/psql)
+    for hpgv in $(dirname "$(dirname "${check_file}")"); do basename "$hpgv"; done | xargs
 }
 
 function herd_postgresql_use() {
-    local pgpath=$(herd_postgresql_bin $1)
+    local pgpath
+    pgpath=$(herd_postgresql_bin "$1")
     if [ -z "$pgpath" ]; then
         return 1
     fi
     # remove existing postgresql from the path
-    export_postgresql_bin_path $pgpath
+    export_postgresql_bin_path "$pgpath"
     #export PGPORT=$(herd_port $1)
 }
 
 function herd_postgresql_versions() {
-    for hpgv in $(dirname $(dirname $(ls /Users/Shared/Herd/services/postgresql/*/bin/psql))); do basename "$hpgv"; done | xargs
+    local check_file
+    check_file=$(ls /Users/Shared/Herd/services/postgresql/*/bin/psql)
+    for hpgv in $(dirname "$(dirname "$check_file")"); do basename "$hpgv"; done | xargs
 }
 
 function macports_postgresql95_install() {
@@ -407,7 +432,8 @@ function macports_postgresql95_install() {
         echo "http https://github.com/macports/macports-base/releases/download/v2.10.1/MacPorts-2.10.1-15-Sequoia.pkg; open MacPorts-2.10.1-15-Sequoia.pkg"
     fi
     sudo port install postgresql95-server
-    read -p "Enter postgresql password for $(whoami) " _pgsecret
+    local _pgsecret
+    read -rp "Enter postgresql password for $(whoami) " _pgsecret
     sudo -u postgres psql -c "CREATE ROLE $(whoami) LOGIN PASSWORD '$_pgsecret' SUPERUSER INHERIT;"
 }
 
@@ -422,24 +448,34 @@ function macports_postgresql95_is_installed() {
 }
 
 function macports_postgresql_bin() {
-    dirname "$(port -q contents postgresql95 | grep 'pg_restore$')"
+    local macport
+    local version
+    version="$(echo "${1:-95}"| tr -d  "[:alpha:]-_." )"
+
+    if macport="$(port -q contents postgresql"${version}" 2>/dev/null | grep 'pg_restore$')"; then
+        dirname "$macport" | xargs
+        return $?
+    fi
+    return 1
+    #dirname "$(port -q contents postgresql"${1:-95} 2>/dev/null" | grep 'pg_restore$')" | xargs
 }
 
 function macports_postgresql_path() {
-    dirname $(macports_postgresql_bin "$@")
+    dirname "$(macports_postgresql_bin "$1")"
 }
 
 function macports_postgresql_use() {
-    local pgpath=$(macports_postgresql_bin $1)
+    local pgpath
+    pgpath=$(macports_postgresql_bin "$1")
     if [ -z "$pgpath" ]; then
         return 1
     fi
-    export_postgresql_bin_path $pgpath
+    export_postgresql_bin_path "$pgpath"
     #export PGPORT=$(macports_port $1)
 }
 
 function macports_postgresql_versions() {
-    port -q installed postgresql*-server | cut -d'-' -f1
+    port -q installed "postgresql*-server" | cut -d'-' -f1
 }
 
 
@@ -477,21 +513,24 @@ function pg95_mode() {
     fi
 
     #echo -e "🐘 Postgresql scripts loaded (9.5 mode '$PG95MODE' [$PGHOST:$PGPORT - $PGUSER] )"
-    echo -e "🐘 Postgresql scripts loaded - see switch_postgres and pgenv_show"
+    echo -e "🐘 ${YELLOW}${BOLD}Postgresql scripts loaded${NC} - ${GREEN}see switch_postgres and pgenv_show${NC}"
 
 }
 
 function pghashlib_install() {
 
+    local PG_PORT
     PG_PORT="${PG_PORT:-5432}"
+    local dbngin_choice
 
     if [ -n "$(dbngin_versions)" ]; then
         echo "DBngin PostgreSQL appears to be installed, the following versions are available ($(dbngin_versions))."
-        read -p "Install against a DBngin PostgreSQL version or continue with default path (Enter for default)" dbnginchoice
-        if [ -n "$dbnginchoice" ]; then
-            echo "Temporarily setting PATH and PG_PORT for DBngin $dbnginchoice".
-            export PATH="$(dbngin_path $dbnginchoice)/bin:$PATH"
-            export PG_PORT=$(dbngin_port $dbnginchoice)
+        read -rp "Install against a DBngin PostgreSQL version or continue with default path (Enter for default)" dbngin_choice
+        if [ -n "$dbngin_choice" ]; then
+            echo "Temporarily setting PATH and PG_PORT for DBngin $dbngin_choice".
+            PATH="$(dbngin_path "$dbngin_choice")/bin:$PATH"
+            PG_PORT=$(dbngin_port "${dbngin_choice}")
+            export PATH PG_PORT
         else
             echo "Continuing on with default postgres version"
         fi
@@ -516,7 +555,8 @@ function pghashlib_install() {
     echo "unzip" && unzip -o pghashlib.zip &>/dev/null && \
     pushd pghashlib-master && \
     echo "hashlib install" && \
-    if [ -e "$(find $(pg_config --includedir) -name 'varatt.h')" ]; then
+    if [ -e "$(find "$(pg_config --includedir)" -name 'varatt.h')" ]; then
+        local line
         # postgres 16+ fails for phhashlib
         # build failure on postgres16 - https://stackoverflow.com/questions/77617997/how-to-set-varsize-and-set-varsize-in-postgresql-16
         # append after match #include <fmgr.h> - src/pghashlib.h
@@ -526,7 +566,7 @@ function pghashlib_install() {
     echo "make" && make &>/dev/null && \
     env | grep -Ei 'PG_' && \
     echo "make install" && {
-        touch $(pg_config --libdir)/test ||
+        touch "$(pg_config --libdir)"/test ||
         sudo make install &>/dev/null &&
         make install &>/dev/null
     } && \
@@ -535,19 +575,19 @@ function pghashlib_install() {
     popd && \
     echo "Tidyup hashlib" && \
     [ -e pghashlib-master ] && rm -rf pghashlib-master && \
-    echo done
-    # rm -f pghashlib.zip &>/dev/null || true
+    echo "done"
+    popd || return
 
-    popd
+    psql -U "$(whoami)" -p "$PG_PORT" -c "create role postgres superuser login password '';" &>/dev/null || true
+    psql -U postgres -p "$PG_PORT" -c "drop extension hashlib" &>/dev/null || true
 
-    psql -U $(whoami) -p $PG_PORT -c "create role postgres superuser login password '';" &>/dev/null || true
-    psql -U postgres -p $PG_PORT -c "drop extension hashlib" &>/dev/null || true
-
-    psql -U postgres -p $PG_PORT -c "create extension hashlib" && \
-    [ $(psql -U postgres -p $PG_PORT -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}') == '069b3c88000000000000000000000000' ] \
-        && echo 'pghashlib installed correctly' \
-        || 'pghashlib not installed correctly'
-    psql -U postgres -p $PG_PORT -c '\dx'
+    psql -U postgres -p "$PG_PORT" -c "create extension hashlib";
+    if [ "$(psql -U postgres -p "$PG_PORT" -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}')" == '069b3c88000000000000000000000000' ]; then
+        echo 'pghashlib installed correctly'
+    else
+        echo 'pghashlib not installed correctly'
+    fi
+    psql -U postgres -p "$PG_PORT" -c '\dx'
 
 }
 
@@ -556,7 +596,10 @@ function pghashlib_install() {
 # setup environment and path for any saved postgresql settings
 #
 export PGENV="$HOME/.pgenv"
-[ -f "$PGENV" ] && source "$PGENV" || :;
+if [ -f "$PGENV" ]; then
+    # shellcheck disable=SC1090
+    source "$PGENV"
+fi
 
 pg95_mode "${PG95MODE:-orbstack}" #orbstack, macports
 if [ -n "$PG_CLIENT_PATH" ] && [ -f "${PG_CLIENT_PATH}/psql" ]; then

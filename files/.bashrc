@@ -3,7 +3,7 @@
 # ! Important behaviour when entering folders - see function 'enter_directory' in .functions
 
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
-BASEDIR="$(dirname $(realpath "${BASH_SOURCE[0]}/"))" # dotfiles directory
+BASEDIR="$(dirname $(realpath "${BASH_SOURCE[0]}"))" # dotfiles directory
 #
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # https://books.apple.com/book/moving-to-zsh/id1483591353
