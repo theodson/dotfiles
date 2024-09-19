@@ -338,7 +338,7 @@ function pgenv_set_port() {
     echo -e "🐘 Set PGPORT\n-------------"
     local pgoption
     COLUMNS=1; select pgoption in "${pgOptions[@]}"; do
-        echo $pgoption
+        echo "$pgoption"
         PGPORT=$(echo "$pgoption"|cut -d':' -f1)
         break
     done
