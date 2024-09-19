@@ -1,3 +1,8 @@
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# Comment this line if you don't want it to be added again.
+Include ~/.orbstack/ssh/config
+
 # https://linuxize.com/post/using-the-ssh-config-file/
 # https://unix.stackexchange.com/questions/340844/how-to-enable-diffie-hellman-group1-sha1-key-exchange-on-debian-8-0
 

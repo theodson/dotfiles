@@ -1,4 +1,5 @@
 BREW_PREFIX=$(brew --prefix)
+export BASEDIR=$(dirname $(realpath ${(%):-%N})) # dotfiles directory
 
 # brew shared bin
 export PATH="/usr/local/sbin:$PATH"
@@ -76,7 +77,11 @@ browse() {
     fi
 }
 
+# Added by OrbStack: command-line tools and integration
+# Comment this line if you don't want it to be added again.
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
+[ -r $BASEDIR/postgres ] && source $BASEDIR/postgres || echo "No postgres script"
 
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
