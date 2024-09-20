@@ -7,10 +7,6 @@
 #   https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/
 #
 
-## call herdUnloadENV as Laravel Herd appends its setup to .bashrc when Herd is rherdUnloadENV
-## we want to opt into "herd" as and when required otherwise it breaks our "delicate" valet and php-7.0 setup.
-#type -p herdUnloadENV && herdUnloadENV
-
 # Added by OrbStack: command-line tools and integration
 # Comment this line if you don't want it to be added again.
 source ~/.orbstack/shell/init.bash 2>/dev/null || :
