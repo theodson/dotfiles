@@ -601,10 +601,21 @@ export PGENV="$HOME/.pgenv"
 if [ -f "$PGENV" ]; then
     # shellcheck disable=SC1090
     source "$PGENV"
+    # Postgres - align to linux and connect as postgres by default
+    if eval false; then
+        # not used... here as reference to Brew postgresql installs
+        if test -e /usr/local/opt/postgresql@${PGVERSION}; then
+            export PATH="/usr/local/opt/postgresql@${PGVERSION}/bin:$PATH"
+            export LDFLAGS="-L/usr/local/opt/postgresql@${PGVERSION}/lib"
+            export CPPFLAGS="-I/usr/local/opt/postgresql@${PGVERSION}/include"
+        fi
+    fi
 fi
 
 pg95_mode "${PG95MODE:-orbstack}" #orbstack, macports
 if [ -n "$PG_CLIENT_PATH" ] && [ -f "${PG_CLIENT_PATH}/psql" ]; then
     export_postgresql_bin_path "$PG_CLIENT_PATH"
 fi
+
+
 
