@@ -150,6 +150,10 @@ function dbngin_bin() {
     echo "${dbngin_path}/bin"
 }
 
+function dbngin_is_pathdefault() {
+    [[ $(which pg_restore) =~ .*'/DBngin/'.* ]]
+}
+
 function dbngin_json() {
     if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
         return 1
@@ -312,6 +316,7 @@ PG95MODE        $PG95MODE
 
 function pgenv_store() {
     pgenv_show | sed -E 's/^(PG[[:alpha:]0-9_]+) +(.+)$/\1=\2/' > "$PGENV"
+    cat "$PGENV" | sed -E 's/^(PG[[:alpha:]0-9_]+)=+(.+)$/export \1/' >> "$PGENV"
 }
 
 
@@ -522,10 +527,30 @@ function pg95_mode() {
 function pghashlib_install() {
 
     local PG_PORT
-    PG_PORT="${PG_PORT:-5432}"
+    PG_PORT="${PGPORT:-5432}"
     local dbngin_choice
 
-    if [ -n "$(dbngin_versions)" ]; then
+    if herd_postgresql_is_pathdefault; then
+        echo "${RED}Using HERD${NC}"
+        # Herd uses a signed postgres binary that stops custom built extensions loading.
+        # Until Herd allows custom extensions, we unsign it (seems to work) to allow custom built extensions to load and run.
+        # confirm codesign -d --verbose=4  /Users/Shared/Herd/services/postgresql/17/bin/postgres 2>&1| grep 'Authority=.*Beyond Code' &>/dev/null
+        local postgres_bin="$(herd_postgresql_bin)/postgres"
+        if [ -e "$postgres_bin" ]; then
+            if codesign -d -v "$postgres_bin" 2>&1 | grep -v 'not signed at all' &>/dev/null; then
+                echo "The postgres binary '$postgres_bin' needs to be UnSigned and restarted before building the pghashlib !! "
+                # remove strict code signing for
+                if ! codesign --remove-signature "$postgres_bin"; then
+                    echo "${RED}Unable to remove signature from $postgres_bin ! Cannot load custom extensions.${NC}"
+                    return 2
+                fi
+                echo "${RED}Signature has been removed from $postgres_bin, MANUALLY restart this Herd postgres service.${NC}"
+                return 1
+            fi
+        fi
+    fi
+
+    if dbngin_is_pathdefault && [ -n "$(dbngin_versions)" ]; then
         echo "DBngin PostgreSQL appears to be installed, the following versions are available ($(dbngin_versions))."
         read -rp "Install against a DBngin PostgreSQL version or continue with default path (Enter for default)" dbngin_choice
         if [ -n "$dbngin_choice" ]; then
@@ -550,21 +575,25 @@ function pghashlib_install() {
     # https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/
     #
 
-    HOMEBREW_NO_INSTALL_CLEANUP=true  HOMEBREW_NO_INSTALL_UPGRADE=true \
-    brew install docutils # provides rst2html command
+    pgenv_show
+
+    if ! type -a rst2html &>/dev/null; then
+        HOMEBREW_NO_INSTALL_CLEANUP=true HOMEBREW_NO_INSTALL_UPGRADE=true \
+            brew install docutils # provides rst2html command
+    fi
     pushd /tmp && \
     wget --quiet https://github.com/markokr/pghashlib/archive/master.zip -O pghashlib.zip && \
     echo "unzip" && unzip -o pghashlib.zip &>/dev/null && \
     pushd pghashlib-master && \
     echo "hashlib install" && \
-    if [ -e "$(find "$(pg_config --includedir)" -name 'varatt.h')" ]; then
-        local line
-        # postgres 16+ fails for phhashlib
-        # build failure on postgres16 - https://stackoverflow.com/questions/77617997/how-to-set-varsize-and-set-varsize-in-postgresql-16
-        # append after match #include <fmgr.h> - src/pghashlib.h
-        line=$(grep -n '#include <fmgr.h>' src/pghashlib.h | cut -d: -f1)
-        sed -i '' "${line}s/^/#include <varatt.h>\n/" src/pghashlib.h
-    fi &&
+#    if [ -e "$(find "$(pg_config --includedir)" -name 'varatt.h')" ]; then
+#        local line
+#        # postgres 16+ fails for phhashlib
+#        # build failure on postgres16 - https://stackoverflow.com/questions/77617997/how-to-set-varsize-and-set-varsize-in-postgresql-16
+#        # append after match #include <fmgr.h> - src/pghashlib.h
+#        line=$(grep -n '#include <fmgr.h>' src/pghashlib.h | cut -d: -f1)
+#        sed -i '' "${line}s/^/#include <varatt.h>\n/" src/pghashlib.h
+#    fi &&
     echo "make" && make &>/dev/null && \
     env | grep -Ei 'PG_' && \
     echo "make install" && {
@@ -580,11 +609,24 @@ function pghashlib_install() {
     echo "done"
     popd || return
 
-    psql -U "$(whoami)" -p "$PG_PORT" -c "create role postgres superuser login password '';" &>/dev/null || true
-    psql -U postgres -p "$PG_PORT" -c "drop extension hashlib" &>/dev/null || true
+    local POSTGRESUSER='postgres'
+    psql -U "$(whoami)" -p "$PG_PORT" -c "create role $POSTGRESUSER superuser login password '';" &>/dev/null || true
 
-    psql -U postgres -p "$PG_PORT" -c "create extension hashlib";
-    if [ "$(psql -U postgres -p "$PG_PORT" -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}')" == '069b3c88000000000000000000000000' ]; then
+    if herd_postgresql_is_pathdefault; then
+        # sign the newly built extension
+        codesign -s- $(pg_config --libdir)/hashlib.dylib
+
+        echo "${RED}Removed signature from $postgres_bin ! Try to load custom extensions.${NC}"
+        codesign -d -v "$postgres_bin"
+        echo "Reloading postgres configuration"
+        psql -c "SELECT pg_reload_conf();"
+    else
+        echo "${RED}NOT Using HERD${NC}"
+    fi
+
+    psql -U "$POSTGRESUSER" -p "$PG_PORT" -c "drop extension hashlib" &>/dev/null || true
+    psql -U "$POSTGRESUSER" -p "$PG_PORT" -c "create extension hashlib";
+    if [ "$(psql -U "$POSTGRESUSER" -p "$PG_PORT" -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}')" == '069b3c88000000000000000000000000' ]; then
         echo 'pghashlib installed correctly'
     else
         echo 'pghashlib not installed correctly'
