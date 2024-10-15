@@ -8,6 +8,8 @@ alias ll='ls -FGlAhp'
 # color=always causes more grief than its worth when pipelining commands
 # alias grep='grep --color=always'
 
+#macOs
+alias serial_number="system_profiler SPHardwareDataType -json | jq -r '.SPHardwareDataType[].serial_number'"
 
 # Network
 alias whatport='what_port'
