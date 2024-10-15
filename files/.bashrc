@@ -32,7 +32,7 @@ unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 [ -r $BASEDIR/postgres ] && source $BASEDIR/postgres || echo "No postgres script"
 [ -r $BASEDIR/.bash/.exports ] && source $BASEDIR/.bash/.exports || true
 [ -r $BASEDIR/.bash/.aliases ] && source $BASEDIR/.bash/.aliases || true
-[ -r $BASEDIR/.ps1 ] && [[ ! "$PROMPT_COMMAND" =~ starship ]] && source $BASEDIR/.ps1 || true # start aware prompt
+#[ -r $BASEDIR/.ps1 ] && [[ ! "$PROMPT_COMMAND" =~ starship ]] && source $BASEDIR/.ps1 || true # start aware prompt
 [ -r $BASEDIR/switch_php ] && [ -n "$USE_SWITCH_PHP_HACKERY" ] && source $BASEDIR/switch_php || true
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
@@ -88,3 +88,4 @@ fi
 if test ! -z "${NVM_DIR}"; then
     [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 fi
+
