@@ -74,7 +74,8 @@ function switch_postgres_cli_client() {
     for pgversion in $(macports_postgresql_versions); do
         pgVerArr+=("MacPorts-$pgversion")
     done
-    for pgversion in $(herd_postgresql_versions); do
+    # for pgversion in $(herd_postgresql_versions); do # All Herd versions installed
+    for pgversion in $(herd_postgresql_versions_running); do
         pgVerArr+=("Herd-$pgversion")
     done
     for pgversion in $(dbngin_versions); do
@@ -432,6 +433,10 @@ function herd_postgresql_versions() {
     local check_file
     check_file=$(ls /Users/Shared/Herd/services/postgresql/*/bin/psql)
     for hpgv in $(dirname "$(dirname "$check_file")"); do basename "$hpgv"; done | xargs
+}
+
+function herd_postgresql_versions_running() {
+    local_postgres_pid_name_version_port | grep Herd | cut -d, -f3 | xargs
 }
 
 function macports_postgresql95_install() {
