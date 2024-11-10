@@ -57,28 +57,6 @@ export BAT_THEME="Dracula"
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
-# use 'fd' instead of 'find' for fzf file lookup
-export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
-
-alias cat="bat"
-alias sqlite="sqlite3"
-alias ":q"="exit"
-alias c="composer"
-alias a="php artisan"
-alias dcu="docker-compose up -d"
-alias dcd="docker-compose down"
-
-# Open in web browser
-browse() {
-    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
-    if [ ${#domain} -gt 0 ];
-    then
-        open http://$domain.test
-    else
-        open -a Firefox\ Developer\ Edition
-    fi
-}
-
 # Added by OrbStack: command-line tools and integration
 # Comment this line if you don't want it to be added again.
 source ~/.orbstack/shell/init.zsh 2>/dev/null || :
