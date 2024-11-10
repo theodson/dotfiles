@@ -45,13 +45,13 @@ export PATH="./vendor/bin:$PATH"
 
 # brew autocompletions
 # https://docs.brew.sh/Shell-Completion
-export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
+# export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
 
 # Use the terminal to enter GPG passphrase
-export GPG_TTY=$(tty)
+#export GPG_TTY=$(tty)
 
 # Use Dracula for the syntax highlighting theme
-export BAT_THEME="Dracula"
+#export BAT_THEME="Dracula"
 
 # VIM, not nano
 export VISUAL=vim
@@ -63,38 +63,60 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 
 [ -r $BASEDIR/postgres ] && source $BASEDIR/postgres || echo "No postgres script"
 
+# use 'fd' instead of 'find' for fzf file lookup
+#export FZF_DEFAULT_COMMAND="fd --type file --follow --no-ignore --hidden --exclude .git"
+
+#alias cat="bat"
+#alias sqlite="sqlite3"
+#alias ":q"="exit"
+#alias c="composer"
+#alias a="php artisan"
+#alias dcu="docker-compose up -d"
+#alias dcd="docker-compose down"
+
+# Open in web browser
+#browse() {
+#    domain=$(echo $PWD | sed "s=$HOME/Code==I" | sed "s=/.*==")
+#    if [ ${#domain} -gt 0 ];
+#    then
+#        open http://$domain.test
+#    else
+#        open -a Firefox\ Developer\ Edition
+#    fi
+#}
+
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
-source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-bindkey '^e' autosuggest-execute
-bindkey '^y' autosuggest-accept
+#source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+#bindkey '^e' autosuggest-execute
+#bindkey '^y' autosuggest-accept
 
 # Zsh syntax highlighting
 # https://github.com/zsh-users/zsh-syntax-highlighting
-source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+#source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # Command substring search (up / down arrows)
 # https://github.com/zsh-users/zsh-history-substring-search
-source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
-bindkey '^p' history-substring-search-up
-bindkey '^n' history-substring-search-down
+#source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+#bindkey '^p' history-substring-search-up
+#bindkey '^n' history-substring-search-down
 
 # z: jump around
 # https://github.com/rupa/z/
-source "$BREW_PREFIX/etc/profile.d/z.sh"
+#source "$BREW_PREFIX/etc/profile.d/z.sh"
 
 # fzf
 # https://github.com/junegunn/fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # "cd" by typing only the directory
-setopt autocd
+#setopt autocd
 
 # Setup completions
-autoload -Uz compinit
-compinit
+#autoload -Uz compinit
+#compinit
 
 # Set pure prompt
-autoload -U promptinit; promptinit
-prompt pure
+#autoload -U promptinit; promptinit
+#prompt pure
 
