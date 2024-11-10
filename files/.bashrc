@@ -64,6 +64,12 @@ if test -r "$PYENV_ROOT"; then
     eval "$(pyenv init -)" || echo "pyenv failed to initialise"
 fi
 
+if ! type python -V &>/dev/null; then
+    echo "No python found... installing latest version of Python"
+    pythonVersion=3.12.2
+    yes y | pyenv install "$pythonVersion" && pyenv global "$pythonVersion"
+fi
+
 # Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 if eval false; then
