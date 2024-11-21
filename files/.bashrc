@@ -37,31 +37,32 @@ unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 [ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
 
 # Add folder to search PATH if it exists
-for folder in $COMPOSER_HOME $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin; do
-    if test -e "${folder}"; then
-        echo $PATH | grep "$folder" &>/dev/null && true || export PATH="$PATH:$folder" # add path later in seach path if missing
-    fi
+for folder in $COMPOSER_HOME $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
+do
+	if test -e "${folder}"; then
+		echo $PATH | grep "$folder" &>/dev/null && true || export PATH="$PATH:$folder" # add path later in seach path if missing
+	fi
 done
 
 # Node Version Manager
 if test -s "/usr/local/opt/nvm/nvm.sh"; then
     mkdir -p "${NVM_HOME:-$HOME/.nvm}" || true
-    source "/usr/local/opt/nvm/nvm.sh" # This loads nvm
+    source "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
 
     if test -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm"; then
-        source "/usr/local/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
+        source "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
     fi
 fi
 
 # Jave Env - http://www.jenv.be/ - install multiple java environments
 if test -r "$HOME/.jenv"; then
-    eval "$(jenv init -)" || echo "jenv failed to initialise"
+	eval "$(jenv init -)" || echo "jenv failed to initialise"
 fi
 
 # Python Versions - https://github.com/pyenv/pyenv
 if test -r "$PYENV_ROOT"; then
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)" || echo "pyenv failed to initialise"
+    eval "$(pyenv init -)"|| echo "pyenv failed to initialise"
 fi
 
 if ! type python -V &>/dev/null; then

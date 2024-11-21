@@ -27,6 +27,7 @@ if test -f $HOME/.dotfile_lastrun; then
         echo 'Running PreInstall script ...'
         pushd $DOTFILES && bash preinstall && popd || true
         echo 'Done PreInstall.'
+#        echo '================================================================================'
     fi
 fi
 
@@ -54,6 +55,7 @@ echo '==========================================================================
 echo 'Linking dotfiles...'
 /bin/bash "$DOTFILES/link" || true
 echo 'Done linking dotfiles.'
+# echo '================================================================================'
 
 
 
@@ -76,6 +78,7 @@ echo 'Done installing, updating, and cleaning up brew dependencies.'
 echo '================================================================================'
 echo 'Installing and updating composer dependencies...'
 echo 'Done installing and updating composer dependencies.'
+#echo '================================================================================'
 
 
 # /bin/bash $DOTFILES/link
@@ -124,5 +127,6 @@ date > $HOME/.dotfile_lastrun
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
 
+echo -e "No longer support PHP 7.x natively in macOs... its too hard... reach for OrbStack machines! 🟣"
 
 
