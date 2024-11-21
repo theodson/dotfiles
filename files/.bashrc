@@ -43,16 +43,6 @@ for folder in $COMPOSER_HOME $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local
     fi
 done
 
-# Node Version Manager
-if test -s "/usr/local/opt/nvm/nvm.sh"; then
-    mkdir -p "${NVM_HOME:-$HOME/.nvm}" || true
-    source "/usr/local/opt/nvm/nvm.sh" # This loads nvm
-
-    if test -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm"; then
-        source "/usr/local/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
-    fi
-fi
-
 # Jave Env - http://www.jenv.be/ - install multiple java environments
 if test -r "$HOME/.jenv"; then
     eval "$(jenv init -)" || echo "jenv failed to initialise"
@@ -70,7 +60,7 @@ if ! type python -V &>/dev/null; then
     yes y | pyenv install "$pythonVersion" && pyenv global "$pythonVersion"
 fi
 
-# Override default macOs Ruby with Brew's version.
+# Ruby Env - Override default macOs Ruby with Brew's version.
 export PATH="/usr/local/opt/ruby/bin:$PATH"
 if eval false; then
     ## For compilers to find ruby you may need to set:
@@ -78,6 +68,14 @@ if eval false; then
     export CPPFLAGS="-I/usr/local/opt/ruby/include"
     ## For pkg-config to find ruby you may need to set:
     export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+fi
+
+# Node Version Manager - Auto Complete
+# Duplicated NVM setup but required when using `herd node_isolate` as that command isn't aware of .bash_profile setup (even though it populates it!)!
+export NVM_DIR="${NVM_DIR:-/Users/theodickinson/Library/Application Support/Herd/config/nvm}" # default to Herd's NVM if not set.
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+if test ! -z "${NVM_DIR}"; then
+    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 fi
 
 # ===========================================================================
@@ -89,10 +87,5 @@ fi
 # install brew bash (v5) and nosort is supported.
 [ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion 2>&1  | sed '/^$/d'
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh" | sed '/^$/d'
-
-# Node Version Manager - Auto Complete
-if test ! -z "${NVM_DIR}"; then
-    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion" # This loads nvm bash_completion
-fi
 
 SECRETS_PATH=

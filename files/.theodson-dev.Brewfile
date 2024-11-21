@@ -26,7 +26,7 @@ brew 'curlie'
 brew 'duf'
 brew 'dust'
 brew 'gping'
-brew 'gtop'
+# brew 'gtop' # requires node
 brew 'ripgrep'
 
 # cask 'launchcontrol'

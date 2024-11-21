@@ -86,6 +86,10 @@ if test -d "$PNPM_HOME"; then
     export PATH="$PNPM_HOME:$PATH"
 fi
 
+
+# Prefer Herd's NVM
+export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
+
 # Node Version Manager
 if test -d "$HOME/.nvm"; then
     export NVM_DIR="$HOME/.nvm"
