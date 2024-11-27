@@ -178,55 +178,6 @@ function d() {
 }
 
 function po() {
-	#
-	# Function to "project open" (was op but OnePassword script prefers that!) open specified project in projects folder
-	#
-
-	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
-	rootfolder="${WORKSPACE:-$HOME/Code}"
-	WORKSPACE=$(echo -e "${WORKSPACE}\n${HOME}/Code\n${HOME}/Workspace\n${HOME}/Projects" | sort | uniq | fzf)
-	rootfolder="${WORKSPACE}"
-
-	# echo "ENV(WORKSPACE:${WORKSPACE})"
-
-	found=0 # 0 = Not Found; 1 = Found
-	project="$1" # Name of project given
-	repo="$2" # Name of repository given
-	count=0 # Array counter
-
-	# Following is in order of preference
-	if [[ $repo != "" ]]; then # Change to project repo
-		directories[$count]=${rootfolder}/${project}/${repo}; ((count++));
-		directories[$count]=${rootfolder}/${project}*/${repo}*; ((count++));
-		directories[$count]=${rootfolder}/${project}*/bgdevlab-${repo}; ((count++));
-	fi
-
-	# Usually webapp is the common repo if no repo was specified
-	directories[$count]=${rootfolder}/${project}/webapp; ((count++));
-	directories[$count]=${rootfolder}/${project}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}/scratch; ((count++));
-	directories[$count]=${rootfolder}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}*; ((count++));
-
-	# Look for possible project folders and change into it if one found.
-	for dir in ${directories[@]}; do
-		if [[ -d $dir ]]; then
-			found=1
-			pushd $dir &>/dev/null
-			echo -e "Changed directory to: ${GREEN}'$dir'$NC"
-			break
-		fi
-	done
-
-	# Was folder changed?
-	if [[ $found == 0 ]]; then
-		echo -e "${RED}Project directory not found.$NC"
-	fi
-}
-
-
-
-function po () {
     local items
 
     if test $# -gt 0; then
@@ -251,7 +202,7 @@ function po () {
         fi
 
     else
-        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \))
+        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) 2>/dev/null)
     fi
 
     # folder with quotes break xargs
