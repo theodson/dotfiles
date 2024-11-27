@@ -174,18 +174,7 @@ function what_port() {
 }
 
 function d() {
-
-    if [[ $# -eq 1 ]]; then
-        selected=$1
-    else
-        rootfolder="${WORKSPACE:-$HOME/Documents}"
-        items="$(find $rootfolder -maxdepth 1 -mindepth 1 \( -type l -o -type d \))"
-        selected="$(echo "$items" | fzf)"
-    fi
-
-    dirname="$(basename "$selected" | sed 's/\./_/g')"
-
-    cd "$selected"
+    po $@
 }
 
 function po() {
@@ -194,7 +183,7 @@ function po() {
 	#
 
 	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
-	rootfolder="${WORKSPACE:-$HOME/code}"
+	rootfolder="${WORKSPACE:-$HOME/Code}"
 	WORKSPACE=$(echo -e "${WORKSPACE}\n${HOME}/Code\n${HOME}/Workspace\n${HOME}/Projects" | sort | uniq | fzf)
 	rootfolder="${WORKSPACE}"
 
@@ -233,6 +222,46 @@ function po() {
 	if [[ $found == 0 ]]; then
 		echo -e "${RED}Project directory not found.$NC"
 	fi
+}
+
+
+
+function po () {
+    local items
+
+    if test $# -gt 0; then
+        wildmatch1='*';
+        wildmatch2='*';
+
+        local folder1="$1"
+        if echo "$1" | grep '/$' &>/dev/null; then
+            wildmatch1=''
+            folder1=$(echo "$folder1" | tr -d '/')
+        fi
+
+        if test $# -eq 1; then
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}" 2>/dev/null)
+        else
+            local folder2="$2"
+            if echo "$2" | grep '/$' &>/dev/null; then
+                wildmatch2=''
+                folder2=$(echo "$folder2" | tr -d '/')
+            fi
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}/*${folder2}${wildmatch2}" 2>/dev/null)
+        fi
+
+    else
+        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \))
+    fi
+
+    # folder with quotes break xargs
+    local parsed=$(echo "$items" | tr -d '"' | tr -d "'")
+    if test $(echo "$parsed" | xargs | wc -l) -gt 0; then
+        selected="$(echo "$items"  | fzf)"
+	    cd "$selected"
+    else
+        echo "nothing found"
+    fi
 }
 
 function npmlist() {
