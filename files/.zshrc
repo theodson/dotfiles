@@ -114,23 +114,23 @@ export HERD_PHP_81_INI_SCAN_DIR="/Users/theodickinson/Library/Application Suppor
 
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
-#source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+#source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/dev/null
 #bindkey '^e' autosuggest-execute
 #bindkey '^y' autosuggest-accept
 
 # Zsh syntax highlighting
 # https://github.com/zsh-users/zsh-syntax-highlighting
-#source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+#source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" 2>/dev/null
 
 # Command substring search (up / down arrows)
 # https://github.com/zsh-users/zsh-history-substring-search
-#source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+#source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh" 2>/dev/null
 #bindkey '^p' history-substring-search-up
 #bindkey '^n' history-substring-search-down
 
 # z: jump around
 # https://github.com/rupa/z/
-#source "$BREW_PREFIX/etc/profile.d/z.sh"
+#source "$BREW_PREFIX/etc/profile.d/z.sh" 2>/dev/null
 
 # fzf
 # https://github.com/junegunn/fzf
