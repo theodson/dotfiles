@@ -8,6 +8,8 @@ alias ll='ls -FGlAhp'
 # color=always causes more grief than its worth when pipelining commands
 # alias grep='grep --color=always'
 
+#macOs
+alias serial_number="system_profiler SPHardwareDataType -json | jq -r '.SPHardwareDataType[].serial_number'"
 
 # Network
 alias whatport='what_port'
@@ -83,9 +85,9 @@ alias pstorm='phpstorm'
 alias diff_with_phpstorm='phpstorm diff'
 alias smartgit="launchSmartGit $1"
 
-
 # Docker
 alias dock_prune='docker container prune'
+
 
 
 # Vagrant
@@ -109,15 +111,15 @@ alias pn='pnpm'
 
 
 # PHP Laravel Valet
-alias sphp70='switch_php 7.0 prompt'
-alias sphp72='switch_php 7.2 prompt'
-alias sphp73='switch_php 7.3 prompt'
-alias sphp74='switch_php 7.4 prompt'
-alias sphp80='switch_php 8.0 prompt'
-alias sphp81='switch_php 8.1 prompt'
-alias sphp82='switch_php 8.2 prompt'
-alias sphp83='switch_php 8.3 prompt'
-alias sphp84='switch_php 8.4 prompt'
+# alias sphp70='switch_php 7.0 prompt'
+# alias sphp72='switch_php 7.2 prompt'
+# alias sphp73='switch_php 7.3 prompt'
+# alias sphp74='switch_php 7.4 prompt'
+# alias sphp80='switch_php 8.0 prompt'
+# alias sphp81='switch_php 8.1 prompt'
+# alias sphp82='switch_php 8.2 prompt'
+# alias sphp83='switch_php 8.3 prompt'
+# alias sphp84='switch_php 8.4 prompt'
 
 # alias vlsi='valet link && valet secure && valet isolate'
 
@@ -174,16 +176,4 @@ alias dep='vendor/bin/dep'                    # no global install - (composer 2 
 
 alias modern-unix='echo bat cheat tldr lsd dog curlie duf dust gping mcfly gtop rg'
 alias modern-unixv="for p in \$(modern-unix | cut -d'-' -f1); do printf \"%-10s \$(brew info \$p | sed -n '2p')\n\" \$p ; done"
-
-# postgres
-alias pgdbs="psql -l -t | cut -d'|' -f1 | egrep -v 'postgres|template' | xargs"
-# mac ports aliases - see sudo port install postgresql95-server
-alias pg95_start='sudo port load postgresql95-server'
-alias pg95_stop='sudo port unload postgresql95-server'
-alias pg95_restart='sudo port reload postgresql95-server'
-# use lunchy ( the launchctl helper ) to control launchd mac port service
-alias pg95_start='sudo lunchy start org.macports.postgresql95-server'
-alias pg95_stop='sudo lunchy stop org.macports.postgresql95-server'
-alias pg95_restart='sudo lunchy restart org.macports.postgresql95-server'
-alias pg95_status='sudo lunchy status org.macports.postgresql95-server'
 

@@ -14,7 +14,7 @@ if test -t 1; then
 fi
 
 # macOS sed fix - https://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux
-sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
+# sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
 # usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
 
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
@@ -137,17 +137,9 @@ function kill_port () {
 }
 
 
-function postgres_dev_init() {
-    # after fresh install of postgres - setup basics
-    if test ! -z "$PGUSER"; then
-        createuser -s ${$PGUSER}
-    fi
-}
-
-
 function what_port() {
 
-	# macOs - what app is running on a port
+	# macOS - what app is running on a port
 
 	if [ $# -lt 1 ]; then
 		echo "usage: PORT";
@@ -168,7 +160,7 @@ function what_port() {
 	    echo "PORT '$port' on localhost has a process listening"
 
         # find ps for port
-	    pids=$(netstat -anv | awk '{print $4","$9}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
+	    pids=$(netstat -anv | awk '{print $4","$11}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
         # find parent id (exclude 0 or 1 for launchd)
 	    ppids=$(ps -o ppid -p $pids | tail -n +2 | grep -v 1 | xargs || true)
 	    #
@@ -182,63 +174,45 @@ function what_port() {
 }
 
 function d() {
-
-    if [[ $# -eq 1 ]]; then
-        selected=$1
-    else
-        rootfolder="${WORKSPACE:-$HOME/Documents}"
-        items="$(find $rootfolder -maxdepth 1 -mindepth 1 \( -type l -o -type d \))"
-        selected="$(echo "$items" | fzf)"
-    fi
-
-    dirname="$(basename "$selected" | sed 's/\./_/g')"
-
-    cd "$selected"
+    po $@
 }
 
 function po() {
-	#
-	# Function to "project open" (was op but OnePassword script prefers that!) open specified project in projects folder
-	#
+    local items
 
-	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
-	rootfolder="${WORKSPACE:-$HOME/code}"
+    if test $# -gt 0; then
+        wildmatch1='*';
+        wildmatch2='*';
 
-	# echo "ENV(WORKSPACE:${WORKSPACE})"
+        local folder1="$1"
+        if echo "$1" | grep '/$' &>/dev/null; then
+            wildmatch1=''
+            folder1=$(echo "$folder1" | tr -d '/')
+        fi
 
-	found=0 # 0 = Not Found; 1 = Found
-	project="$1" # Name of project given
-	repo="$2" # Name of repository given
-	count=0 # Array counter
+        if test $# -eq 1; then
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}" 2>/dev/null)
+        else
+            local folder2="$2"
+            if echo "$2" | grep '/$' &>/dev/null; then
+                wildmatch2=''
+                folder2=$(echo "$folder2" | tr -d '/')
+            fi
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}/*${folder2}${wildmatch2}" 2>/dev/null)
+        fi
 
-	# Following is in order of preference
-	if [[ $repo != "" ]]; then # Change to project repo
-		directories[$count]=${rootfolder}/${project}/${repo}; ((count++));
-		directories[$count]=${rootfolder}/${project}*/${repo}*; ((count++));
-		directories[$count]=${rootfolder}/${project}*/bgdevlab-${repo}; ((count++));
-	fi
+    else
+        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) 2>/dev/null)
+    fi
 
-	# Usually webapp is the common repo if no repo was specified
-	directories[$count]=${rootfolder}/${project}/webapp; ((count++));
-	directories[$count]=${rootfolder}/${project}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}/scratch; ((count++));
-	directories[$count]=${rootfolder}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}*; ((count++));
-
-	# Look for possible project folders and change into it if one found.
-	for dir in ${directories[@]}; do
-		if [[ -d $dir ]]; then
-			found=1
-			pushd $dir &>/dev/null
-			echo -e "Changed directory to: ${GREEN}'$dir'$NC"
-			break
-		fi
-	done
-
-	# Was folder changed?
-	if [[ $found == 0 ]]; then
-		echo -e "${RED}Project directory not found.$NC"
-	fi
+    # folder with quotes break xargs
+    local parsed=$(echo "$items" | tr -d '"' | tr -d "'")
+    if test $(echo "$parsed" | xargs | wc -l) -gt 0; then
+        selected="$(echo "$items"  | fzf)"
+	    cd "$selected"
+    else
+        echo "nothing found"
+    fi
 }
 
 function npmlist() {
@@ -454,9 +428,11 @@ _artisan() {
     COMPREPLY=($(compgen -W "$COMMANDS" -- "${COMP_WORDS[COMP_CWORD]}"))
     return 0
 }
-complete -F _artisan art
-complete -F _artisan artisan
 
+if type -p complete &>/dev/null; then
+    complete -F _artisan art
+    complete -F _artisan artisan
+fi
 
 # This file is part of the Symfony package.
 #
@@ -471,7 +447,7 @@ _sf_dep() {
     local sf_cmd="${COMP_WORDS[0]}"
 
     # for an alias, get the real script behind it
-    sf_cmd_type=$(type -t $sf_cmd)
+    sf_cmd_type=$(type $sf_cmd)
     if [[ $sf_cmd_type == "alias" ]]; then
         sf_cmd=$(alias $sf_cmd | sed -E "s/alias $sf_cmd='(.*)'/\1/")
     elif [[ $sf_cmd_type == "file" ]]; then
@@ -541,8 +517,9 @@ _sf_dep() {
     fi
 }
 
-complete -F _sf_dep dep
-
+if type -p complete &>/dev/null; then
+    complete -F _sf_dep dep
+fi
 
 function imagick_test() {
 
@@ -551,10 +528,10 @@ function imagick_test() {
         return 1
     fi
 
-    [ type -p php &>/dev/null ] || {
+    if ! type -p php &>/dev/null; then
         echo "cannot find php"
         return 1
-    }
+    fi
 
     outputfile=$1
     php <<"IMAGICK_TEST" >$outputfile
@@ -631,7 +608,7 @@ function launchSmartGit() {
 
 	pushd "$dir" 1>/dev/null
 
-	if [ git rev-parse --is-inside-work-tree &>/dev/null ]; then
+	if git rev-parse --is-inside-work-tree &>/dev/null; then
 		local app="/Applications/SmartGit.app/Contents/MacOS/SmartGit"
 		nohup "${app}" --log "${1}" &>/dev/null &
 	else
@@ -802,295 +779,6 @@ function clear_dns_cache() {
     }
 }
 
-function dbngin_json() {
-    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
-        return 1
-    fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o -) |jq
-}
-
-function dbngin_versions() {
-    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
-        return 1
-    fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq '.[]|select(.Type=="PostgreSQL")|.Version' | xargs)
-}
-
-function dbngin_path() {
-    [ $# -ne 1 ] && {
-        echo "Usage: PG_VERSION"
-        return 1
-    }
-    ver=$1
-    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
-        return 1
-    fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Binaries" | xargs)
-}
-
-function dbngin_port() {
-    [ $# -ne 1 ] && {
-        echo "Usage: PG_VERSION"
-        return 1
-    }
-    ver=$1
-    if [ ! -e "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" ]; then
-        return 1
-    fi
-    echo $(plutil -convert json  "$HOME/Library/Application Support/com.tinyapp.DBngin/Data/DBEngines.plist" -o - | jq ".[]|select(.Version==\"$ver\")|.Port" | xargs)
-}
-
-function pghashlib_install() {
-
-    PG_PORT="${PG_PORT:-5432}"
-
-    if [ -n "$(dbngin_versions)" ]; then
-        echo "DBngin PostgreSQL appears to be installed, the following versions are available ($(dbngin_versions))."
-        read -p "Install against a DBngin PostgreSQL version or continue with default path (Enter for default)" dbnginchoice
-        if [ -n "$dbnginchoice" ]; then
-            echo "Temporarily setting PATH and PG_PORT for DBngin $dbnginchoice".
-            export PATH="$(dbngin_path $dbnginchoice)/bin:$PATH"
-            export PG_PORT=$(dbngin_port $dbnginchoice)
-        else
-            echo "Continuing on with default postgres version"
-        fi
-    fi
-
-
-    # alternative
-    #   - https://github.com/Cyan4973/xxHash
-    #   - https://github.com/hatarist/pg_xxhash
-    #   - https://github.com/fboulnois/pg_uuidv7
-    #   - https://github.com/petere/pgvihash
-
-    # extensions
-    # https://gist.github.com/joelonsql/e5aa27f8cc9bd22b8999b7de8aee9d47
-    # https://docs.digitalocean.com/products/databases/postgresql/details/supported-extensions/
-    #
-
-    HOMEBREW_NO_INSTALL_CLEANUP=true  HOMEBREW_NO_INSTALL_UPGRADE=true \
-    brew install docutils # provides rst2html command
-    pushd /tmp && \
-    wget --quiet https://github.com/markokr/pghashlib/archive/master.zip -O pghashlib.zip && \
-    echo "unzip" && unzip -o pghashlib.zip &>/dev/null && \
-    pushd pghashlib-master && \
-    echo "hashlib install" && \
-    if [ -e "$(find $(pg_config --includedir) -name 'varatt.h')" ]; then
-        # postgres 16+ fails for phhashlib
-        # build failure on postgres16 - https://stackoverflow.com/questions/77617997/how-to-set-varsize-and-set-varsize-in-postgresql-16
-        # append after match #include <fmgr.h> - src/pghashlib.h
-        line=$(grep -n '#include <fmgr.h>' src/pghashlib.h | cut -d: -f1)
-        sed -i '' "${line}s/^/#include <varatt.h>\n/" src/pghashlib.h
-    fi &&
-    echo "make" && make &>/dev/null && \
-    env | grep -Ei 'PG_' && \
-    echo "make install" && {
-        touch $(pg_config --libdir)/test ||
-        sudo make install &>/dev/null &&
-        make install &>/dev/null
-    } && \
-    echo "hashlib done"
-
-    popd && \
-    echo "Tidyup hashlib" && \
-    [ -e pghashlib-master ] && rm -rf pghashlib-master && \
-    echo done
-    # rm -f pghashlib.zip &>/dev/null || true
-
-    popd
-
-    psql -U $(whoami) -p $PG_PORT -c "create role postgres superuser login password '';" &>/dev/null || true
-    psql -U postgres -p $PG_PORT -c "drop extension hashlib" &>/dev/null || true
-
-    psql -U postgres -p $PG_PORT -c "create extension hashlib" && \
-    [ $(psql -U postgres -p $PG_PORT -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | head -1 | awk '{print $1}') == '069b3c88000000000000000000000000' ] \
-        && echo 'pghashlib installed correctly' \
-        || 'pghashlib not installed correctly'
-    psql -U postgres -p $PG_PORT -c '\dx'
-
-}
-
-function fix_postgres() {
-    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
-
-    brew services stop postgresql@${PG_VERSION};
-    mkdir -p /usr/local/var/postgresql@${PG_VERSION}/{{pg_commit_ts,pg_dynshmem,pg_replslot,pg_serial,pg_snapshots,pg_stat,pg_stat_tmp,pg_tblspc,pg_twophase},pg_logical/{mappings,snapshots}}
-    rm -f /usr/local/var/postgresql@${PG_VERSION}/postmaster.pid &>/dev/null
-    pgpids="$(ps ax  | grep 'postgre[s]ql\@' | awk '{print $1}')"
-    [ -z "${pgpids}" ] && echo "NO postgres IDS found." || /bin/kill -SIGHUP "$pgpids" &>/dev/null
-    brew services start postgresql@${PG_VERSION}
-    sleep 2
-    pghashlib_install
-    psql -l
-}
-
-function switch_postgres() {
-    #
-    # This switch postgresql assumes only 1 version of Postgres can be running and its on port 5432.
-    #
-    local PG_VERSION="${1:-${PGVERSION:-9.5}}"
-    PG_VERSION_NO_DOT=$(echo "${PG_VERSION}"|tr -d '.')
-    #
-    # MacPorts Postgres
-    #
-    if [ -z "$PG_MATCHED" ] && [ -e "/opt/local/lib/postgresql${PG_VERSION_NO_DOT}" ]; then
-        pgmacport_versions=$(find /opt/local/lib/postgresql* -maxdepth 0 | sed 's#/opt/local/lib/postgresql##g'| sort -n)
-        echo "pgmacport_versions=$pgmacport_versions"
-        if ! echo "$pgmacport_versions" | grep $PG_VERSION_NO_DOT; then
-            echo "MacPorts Postgres $PG_VERSION is not installed"
-        else
-            PG_PGAPP=1
-            PG_BINPATH="/opt/local/lib/postgresql${PG_VERSION_NO_DOT}/bin"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "MacPorts Postgres $PG_VERSION is installed"
-            else
-                echo "MacPorts Postgres $PG_VERSION is not installed"
-                PG_BINPATH=''
-            fi
-        fi
-    else
-        echo "MacPorts Postgres version not found"
-    fi
-
-    ##
-    ## EDB Postgres !!! THIS 9.5 package in 2024 doesnt work
-    ##
-    #if [ -z "$PG_MATCHED" ] && [ -e /Library/PostgreSQL ]; then
-    #    pgedb_versions=$(find /Library/PostgreSQL -mindepth 1 -maxdepth 1 | sed 's#/Library/PostgreSQL/##g'| grep -v 'latest' | sort -n)
-    #    if ! echo "$pgedb_versions" | grep $PG_VERSION; then
-    #        echo "EDB Postgres $PG_VERSION is not installed"
-    #    else
-    #        PG_PGAPP=1
-    #        PG_VERSION=$(for version in $pgedb_versions; do echo "$version" | grep $PG_VERSION; done)
-    #        PG_BINPATH="/Library/PostgreSQL/$PG_VERSION/bin"
-    #        if [ -e "$PG_BINPATH" ]; then
-    #            PG_MATCHED=1
-    #            echo "EDB Postgres $PG_VERSION is installed"
-    #        else
-    #            echo "EDB Postgres $PG_VERSION is not installed"
-    #            PG_BINPATH=''
-    #        fi
-    #    fi
-    #else
-    #    echo "EDB Postgres version not found"
-    #fi
-
-    # #
-    # # Postgres.app
-    # # Can't install extensions with the version that supports Postgres v9.5!
-    # #
-    # if [ -z "$PG_MATCHED" ] && [ -e /Applications/Postgres.app/Contents/Versions ]; then
-    #     pgapp_versions=$(find /Applications/Postgres.app/Contents/Versions -mindepth 1 -maxdepth 1 | sed 's#/Applications/Postgres.app/Contents/Versions/##g'| grep -v 'latest' | sort -n)
-    #     if ! echo "$pgapp_versions" | grep $PG_VERSION; then
-    #         echo "Postgres $PG_VERSION is not installed via Postres.app "
-    #     else
-    #         PG_PGAPP=1
-    #         PG_VERSION=$(for version in $pgapp_versions; do echo "$version" | grep $PG_VERSION; done)
-    #         PG_BINPATH="/Applications/Postgres.app/Contents/Versions/$PG_VERSION/bin"
-    #         if [ -e "$PG_BINPATH" ]; then
-    #             PG_MATCHED=1
-    #             echo "Postgres.app $PG_VERSION is installed"
-    #         else
-    #             echo "Postgres.app $PG_VERSION is not installed"
-    #             PG_BINPATH=''
-    #         fi
-    #     fi
-    # else
-    #     echo "Postgres.app not installed"
-    # fi
-
-    #
-    # DBNgin
-    #
-    pgdbng_versions=$(dbngin_versions)
-    if [ -z "$PG_MATCHED" ] && [ -n "${pgdbng_versions}" ]; then
-        # match nearest maj.min.patch for DBngin
-        PG_VERSION=$(for version in $pgdbng_versions; do echo "$version" | grep $PG_VERSION; done)
-
-        if ! echo "$pgdbng_versions" | grep -q $PG_VERSION; then
-            echo "DBngin Postgres $PG_VERSION is not installed"
-        else
-            PG_DBNGIN=1
-            # match to closest maj.min.patch version
-            PGVERSION=$(for v in $(dbngin_versions); do echo $v | grep '^11'; done)
-            PG_BINPATH="$(dbngin_path $PGVERSION)/bin"
-            export PG_PORT="$(dbngin_port $PGVERSION)"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "DBngin Postgres $PG_VERSION is installed, on port $PG_PORT"
-            else
-                echo "DBngin Postgres $PG_VERSION is not installed"
-                PG_BINPATH=''
-            fi
-        fi
-        # can we stop DBNgin from the commandline ??
-        for version in $pgdbng_versions; do
-            echo "TODO - stop DBngin Postgres $version" > /dev/null
-        done
-        #echo "TODO - Start DBNgin from the commandline"
-    else
-        echo "DBngin Postgres version not found"
-    fi
-
-    #
-    # Homebrew postgresql
-    #
-    pgbrew_versions=$(find /usr/local/opt -path '*/postgresql@*' | sed 's#/usr/local/opt/##g')
-    if [ -z "$PG_MATCHED" ] && [ -n "${pgbrew_versions}" ]; then
-        if ! echo "$pgbrew_versions" | grep $PG_VERSION; then
-            echo "Postgres $PG_VERSION is not installed via brew."
-        else
-            PG_BREW=1
-            PG_BINPATH="/usr/local/opt/postgresql@${PGVERSION}/bin"
-            if [ -e "$PG_BINPATH" ]; then
-                PG_MATCHED=1
-                echo "Postgres $PG_VERSION is installed via Brew "
-            else
-                echo "Postgres $PG_VERSION is not installed via Brew "
-                PG_BINPATH=''
-            fi
-        fi
-        # remove requested version for all versions - lets not stop it if its already running.
-        #if [ false ]; then
-        #    echo "Skipping stopping services for now"
-        #    versions=$(echo $pgbrew_versions | sed "s#postgresql@$PG_VERSION##g")
-        #    for version in $pgbrew_versions; do
-        #        brew services stop $version &>/dev/null
-        #        # start postgres depending on how it was installed.
-        #    done
-        #    brew services start postgresql@${PG_VERSION}
-        #fi
-    fi
-
-    unset PG_MATCHED
-
-    sed -i '' "/SWITCHED_PGVERSION/d" $HOME/.versions
-    echo "SWITCHED_PGVERSION=$PG_VERSION # $(date)" >> $HOME/.versions
-
-    PGVERSION=$PG_VERSION
-    export PGVERSION
-
-    # clean and update PATH (check brew installed Postgres)
-    CLEANED_PATH="$(echo $PATH | sed -E 's#/usr/local/opt/postgresql@[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check DBNgin installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Users/Shared/DBngin/postgresql/[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check Postgres.app installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Applications/Postgres.app/Contents/Versions/[0-9.]*/bin[/]*[:]*##g')"
-    # clean and update PATH (check EDBPostgres installed Postgres)
-    CLEANED_PATH="$(echo $CLEANED_PATH | sed -E 's#/Library/PostgreSQL/[0-9.]*/bin[/]*[:]*##g')"
-    export PATH="$CLEANED_PATH"
-
-    # set environment as per brew info for the service
-    if [ -e "${PG_BINPATH}"/pg_config ]; then
-        export PATH="$PG_BINPATH:$PATH"
-        export LDFLAGS="$($PG_BINPATH/pg_config --ldflags)"
-        export CPPFLAGS="$($PG_BINPATH/pg_config --cppflags)"
-    fi
-
-    echo "PATH updated for $PG_VERSION: $PG_BINPATH"
-
-}
 
 function rebuildOpenWith() {
     /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
@@ -1219,4 +907,15 @@ function git-grouped-log_original () {
 
     echo
   done 9< <(git log --no-merges --format=$'%cd %cn' --date=short | sort --unique --reverse)
+}
+
+function o() {
+    if [[ $# -eq 1 ]]; then
+        selected=$1
+    else
+        list="$(orbctl list)"
+        selected="$(echo "$list" | fzf)"
+    fi
+    machine="$(basename "$selected" | sed 's/ .*//')"
+    orb -m "$machine"
 }

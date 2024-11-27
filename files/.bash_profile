@@ -7,43 +7,45 @@
 #   https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/
 #
 
-## call herdUnloadENV as Laravel Herd appends its setup to .bashrc when Herd is rherdUnloadENV
-## we want to opt into "herd" as and when required otherwise it breaks our "delicate" valet and php-7.0 setup.
-#type -p herdUnloadENV && herdUnloadENV
-
 # Added by OrbStack: command-line tools and integration
 # Comment this line if you don't want it to be added again.
 source ~/.orbstack/shell/init.bash 2>/dev/null || :
 
 
-# Herd injected NVM configuration
+# Herd injected NVM configuration (always automatically added by Herd to .bash_profile)
 export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
+if [ ! -e "$NVM_DIR" ]; then
+    unset NVM_DIR
+fi
 
-# Herd injected PHP binary.
-export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
-
-
-# Herd injected PHP 8.3 configuration.
-export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+# Node Version Manager - Auto Complete
+if test ! -z "${NVM_DIR}"; then
+    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+fi
 
 
 # Herd injected PHP 7.4 configuration.
 export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
 
 
-# Herd injected PHP 8.4 configuration.
-export HERD_PHP_84_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/84/"
+# Herd injected PHP 8.1 configuration.
+export HERD_PHP_81_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/81/"
 
 
 # Herd injected PHP 8.2 configuration.
 export HERD_PHP_82_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/82/"
 
 
-# Herd injected PHP 8.1 configuration.
-export HERD_PHP_81_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/81/"
+# Herd injected PHP 8.3 configuration.
+export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/84/"
 
 
 # Herd injected PHP binary.
 export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
+

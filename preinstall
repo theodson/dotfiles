@@ -7,7 +7,7 @@
 #
 # Typically, used prior to running dotfiles/link or dotfiles/install
 #
-# WARNING: don't run this if you HOME directory has spaces!! Not tested in that scenario!
+# WARNING: don't run this if your HOME directory has spaces!! Not tested in that scenario!
 #
 
 function archive_existing_dotfiles() {
@@ -101,6 +101,10 @@ function macappstore_bundle_existing() {
 #
 # for reference a keep safe
 #
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "${BASEDIR}"
+cd "${BASEDIR}" ||:;
 
 datepart=$(date +"%Y%m%d_%H%M%S")
 mkdir -p $HOME/.predotfiles
