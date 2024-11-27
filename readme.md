@@ -15,7 +15,7 @@ Fork the repository and make it your own!
 ```bash
 # change reponame to your forked repo
 
-cd $HOME && git clone https://github.com/theodson/dotfiles.git 
+git clone https://github.com/theodson/dotfiles.git 
 ```
 
 
@@ -39,7 +39,7 @@ brew update
   `preinstall` archives some existing dotfiles... 
 
 ```
-pushd $HOME/dotfiles && 
+pushd dotfiles && 
 bash preinstall 
 popd
 ```
@@ -60,7 +60,13 @@ and change to your liking... You'll probably want to **change these files** once
 
 - `dotfiles/files/.gitconfig`
 - `dotfiles/files/.Brewfile`
-- `dotfiles/switch_php` function `composer_global_install()` to specify php version specific installs (*a default set exists*)
+
+### `switch_php`
+- The `switch_php` script and functions is on _**'reduced work duty'**_ as I'm taking the approach of relying on two tools, **time will tell**!.
+  - Herd for PHP-8.0+
+  - OrbStack for legacy PHP-7
+> So `dotfiles/switch_php` script and related functions are still in the repo but not included automatically.
+
 
 
 
@@ -137,29 +143,6 @@ Sometimes this breaks php/valet - see troubleshooting below.
 
 Lets face it, its likely, brew changes and constant WIP...!
 
-## Valet - Php breaks 
-
-If our custom **`switch_php`** fails to work, try this sequence of tasks.
-
-> These functions all exist in `dotfiles/files/switch_php` ( loaded by `.bashrc`)
-
-```
-php_uninstall
-php_uninstall # yes twice
-
-brew doctor
-
-source dotfiles/install
-
-php_install 8.1
-```
-
-```
-php_install 7.0
-```
-
-
-
 ## How to add MacAppStore Apps 
 
 Example search for WhatsApp reveals an MacAppStore ID
@@ -185,10 +168,10 @@ Notes:
 
 ## Update my Brewfile with my Apps - how to ?
 
-In summary, you should compare your generated `$HOME/predotfiles.Brewfile` file with the `dotfiles/files/.Brewfile` and to determine any new `mas` entries review the `$HOME/predotfiles.MacAppStore_list` list of applications. 
+In summary, you should compare your generated `$HOME/predotfiles.Brewfile` file with the `dotfiles/files/.Brewfile` 
+and to determine any new `mas` entries review the `$HOME/predotfiles.MacAppStore_list` list of applications. 
 
 See Troubleshooting for some help of using the `mas` command and searching for Apps.
-
 
 
 # ToDo
