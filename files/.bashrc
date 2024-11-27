@@ -71,6 +71,14 @@ if eval false; then
     export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
 fi
 
+# Node Version Manager - Auto Complete
+# Duplicated NVM setup but required when using `herd node_isolate` as that command isn't aware of .bash_profile setup (even though it populates it!)!
+export NVM_DIR="${NVM_DIR:-/Users/theodickinson/Library/Application Support/Herd/config/nvm}" # default to Herd's NVM if not set.
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+if test ! -z "${NVM_DIR}"; then
+    [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+fi
+
 # ===========================================================================
 #		Auto Complete
 

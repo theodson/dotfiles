@@ -99,38 +99,50 @@ export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Suppor
 export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
 
 
-# Herd injected PHP 8.4 configuration.
-export HERD_PHP_84_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/84/"
-
-
-# Herd injected PHP 8.2 configuration.
-export HERD_PHP_82_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/82/"
+# Herd injected PHP 7.4 configuration.
+export HERD_PHP_74_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/74/"
 
 
 # Herd injected PHP 8.1 configuration.
 export HERD_PHP_81_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/81/"
 
 
+# Herd injected PHP 8.2 configuration.
+export HERD_PHP_82_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/82/"
+
+
+# Herd injected PHP 8.3 configuration.
+export HERD_PHP_83_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/83/"
+
+
+# Herd injected PHP 8.4 configuration.
+export HERD_PHP_84_INI_SCAN_DIR="/Users/theodickinson/Library/Application Support/Herd/config/php/84/"
+
+
+# Herd injected PHP binary.
+export PATH="/Users/theodickinson/Library/Application Support/Herd/bin/":$PATH
+
+
 
 # Zsh autocompletions
 # https://github.com/zsh-users/zsh-autosuggestions
-source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/dev/null
-bindkey '^e' autosuggest-execute
-bindkey '^y' autosuggest-accept
+#source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" 2>/dev/null
+#bindkey '^e' autosuggest-execute
+#bindkey '^y' autosuggest-accept
 
 # Zsh syntax highlighting
 # https://github.com/zsh-users/zsh-syntax-highlighting
-source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" 2>/dev/null
+#source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" 2>/dev/null
 
 # Command substring search (up / down arrows)
 # https://github.com/zsh-users/zsh-history-substring-search
-source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh" 2>/dev/null
-bindkey '^p' history-substring-search-up
-bindkey '^n' history-substring-search-down
+#source "$BREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh" 2>/dev/null
+#bindkey '^p' history-substring-search-up
+#bindkey '^n' history-substring-search-down
 
 # z: jump around
 # https://github.com/rupa/z/
-source "$BREW_PREFIX/etc/profile.d/z.sh" 2>/dev/null
+#source "$BREW_PREFIX/etc/profile.d/z.sh" 2>/dev/null
 
 # fzf
 # https://github.com/junegunn/fzf
