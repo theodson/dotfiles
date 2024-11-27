@@ -14,7 +14,7 @@ if test -t 1; then
 fi
 
 # macOS sed fix - https://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux
-sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
+# sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
 # usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
 
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
@@ -139,7 +139,7 @@ function kill_port () {
 
 function what_port() {
 
-	# macOs - what app is running on a port
+	# macOS - what app is running on a port
 
 	if [ $# -lt 1 ]; then
 		echo "usage: PORT";
@@ -178,55 +178,6 @@ function d() {
 }
 
 function po() {
-	#
-	# Function to "project open" (was op but OnePassword script prefers that!) open specified project in projects folder
-	#
-
-	# To override use env WORKSPACE, e.g. export WORKSPACE=~/Code
-	rootfolder="${WORKSPACE:-$HOME/Code}"
-	WORKSPACE=$(echo -e "${WORKSPACE}\n${HOME}/Code\n${HOME}/Workspace\n${HOME}/Projects" | sort | uniq | fzf)
-	rootfolder="${WORKSPACE}"
-
-	# echo "ENV(WORKSPACE:${WORKSPACE})"
-
-	found=0 # 0 = Not Found; 1 = Found
-	project="$1" # Name of project given
-	repo="$2" # Name of repository given
-	count=0 # Array counter
-
-	# Following is in order of preference
-	if [[ $repo != "" ]]; then # Change to project repo
-		directories[$count]=${rootfolder}/${project}/${repo}; ((count++));
-		directories[$count]=${rootfolder}/${project}*/${repo}*; ((count++));
-		directories[$count]=${rootfolder}/${project}*/bgdevlab-${repo}; ((count++));
-	fi
-
-	# Usually webapp is the common repo if no repo was specified
-	directories[$count]=${rootfolder}/${project}/webapp; ((count++));
-	directories[$count]=${rootfolder}/${project}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}/scratch; ((count++));
-	directories[$count]=${rootfolder}/${project}; ((count++));
-	directories[$count]=${rootfolder}/${project}*; ((count++));
-
-	# Look for possible project folders and change into it if one found.
-	for dir in ${directories[@]}; do
-		if [[ -d $dir ]]; then
-			found=1
-			pushd $dir &>/dev/null
-			echo -e "Changed directory to: ${GREEN}'$dir'$NC"
-			break
-		fi
-	done
-
-	# Was folder changed?
-	if [[ $found == 0 ]]; then
-		echo -e "${RED}Project directory not found.$NC"
-	fi
-}
-
-
-
-function po () {
     local items
 
     if test $# -gt 0; then
@@ -251,7 +202,7 @@ function po () {
         fi
 
     else
-        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \))
+        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) 2>/dev/null)
     fi
 
     # folder with quotes break xargs
@@ -477,9 +428,11 @@ _artisan() {
     COMPREPLY=($(compgen -W "$COMMANDS" -- "${COMP_WORDS[COMP_CWORD]}"))
     return 0
 }
-complete -F _artisan art
-complete -F _artisan artisan
 
+if type -p complete &>/dev/null; then
+    complete -F _artisan art
+    complete -F _artisan artisan
+fi
 
 # This file is part of the Symfony package.
 #
@@ -564,8 +517,9 @@ _sf_dep() {
     fi
 }
 
-complete -F _sf_dep dep
-
+if type -p complete &>/dev/null; then
+    complete -F _sf_dep dep
+fi
 
 function imagick_test() {
 
@@ -574,10 +528,10 @@ function imagick_test() {
         return 1
     fi
 
-    [ type -p php &>/dev/null ] || {
+    if ! type -p php &>/dev/null; then
         echo "cannot find php"
         return 1
-    }
+    fi
 
     outputfile=$1
     php <<"IMAGICK_TEST" >$outputfile
@@ -654,7 +608,7 @@ function launchSmartGit() {
 
 	pushd "$dir" 1>/dev/null
 
-	if [ git rev-parse --is-inside-work-tree &>/dev/null ]; then
+	if git rev-parse --is-inside-work-tree &>/dev/null; then
 		local app="/Applications/SmartGit.app/Contents/MacOS/SmartGit"
 		nohup "${app}" --log "${1}" &>/dev/null &
 	else

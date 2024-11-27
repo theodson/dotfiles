@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-set -e
+# exit on any failure including within piped commands.
+set -o pipefail -e
 
-STARTING_DIR=$PWD
+# Where this script lives
+DOTFILES=$(realpath "$(dirname $0)")
+
 cd $HOME
 echo '================================================================================'
 echo 'Preparing dotfile install ...'
@@ -10,9 +13,8 @@ sudo -v # ensure we only type password once
 
 type php &>/dev/null && current_php_version=$(php -r "echo PHP_VERSION;" | cut -d. -f-2)
 
-# echo '================================================================================'
 
-if test ! $(which brew); then
+if test ! "$(which brew)"; then
     echo '================================================================================'
     echo 'Installing homebrew...'
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -20,11 +22,12 @@ if test ! $(which brew); then
 fi
 
 if test -f $HOME/.dotfile_lastrun; then
-    if test -f $HOME/dotfiles/preinstall; then
+    if test -f "$DOTFILES/preinstall"; then
         echo '================================================================================'
         echo 'Running PreInstall script ...'
-        pushd $HOME/dotfiles && bash preinstall && popd || true
+        pushd $DOTFILES && bash preinstall && popd || true
         echo 'Done PreInstall.'
+#        echo '================================================================================'
     fi
 fi
 
@@ -50,8 +53,9 @@ fi
 
 echo '================================================================================'
 echo 'Linking dotfiles...'
-/bin/bash $HOME/dotfiles/link
+/bin/bash "$DOTFILES/link" || true
 echo 'Done linking dotfiles.'
+# echo '================================================================================'
 
 
 
@@ -63,26 +67,6 @@ echo 'Installing, updating, and cleaning up brew dependencies...'
 export HOMEBREW_NO_INSTALL_CLEANUP=true
 
 brew bundle --global || true
-# load and process custom brew bundle files
-if test -e $HOME/dotfiles/files/.brew_bundle_files; then # file contains list of brew bundle files
-    for bundle_file in $(cat $HOME/dotfiles/files/.brew_bundle_files); do
-        bundle_file=$(eval echo $bundle_file)
-        if [ -e "$bundle_file" ]; then
-            brew bundle --file $bundle_file || true
-        else
-            echo "Cannot load brew bundle file $bundle_file"
-        fi
-    done
-fi
-if test -n "$BREW_BUNDLE_FILES"; then # USE ENV if set ( space delimited list of files )
-    for bundle_file in $BREW_BUNDLE_FILES; do
-        if [ -e "$bundle_file" ]; then
-            brew bundle --file $bundle_file || true
-        else
-            echo "Cannot load brew bundle file $bundle_file"
-        fi
-    done
-fi
 
 #brew bundle cleanup --force --global
 # brew services cleanup
@@ -93,15 +77,11 @@ echo 'Done installing, updating, and cleaning up brew dependencies.'
 
 echo '================================================================================'
 echo 'Installing and updating composer dependencies...'
-# composer global update --with-all-dependencies
-type -p composer &>/dev/null && {
-    echo 'composer version --2.2 required for php < 7.2.5'
-    composer self-update --2.2 || true
-}
 echo 'Done installing and updating composer dependencies.'
+#echo '================================================================================'
 
 
-# /bin/bash $HOME/dotfiles/link
+# /bin/bash $DOTFILES/link
 
 # echo '================================================================================'
 # echo 'Installing and updating npm dependencies...'
@@ -128,15 +108,6 @@ echo 'Done installing and updating composer dependencies.'
 # echo 'Done installing and updating FZF.'
 # echo '================================================================================'
 
-echo '================================================================================'
-echo 'Installing and updating terminal themes...'
-for theme in 3024_Day AtomOneLight PencilLight Material Spring ayu_light; do
-    THEME=https://raw.githubusercontent.com/dexpota/kitty-themes/master/themes/${theme}.conf
-    wget -q "$THEME" -P ~/.config/kitty/themes
-done
-echo 'Done installing and updating terminal themes.'
-# echo '================================================================================'
-
 # Additionally, if you receive “zsh compinit: insecure directories” warnings
 # when attempting to load these completions, you may need to run this
 # see: https://docs.brew.sh/Shell-Completion
@@ -156,20 +127,6 @@ date > $HOME/.dotfile_lastrun
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # Alternative to dotfiles - https://yadm.io
 
-echo 'Done!'
-env | egrep -i 'php|compos|valet' | sort
-brew list --pinned
-
-
-#echo '================================================================================'
-#echo 'Installing and updating php, composer and valet dependencies...'
-#source $HOME/dotfiles/files/switch_php
-#echo -e "For each PHP version you wish to use please run 'php_install'. e.g.\nphp_install 7.0\nphp_install 8.1"
-#echo '================================================================================'
-#set +e
-#
-#echo 'Done!'
-#env | egrep -i 'php|compos|valet' | sort
-#brew list --pinned
+echo -e "No longer support PHP 7.x natively in macOs... its too hard... reach for OrbStack machines! 🟣"
 
 

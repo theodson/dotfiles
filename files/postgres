@@ -487,7 +487,9 @@ function macports_postgresql_use() {
 }
 
 function macports_postgresql_versions() {
-    port -q installed "postgresql*-server" | cut -d'-' -f1
+    if type port &>/dev/null; then
+        port -q installed "postgresql*-server" | cut -d'-' -f1
+    fi
 }
 
 
