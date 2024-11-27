@@ -14,7 +14,7 @@ if test -t 1; then
 fi
 
 # macOS sed fix - https://stackoverflow.com/questions/5694228/sed-in-place-flag-that-works-both-on-mac-bsd-and-linux
-sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
+# sedi=(-i) && [ "$(uname)" == "Darwin" ] && sedi=(-i '')
 # usage - sed "${sedi[@]}" "s/^LOOKFOR.*/REPALCEWITH/" yourfile
 
 # `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
@@ -139,7 +139,7 @@ function kill_port () {
 
 function what_port() {
 
-	# macOs - what app is running on a port
+	# macOS - what app is running on a port
 
 	if [ $# -lt 1 ]; then
 		echo "usage: PORT";
@@ -477,9 +477,11 @@ _artisan() {
     COMPREPLY=($(compgen -W "$COMMANDS" -- "${COMP_WORDS[COMP_CWORD]}"))
     return 0
 }
-complete -F _artisan art
-complete -F _artisan artisan
 
+if type -p complete &>/dev/null; then
+    complete -F _artisan art
+    complete -F _artisan artisan
+fi
 
 # This file is part of the Symfony package.
 #
@@ -564,8 +566,9 @@ _sf_dep() {
     fi
 }
 
-complete -F _sf_dep dep
-
+if type -p complete &>/dev/null; then
+    complete -F _sf_dep dep
+fi
 
 function imagick_test() {
 
@@ -574,10 +577,10 @@ function imagick_test() {
         return 1
     fi
 
-    [ type -p php &>/dev/null ] || {
+    if ! type -p php &>/dev/null; then
         echo "cannot find php"
         return 1
-    }
+    fi
 
     outputfile=$1
     php <<"IMAGICK_TEST" >$outputfile
@@ -654,7 +657,7 @@ function launchSmartGit() {
 
 	pushd "$dir" 1>/dev/null
 
-	if [ git rev-parse --is-inside-work-tree &>/dev/null ]; then
+	if git rev-parse --is-inside-work-tree &>/dev/null; then
 		local app="/Applications/SmartGit.app/Contents/MacOS/SmartGit"
 		nohup "${app}" --log "${1}" &>/dev/null &
 	else
