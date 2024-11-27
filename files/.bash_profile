@@ -14,10 +14,11 @@ source ~/.orbstack/shell/init.bash 2>/dev/null || :
 
 # Herd injected NVM configuration (always automatically added by Herd to .bash_profile)
 export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
 if [ ! -e "$NVM_DIR" ]; then
     unset NVM_DIR
 fi
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # Node Version Manager - Auto Complete
 if test ! -z "${NVM_DIR}"; then
