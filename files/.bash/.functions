@@ -629,7 +629,7 @@ function git_add_to_osxkeychain() {
 	printf "protocol=https\nhost=%s\nusername=%s\npassword=%s\n" "$1" "$2" "$3" | git "credential-osxkeychain" store
 }
 
-function git_tag_relases() {
+function git_tag_releases() {
     git for-each-ref --sort=-creatordate --format '## %(refname)
 
 **Released:**  %(creatordate) %(object:short) - %(*objectname:short)
