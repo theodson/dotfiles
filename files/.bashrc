@@ -4,6 +4,7 @@
 BREW_PREFIX=$(brew --prefix)
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # $HOME
 BASEDIR="$(dirname $(realpath "${BASH_SOURCE[0]}"))" # dotfiles directory
+echo "BASEDIR=$BASEDIR"
 #
 # https://scriptingosx.com/2017/04/about-bash_profile-and-bashrc-on-macos/
 # https://books.apple.com/book/moving-to-zsh/id1483591353
@@ -37,7 +38,7 @@ unset USE_SWITCH_PHP_HACKERY # Herd and OrbStack only...
 [ -r $BASEDIR/.bash/.aliases ] && source $BASEDIR/.bash/.aliases || true
 #[ -r $BASEDIR/.ps1 ] && [[ ! "$PROMPT_COMMAND" =~ starship ]] && source $BASEDIR/.ps1 || true # start aware prompt
 [ -r $BASEDIR/switch_php ] && [ -n "$USE_SWITCH_PHP_HACKERY" ] && source $BASEDIR/switch_php || true
-[ -r $BASEDIR/.adhoc ] && source $BASEDIR/.adhoc || true
+[ -r $HOME/.adhoc ] && source $HOME/.adhoc || true
 
 # Add folder to search PATH if it exists
 for folder in $COMPOSER_HOME $HOME/.yarn/bin $HOME/bin /usr/local/bin /usr/local/sbin;
