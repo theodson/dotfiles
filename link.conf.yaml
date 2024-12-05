@@ -1,10 +1,6 @@
 - clean: ['~']
 
 - link:
-    ~/.config/kitty/kitty.conf:
-        path: files/kitty.conf
-        relink: true
-        create: true
     ~/.defaults:
         path: files/.defaults
         relink: true
