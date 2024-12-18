@@ -61,7 +61,10 @@ export MCFLY_LIGHT=TRUE
 # =============================================================================
 
 # Developer Workspace
-export WORKSPACE="${WORKSPACE:-$HOME/Workspace}"
+export WORKSPACE="${WORKSPACE:-$HOME/Code}"
+
+#export SECRETS_BASE=/Users/$(whoami)/.secrets
+export SECRETS_BASE="$WORKSPACE/.secrets"
 
 if eval false; then
     # Check for custom built frankenphp
