@@ -366,7 +366,8 @@ function clearall() {
     grep -E 'APP_ENV|_CONNECTION|_DRIVER|PROCORE|DB_DATABASE' $dotenv | grep -v '^#'
     echo -e "\n"
 
-    php_ver="$(get_php_version)"
+    # alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
+    php_ver="$(php_version)"
 
     cleanfiles=$(ls -1 bootstrap/cache/*.php 2>&1) && {
         for f in $cleanfiles; do echo "removing $f"; done
