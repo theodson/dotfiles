@@ -25,7 +25,7 @@ brew 'dust'
 brew 'gping'
 brew 'gtop'
 brew 'ripgrep'
-# brew 'composer'
+# brew 'composer' # Herd manage this
 brew 'coreutils'
 brew 'docutils'
 # brew 'exa'
@@ -51,13 +51,15 @@ brew 'less'
 brew 'lunchy'
 brew 'cantino/mcfly/mcfly'
 brew 'mas'
-# brew 'nginx'
-# brew 'nvm'
+brew 'mkcert'
+brew 'nss'
+# brew 'nginx'  # Herd manage this
+# brew 'nvm'  # Herd manage this
 brew orbstack
 # brew 'php@8.0'
 # brew 'postgresql@9.5' - using mcaports version as no longer available
 # brew 'pnpm'  # curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=6.32.1  sh -
-# brew 'redis@6.2', restart_service: true, link: true, conflicts_with: ["redis"]
+# brew 'redis@6.2', restart_service: true, link: true, conflicts_with: ["redis"]  # Herd manage this
 brew 'rbenv'
 brew 'pyenv'
 brew 'ruby'
