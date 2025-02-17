@@ -49,9 +49,7 @@ Important: move these archived files __off your machine__ to somewhere safe ☁�
 
 - Ensure TimeMachine/BackBlaze/etc is recently synced.
 
-- ~~run `mackup backup`~~
 - ~~run `restic`~~
-
 
 
 ##  🧐 Review

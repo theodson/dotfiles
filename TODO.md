@@ -2,7 +2,6 @@
 
 - [x] Fix SHIFT+CMD+A conflict on PHPStorm and macOs
 - [ ] Top of Page - https://second-cup-of-coffee.com/move-cursor-to-the-top-of-the-page-in-phpstorm/
-- [ ] Review `mackup` - https://github.com/lra/mackup
 - [ ] Review `restic` - backups https://restic.readthedocs.io/en/stable/040_backup.html
 
 - [ ] Store Keys safely - investigate https://github.com/elasticdog/transcrypt
@@ -14,7 +13,7 @@
 https://golangrepo.com/repo/TimothyYe-skm-go-devops-tools
 
 # TimeMachine App Data / Config recovery / Backups
-Don't forget to deal with these Apps as well as private dotfiles (see mackup/restic above)
+Don't forget to deal with these Apps as well as private dotfiles (see restic above)
 
 TIME_MACHINE_PATH=/Volumes/TimeMachine/Backups.backupdb/MacBookPro/latest/Macintosh HD - Data/Users/username
 

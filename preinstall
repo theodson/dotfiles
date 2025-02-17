@@ -39,7 +39,6 @@ function archive_existing_dotfiles() {
         $HOME/.ssh/config \
         $HOME/ssh_config \
         $HOME/.netrc \
-        $HOME/.mackup.cfg \
         $HOME/.gnupg \
         $HOME/.Brewfile.lock.json \
         $HOME/.predotfiles/predotfiles*.txt \
