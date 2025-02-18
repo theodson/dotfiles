@@ -174,10 +174,10 @@ function what_port() {
 }
 
 function d() {
-    po $@
+    j $@
 }
 
-function po() {
+function j() {
     local items
 
     if test $# -gt 0; then
