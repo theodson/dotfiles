@@ -49,8 +49,8 @@ do
 done
 
 # Jave Env - http://www.jenv.be/ - install multiple java environments
-if test -r "$HOME/.jenv"; then
-	eval "$(jenv init -)" || echo "jenv failed to initialise"
+if type -t jenv &>/dev/null; then
+	eval "$(jenv init -)" && echo -n "jenv init done. " && jenv enable-plugin export || echo "jenv failed to initialise"
 fi
 
 # Python Versions - https://github.com/pyenv/pyenv
