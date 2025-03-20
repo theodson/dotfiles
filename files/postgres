@@ -338,6 +338,9 @@ function pgenv_set_port() {
         fi
     done
 
+    # always include 5432 (it's too useful not to)
+    pgOptions+=("5432:DEFAULT ");
+
     # scan ports possibly... nah
     # nc -z localhost 5432-5532 2>&1 | awk '{print $5}' | xargs
 
