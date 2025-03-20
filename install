@@ -84,13 +84,17 @@ echo 'Done installing and updating composer dependencies.'
 #
 # Java Setup - jenv required.
 #
-brew install openjdk@8 openjdk@17 openjdk@23 jenv
+brew install openjdk@8 openjdk@11 openjdk@17 openjdk@21 openjdk@23 jenv
 eval "$(jenv init -)" && echo -n "jenv init done. " && jenv enable-plugin export || echo "jenv failed to initialise"
 echo "Linking JDKs - requires sudo"
+sudo ln -snf $(brew --prefix)/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 sudo ln -snf $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
+sudo ln -snf $(brew --prefix)/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk
 sudo ln -snf $(brew --prefix)/opt/openjdk@23/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-23.jdk
 sudo ln -snf $(brew --prefix)/opt/openjdk@8/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-8.jdk
+jenv add /Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home/
 jenv add /Library/Java/JavaVirtualMachines/openjdk-17.jdk/Contents/Home/
+jenv add /Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home/
 jenv add /Library/Java/JavaVirtualMachines/openjdk-23.jdk/Contents/Home/
 jenv add /Library/Java/JavaVirtualMachines/openjdk-8.jdk/Contents/Home/
 jenv global 23
