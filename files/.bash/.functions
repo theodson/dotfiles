@@ -240,6 +240,15 @@ function man() {
 		man "$@"
 }
 
+function mcfly_history() {
+    # sqlite DB is ~/Library/Application\ Support/McFly/history.db
+    if type mcfly &>/dev/null; then
+        mcfly dump | jq -r '.[]|"\(.when_run), \(.cmd)"'
+    else
+        echo 'mcfly is not installed'
+    fi
+}
+
 function sshrem() {
 	# TODO : look at ssh-keyscan -H for another option
 	if [ $# -lt 1 ]; then

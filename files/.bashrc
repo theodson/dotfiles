@@ -12,9 +12,10 @@ echo "BASEDIR=$BASEDIR"
 # Standardising on $HOME.bashrc over $HOME/.profile as $HOME/.bash_profile makes $HOME/.profile obsolete and ignores it
 #
 
-
 # Mcfly - https://github.com/cantino/mcfly
 type mcfly &>/dev/null && eval "$(mcfly init bash)"
+export MCFLY_RESULTS_SORT=LAST_RUN # LAST_RUN|RANK
+export MCFLY_RESULTS=65535 # max is 65535
 
 # Starship - easy command prompt
 type starship &>/dev/null && eval "$(starship init bash)"
@@ -94,3 +95,5 @@ fi
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh" | sed '/^$/d'
 
 SECRETS_PATH=
+
+export PATH="/$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$PATH"
