@@ -5,7 +5,6 @@
 tap 'timothyye/tap'
 tap 'homebrew/services'
 tap 'buo/cask-upgrade'
-tap 'cantino/mcfly'
 
 # -----------------------------------------------------------------------------
 
