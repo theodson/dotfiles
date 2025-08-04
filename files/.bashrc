@@ -16,6 +16,8 @@ echo "BASEDIR=$BASEDIR"
 type mcfly &>/dev/null && eval "$(mcfly init bash)"
 export MCFLY_RESULTS_SORT=LAST_RUN # LAST_RUN|RANK
 export MCFLY_RESULTS=65535 # max is 65535
+# Undocumented MCFLY_RESULTS_FILTER https://github.com/cantino/mcfly/blob/a7722aed500e5a93922061c5f64cda682460daad/src/settings.rs#L264
+export MCFLY_RESULTS_FILTER=CURRENT_DIRECTORY  #GLOBAL|CURRENT_DIRECTORY
 
 # Starship - easy command prompt
 type starship &>/dev/null && eval "$(starship init bash)"
