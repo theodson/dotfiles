@@ -64,6 +64,8 @@ brew 'mailpit'
 brew 'mas'
 brew 'maven'
 brew 'mkcert'
+# mtr 'traceroute' and 'ping' in a single tool
+brew 'mtr'
 brew 'nss'
 brew 'openjdk8'
 brew 'openjdk@17'
