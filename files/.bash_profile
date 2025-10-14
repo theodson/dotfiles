@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+if test -n "$(getconf DARWIN_USER_TEMP_DIR)"; then
+    # attempt to fix 2025-SEP issue where /var/folders/zz/zyxvpxvq6csfxvn_n0000000000000/T is not writable for a variety
+    # of
+    export OLD_TMPDIR="$TMPDIR"
+    TMPDIR=$(getconf DARWIN_USER_TEMP_DIR)
+    export TMPDIR
+fi
 
 [ -r ~/.bashrc ] && source ~/.bashrc # all bash setup in bashrc
 
