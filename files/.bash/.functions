@@ -372,7 +372,7 @@ function clearall() {
         echo "Stopping - cannot find dotenv file '$dotenv'"
         return 1
     }
-    grep -E 'APP_ENV|_CONNECTION|_DRIVER|PROCORE|DB_DATABASE' $dotenv | grep -v '^#'
+    grep -E 'APP_ENV|_CONNECTION|_DRIVER|DB_|MAIL_|PROCORE' $dotenv | grep -v '^#' | sort | uniq
     echo -e "\n"
 
     # alias php_version='php -r "echo PHP_VERSION;" | cut -d. -f-2' # current php version
