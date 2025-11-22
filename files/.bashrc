@@ -57,12 +57,14 @@ if type -t jenv &>/dev/null; then
 fi
 
 # Python Versions - https://github.com/pyenv/pyenv
-if test -r "$PYENV_ROOT"; then
-    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+if test -n "$PYENV_ROOT"; then
+    export PATH="$PYENV_ROOT/bin:$PATH"
+fi
+if type -t pyenv; then
     eval "$(pyenv init -)"|| echo "pyenv failed to initialise"
 fi
 
-if ! type python -V &>/dev/null; then
+if ! type python -V &>/dev/null && type -t pyenv; then
     echo "No python found... installing latest version of Python"
     pythonVersion=3.12.2
     yes y | pyenv install "$pythonVersion" && pyenv global "$pythonVersion"
