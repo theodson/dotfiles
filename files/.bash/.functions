@@ -929,3 +929,69 @@ function o() {
     machine="$(basename "$selected" | sed 's/ .*//')"
     orb -m "$machine"
 }
+
+
+# Add a custom SSH host with legacy key algorithms
+# Usage: ssh-add-host <hostname> [user]
+#
+# Hosts are added to a separate config file (~/.ssh/config.d/legacy-hosts)
+# which is included from the main SSH config file.
+
+ssh_add_legacy_host() {
+    local hostname="${1}"
+    local user="${2:-root}"
+    local ssh_config="${HOME}/.ssh/config"
+    local ssh_config_dir="${HOME}/.ssh/config.d"
+    local legacy_config="${ssh_config_dir}/legacy-hosts"
+    local include_line="Include ${ssh_config_dir}/*"
+
+    if [[ -z "$hostname" ]]; then
+        echo "Usage: ssh_add_host <hostname> [user]"
+        echo "Example: ssh_add_host legacybox bob"
+        return 1
+    fi
+
+    # Create .ssh directory if it doesn't exist
+    mkdir -p "${HOME}/.ssh"
+    chmod 700 "${HOME}/.ssh"
+
+    # Create config.d directory if it doesn't exist
+    mkdir -p "${ssh_config_dir}"
+    chmod 700 "${ssh_config_dir}"
+
+    # Ensure main config file exists
+    touch "$ssh_config"
+    chmod 600 "$ssh_config"
+
+    # Add Include directive to main config if not present (must be at the top)
+    if ! grep -qF "$include_line" "$ssh_config" 2>/dev/null; then
+        # Prepend Include to the config file
+        local tmp_config="${ssh_config}.tmp"
+        echo "$include_line" > "$tmp_config"
+        echo "" >> "$tmp_config"
+        cat "$ssh_config" >> "$tmp_config"
+        mv "$tmp_config" "$ssh_config"
+        chmod 600 "$ssh_config"
+        echo "Added Include directive to ${ssh_config}"
+    fi
+
+    # Check if host already exists in legacy config
+    if grep -q "^Host ${hostname}$" "$legacy_config" 2>/dev/null; then
+        echo "Host '${hostname}' already exists in ${legacy_config}"
+        return 1
+    fi
+
+    # Append the host configuration to the legacy config file
+    cat >> "$legacy_config" <<EOF
+
+Host ${hostname}
+    HostName ${hostname}
+    User ${user}
+    HostKeyAlgorithms +ssh-rsa
+    PubkeyAcceptedAlgorithms +ssh-rsa
+EOF
+
+    chmod 600 "$legacy_config"
+    echo "Added host '${hostname}' to ${legacy_config}"
+    echo "You can now connect with: ssh ${hostname}"
+}

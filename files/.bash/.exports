@@ -91,7 +91,7 @@ fi
 
 
 # Prefer Herd's NVM
-export NVM_DIR="/Users/theodickinson/Library/Application Support/Herd/config/nvm"
+export NVM_DIR="${HOME}/Library/Application Support/Herd/config/nvm"
 if [ ! -e "$NVM_DIR" ]; then
     unset NVM_DIR
 fi

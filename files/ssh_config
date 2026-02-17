@@ -12,17 +12,17 @@ Host 10.20.1.*, 10.23.1.*
   User admin
   LogLevel INFO
   KexAlgorithms +diffie-hellman-group1-sha1
-  HostKeyAlgorithms=+ssh-dss
+#  HostKeyAlgorithms=+ssh-dss
 
 Host 10.20.1.*, 10.23.1.*
   LogLevel INFO
   User root
   KexAlgorithms +diffie-hellman-group1-sha1
-  HostKeyAlgorithms=+ssh-dss
+#  HostKeyAlgorithms=+ssh-dss
 
 Host *
   LogLevel INFO
   AddKeysToAgent yes
   UseKeychain no
   KexAlgorithms +diffie-hellman-group1-sha1
-  HostKeyAlgorithms=+ssh-dss
+#  HostKeyAlgorithms=+ssh-dss
