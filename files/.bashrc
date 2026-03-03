@@ -101,3 +101,11 @@ fi
 SECRETS_PATH=
 
 export PATH="/$HOME/Library/Application Support/JetBrains/Toolbox/scripts:$PATH"
+
+# Go install for Laravel Ward
+# brew install go;cd $HOME && go install github.com/eljakani/ward@latest
+# Make sure $GOPATH/bin is in your PATH
+GOPATH="$(go env GOPATH)/bin"
+if [ -d "$GOPATH" ]; then
+    export PATH="$PATH:$GOPATH"
+fi
