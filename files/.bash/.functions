@@ -152,19 +152,29 @@ function what_port() {
         return 3
     }
     type -p pstree &>/dev/null || {
-        echo "cannot find util nc... please install nc, brew install pstree"
+        echo "cannot find util pstree... please install pstree, brew install pstree"
         return 3
     }
 
     if nc -z localhost $port &>/dev/null; then
 	    echo "PORT '$port' on localhost has a process listening"
 
-        # find ps for port
-	    pids=$(netstat -anv | awk '{print $4","$11}' | grep "\.$port," | cut -d, -f2 | uniq | xargs)
+        # find pids for port - lsof is much more robust on macOS
+        pids=$(lsof -i :$port -t 2>/dev/null | sort -u | tr '\n' ' ')
+        if [ -z "$pids" ]; then
+            # fallback to netstat if lsof didn't find anything
+            pids=$(netstat -anv | awk '{print $4","$11}' | grep "\.$port," | cut -d, -f2 | sed 's/.*://' | grep -E '^[0-9]+$' | sort -u | tr '\n' ' ')
+        fi
+
+        if [ -z "$pids" ]; then
+            echo "Could not find any PIDs for port $port"
+            return 1
+        fi
+
         # find parent id (exclude 0 or 1 for launchd)
-	    ppids=$(ps -o ppid -p $pids | tail -n +2 | grep -v 1 | xargs || true)
+        ppids=$(ps -o ppid -p $pids 2>/dev/null | tail -n +2 | awk '$1 != 0 && $1 != 1 {print $1}' | sort -u | tr '\n' ' ')
 	    #
-	    [ -z $ppids ] && pstree $pids || pstree $ppids
+	    [ -z "$ppids" ] && pstree $pids || pstree $ppids
 	    return
     else
         echo "PORT '$port' on localhost does not have a process listening">&2
@@ -177,8 +187,14 @@ function d() {
     j $@
 }
 
+
+function j3() {
+    JUMP_DEPTH=3 j $@
+}
+
 function j() {
     local items
+    local jumpdepth="${JUMP_DEPTH:-2}"
 
     if test $# -gt 0; then
         wildmatch1='*';
@@ -191,18 +207,18 @@ function j() {
         fi
 
         if test $# -eq 1; then
-            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}" 2>/dev/null)
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth "$jumpdepth" -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}" 2>/dev/null)
         else
             local folder2="$2"
             if echo "$2" | grep '/$' &>/dev/null; then
                 wildmatch2=''
                 folder2=$(echo "$folder2" | tr -d '/')
             fi
-            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}/*${folder2}${wildmatch2}" 2>/dev/null)
+            items=$(find $HOME/{Code,Workspace,Projects} -maxdepth "$jumpdepth" -mindepth 1 \( -type l -o -type d \) -path "*/*${folder1}${wildmatch1}/*${folder2}${wildmatch2}" 2>/dev/null)
         fi
 
     else
-        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth 2 -mindepth 1 \( -type l -o -type d \) 2>/dev/null)
+        items=$(find $HOME/{Code,Workspace,Projects} -maxdepth "$jumpdepth" -mindepth 1 \( -type l -o -type d \) 2>/dev/null)
     fi
 
     # folder with quotes break xargs

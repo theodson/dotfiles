@@ -179,3 +179,5 @@ export HERD_PHP_81_INI_SCAN_DIR="/Users/theodson/Library/Application Support/Her
 
 # Herd injected PHP 7.4 configuration.
 export HERD_PHP_74_INI_SCAN_DIR="/Users/theodson/Library/Application Support/Herd/config/php/74/"
+
+export PATH="$HOME/.local/bin:$PATH"
