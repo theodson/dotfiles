@@ -298,6 +298,8 @@ function local_postgres_process_ports() {
 
 }
 
+alias pgenv_switch='switch_postgres'
+
 function pgenv_show() {
     echo "# Standard Postgres Env
 PGHOST          $PGHOST
