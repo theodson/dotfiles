@@ -59,7 +59,7 @@ export EDITOR="$VISUAL"
 
 # Added by OrbStack: command-line tools and integration
 # Comment this line if you don't want it to be added again.
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+source $HOME/.orbstack/shell/init.zsh 2>/dev/null || :
 
 [ -r $BASEDIR/postgres ] && source $BASEDIR/postgres || echo "No postgres script"
 
