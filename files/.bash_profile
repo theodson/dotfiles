@@ -55,7 +55,7 @@ export HERD_PHP_84_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/p
 
 
 # Herd injected PHP 8.5 configuration.
-export HERD_PHP_84_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/85/"
+export HERD_PHP_85_INI_SCAN_DIR="$HOME/Library/Application Support/Herd/config/php/85/"
 
 
 # Herd injected PHP binary.
@@ -64,3 +64,11 @@ export PATH="$HOME/Library/Application Support/Herd/bin/":$PATH
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init.bash 2>/dev/null || :
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
+# Added by Junie
+export PATH="$HOME/.local/bin:$PATH"
+# End of Junie
